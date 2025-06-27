@@ -1,7 +1,7 @@
 const User = require('../models/user.model');
 const { validationResult } = require('express-validator');
 const crypto = require('crypto');
-const sendEmail = require('../utils/sendEmail');
+// const sendEmail = require('../utils/sendEmail'); // ⛔ Temporarily disabled
 const logAudit = require('../utils/auditLog');
 
 // @desc    Register user
@@ -18,7 +18,9 @@ exports.register = async (req, res) => {
             });
             return res.status(400).json({ errors: errors.array() });
         }
+
         const { firstName, lastName, email, password, role, organization } = req.body;
+
         let user = await User.findOne({ email });
         if (user) {
             await logAudit({
@@ -31,7 +33,9 @@ exports.register = async (req, res) => {
                 message: 'User already exists'
             });
         }
+
         const verificationToken = crypto.randomBytes(20).toString('hex');
+
         user = await User.create({
             firstName,
             lastName,
@@ -41,19 +45,25 @@ exports.register = async (req, res) => {
             organization,
             verificationToken
         });
+
         await logAudit({
             user: user._id,
             action: 'register_success',
             details: { email, role },
             ip: req.ip
         });
+
         const verificationUrl = `${req.protocol}://${req.get('host')}/api/auth/verify-email/${verificationToken}`;
         const message = `Please verify your email by clicking on this link: \n\n ${verificationUrl}`;
-        await sendEmail({
-            email: user.email,
-            subject: 'Email Verification',
-            message
-        });
+
+        // ⛔ Email sending skipped for development
+        // await sendEmail({
+        //     email: user.email,
+        //     subject: 'Email Verification',
+        //     message
+        // });
+        console.log('⛔ Skipped sending email (dev mode):', user.email);
+
         sendTokenResponse(user, 201, res);
     } catch (err) {
         console.error(err);
@@ -76,7 +86,6 @@ exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Validate email & password
         if (!email || !password) {
             await logAudit({
                 action: 'login_failed',
@@ -89,7 +98,6 @@ exports.login = async (req, res) => {
             });
         }
 
-        // Check for user
         const user = await User.findOne({ email }).select('+password');
         if (!user) {
             await logAudit({
@@ -103,7 +111,6 @@ exports.login = async (req, res) => {
             });
         }
 
-        // Check if password matches
         const isMatch = await user.matchPassword(password);
         if (!isMatch) {
             await logAudit({
@@ -118,7 +125,6 @@ exports.login = async (req, res) => {
             });
         }
 
-        // Successful login
         await logAudit({
             user: user._id,
             action: 'login_success',
@@ -126,7 +132,6 @@ exports.login = async (req, res) => {
             ip: req.ip
         });
 
-        // Send token
         sendTokenResponse(user, 200, res);
     } catch (err) {
         console.error(err);
@@ -192,9 +197,8 @@ exports.getMe = async (req, res) => {
     }
 };
 
-// Helper function to get token from model, create cookie and send response
+// Helper: Send token response
 const sendTokenResponse = (user, statusCode, res) => {
-    // Create token
     const token = user.getSignedJwtToken();
 
     const options = {
@@ -208,11 +212,8 @@ const sendTokenResponse = (user, statusCode, res) => {
         options.secure = true;
     }
 
-    res
-        .status(statusCode)
-        .cookie('token', token, options)
-        .json({
-            success: true,
-            token
-        });
-}; 
+    res.status(statusCode).cookie('token', token, options).json({
+        success: true,
+        token
+    });
+};
