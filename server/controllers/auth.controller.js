@@ -197,7 +197,7 @@ exports.getMe = async (req, res) => {
     }
 };
 
-// Helper: Send token response
+// ✅ FIXED: Helper to send token and user info
 const sendTokenResponse = (user, statusCode, res) => {
     const token = user.getSignedJwtToken();
 
@@ -214,6 +214,13 @@ const sendTokenResponse = (user, statusCode, res) => {
 
     res.status(statusCode).cookie('token', token, options).json({
         success: true,
-        token
+        token,
+        user: {
+            id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            role: user.role
+        }
     });
 };

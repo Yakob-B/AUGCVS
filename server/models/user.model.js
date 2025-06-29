@@ -32,11 +32,19 @@ const userSchema = new mongoose.Schema({
         default: 'external'
     },
     organization: {
-        type: String,
-        required: function() {
-            return this.role === 'external';
-        }
+  type: String,
+  validate: {
+    validator: function(value) {
+      // only validate if role is external
+      if (this.role === 'external') {
+        return value && value.trim().length > 0;
+      }
+      return true;
     },
+    message: 'Organization is required for external users.'
+  }
+}
+,
     isEmailVerified: {
         type: Boolean,
         default: false

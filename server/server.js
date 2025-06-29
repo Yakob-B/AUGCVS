@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Database connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/augcvs', {
+mongoose.connect(process.env.MONGODB_URI|| 'mongodb://127.0.0.1:27017/augcvs', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
