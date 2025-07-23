@@ -68,7 +68,7 @@ exports.deleteUser = async (req, res) => {
       });
       return res.status(404).json({ success: false, message: 'User not found' });
     }
-    await user.remove();
+    await User.deleteOne({ _id: user._id });
     await logAudit({
       user: req.user.id,
       action: 'delete_user_success',

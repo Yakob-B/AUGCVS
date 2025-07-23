@@ -17,8 +17,10 @@ router.use(protect);
 
 // Verification validation middleware
 const verificationValidation = [
-    check('graduate', 'Graduate ID is required').isMongoId(),
-    check('certificateNumber', 'Certificate number is required').not().isEmpty()
+    check('studentId', 'Student ID is required').not().isEmpty(),
+    check('fullName', 'Full name is required').not().isEmpty(),
+    check('graduationYear', 'Graduation year is required').isNumeric(),
+    check('degreeType', 'Degree type is required').not().isEmpty()
 ];
 
 // Process validation middleware

@@ -4,24 +4,45 @@ const { validationResult } = require('express-validator');
 const sendEmail = require('../utils/sendEmail');
 const logAudit = require('../utils/auditLog');
 
+// Helper function to emit socket events
+const emitVerificationUpdate = (req, event, data) => {
+  const io = req.app.get('io');
+  if (io) {
+    // Emit to the specific user who made the request
+    io.to(`user-${data.requester}`).emit(event, data);
+    
+    // Emit to registrar room for new requests
+    if (event === 'verification-created') {
+      io.to('registrar-room').emit('new-verification-request', data);
+    }
+  }
+};
+
 // @desc    Create verification request
 // @route   POST /api/verifications
 // @access  Private (External)
 exports.createVerification = async (req, res) => {
+    // Debug logging
+    console.log('--- Incoming Verification Request ---');
+    console.log('req.body:', req.body);
+    console.log('req.file:', req.file);
+
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
+            console.log('Validation errors:', errors.array());
             await logAudit({
                 user: req.user.id,
                 action: 'create_verification_failed',
                 details: { errors: errors.array() },
                 ip: req.ip
             });
-            return res.status(400).json({ errors: errors.array() });
+            return res.status(400).json({ success: false, errors: errors.array() });
         }
 
         // Check if file was uploaded
         if (!req.file) {
+            console.log('No file uploaded!');
             await logAudit({
                 user: req.user.id,
                 action: 'create_verification_failed',
@@ -30,15 +51,54 @@ exports.createVerification = async (req, res) => {
             });
             return res.status(400).json({
                 success: false,
-                message: 'Please upload a certificate file'
+                errors: [{ msg: 'Please upload a certificate file', param: 'certificateFile' }]
             });
         }
 
-        // Add requester and file path to req.body
-        req.body.requester = req.user.id;
-        req.body.certificateFile = `/uploads/${req.file.filename}`;
+        // Lookup graduate by studentId, fullName, graduationYear, degreeType
+        const { studentId, fullName, graduationYear, degreeType } = req.body;
+        let graduateQuery = { studentId, graduationYear, degreeType };
+        if (fullName) {
+            // Try to split fullName into firstName and lastName
+            const [firstName, ...rest] = fullName.trim().split(' ');
+            if (firstName && rest.length > 0) {
+                graduateQuery.firstName = firstName;
+                graduateQuery.lastName = rest.join(' ');
+            }
+        }
+        const graduate = await Graduate.findOne(graduateQuery);
+        if (!graduate) {
+            await logAudit({
+                user: req.user.id,
+                action: 'create_verification_failed',
+                details: { reason: 'Graduate not found', query: graduateQuery },
+                ip: req.ip
+            });
+            return res.status(404).json({
+                success: false,
+                errors: [{ msg: 'Graduate not found with provided details', param: 'graduate' }]
+            });
+        }
 
-        const verification = await Verification.create(req.body);
+        // Prepare verification data
+        const verificationData = {
+            requester: req.user.id,
+            graduate: graduate._id,
+            certificateNumber: graduate.certificateNumber,
+            certificateFile: `/uploads/${req.file.filename}`
+        };
+
+        const verification = new Verification(verificationData);
+        await verification.save();
+        
+        // Emit real-time notification
+        emitVerificationUpdate(req, 'verification-created', {
+          id: verification._id,
+          requestNumber: verification.requestNumber,
+          status: verification.status,
+          requester: verification.requester
+        });
+        
         await logAudit({
             user: req.user.id,
             action: 'create_verification_success',
@@ -57,9 +117,15 @@ exports.createVerification = async (req, res) => {
             details: { error: err.message },
             ip: req.ip
         });
+        if (err.name === 'ValidationError') {
+            return res.status(400).json({
+                success: false,
+                errors: [{ msg: err.message, error: err }]
+            });
+        }
         res.status(500).json({
             success: false,
-            message: 'Server error'
+            errors: [{ msg: 'Server error', error: err.message }]
         });
     }
 };
@@ -165,10 +231,24 @@ exports.processVerification = async (req, res) => {
 
         // Send email notification
         const message = `Your verification request (${verification.requestNumber}) has been processed.\n\nStatus: ${status}\nResult: ${verificationResult}\nComments: ${comments}`;
-        await sendEmail({
+        try {
+          await sendEmail({
             email: verification.requester.email,
             subject: 'Verification Request Processed',
             message
+          });
+        } catch (e) {
+          console.error('Email send failed:', e.message);
+        }
+
+        // Emit real-time notification to user
+        emitVerificationUpdate(req, 'verification-processed', {
+          id: verification._id,
+          requestNumber: verification.requestNumber,
+          status: verification.status,
+          verificationResult: verification.verificationResult,
+          comments: verification.comments,
+          processedAt: verification.processedAt
         });
 
         res.status(200).json({

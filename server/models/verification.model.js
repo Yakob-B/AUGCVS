@@ -36,8 +36,8 @@ const verificationSchema = new mongoose.Schema({
     processedAt: Date,
     verificationResult: {
         type: String,
-        enum: ['authentic', 'forged', 'invalid'],
-        default: null
+        enum: ['pending', 'authentic', 'forged', 'invalid'],
+        default: 'pending'
     },
     comments: {
         type: String,
@@ -54,8 +54,8 @@ const verificationSchema = new mongoose.Schema({
 });
 
 // Generate request number before saving
-verificationSchema.pre('save', async function(next) {
-    if (this.isNew) {
+verificationSchema.pre('validate', async function(next) {
+    if (this.isNew && !this.requestNumber) {
         const count = await this.constructor.countDocuments();
         this.requestNumber = `REQ${Date.now().toString().slice(-6)}${count + 1}`;
     }

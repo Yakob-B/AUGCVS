@@ -6,7 +6,8 @@ const {
     getGraduate,
     updateGraduate,
     deleteGraduate,
-    searchGraduates
+    searchGraduates,
+    getFilters
 } = require('../controllers/graduate.controller');
 const { protect, authorize } = require('../middleware/auth.middleware');
 const { upload, handleUploadError } = require('../middleware/upload.middleware');
@@ -33,7 +34,12 @@ const graduateValidation = [
     check('certificateNumber', 'Certificate number is required').not().isEmpty()
 ];
 
-// Routes
+// ✅ Static and search/filter routes go first
+router.get('/filters', authorize('admin', 'registrar'), getFilters);
+router.get('/search', authorize('admin', 'registrar'), searchGraduates);
+router.get('/', authorize('admin', 'registrar'), getGraduates);
+
+// ✅ CRUD routes
 router.post(
     '/',
     authorize('admin', 'registrar'),
@@ -52,9 +58,7 @@ router.put(
     updateGraduate
 );
 
-router.get('/', authorize('admin', 'registrar'), getGraduates);
-router.get('/search', authorize('admin', 'registrar'), searchGraduates);
 router.get('/:id', authorize('admin', 'registrar'), getGraduate);
 router.delete('/:id', authorize('admin'), deleteGraduate);
 
-module.exports = router; 
+module.exports = router;

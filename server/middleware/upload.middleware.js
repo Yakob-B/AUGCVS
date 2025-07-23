@@ -52,19 +52,26 @@ const upload = multer({
 
 // Error handling middleware
 const handleUploadError = (err, req, res, next) => {
-    if (err instanceof multer.MulterError) {
-        if (err.code === 'LIMIT_FILE_SIZE') {
+    if (err) {
+        if (err instanceof multer.MulterError) {
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(400).json({
+                    success: false,
+                    message: 'File size cannot exceed 5MB'
+                });
+            }
             return res.status(400).json({
                 success: false,
-                message: 'File size cannot exceed 5MB'
+                message: err.message
             });
         }
+        // Handle all other errors (e.g., file type)
         return res.status(400).json({
             success: false,
-            message: err.message
+            message: err.message || 'File upload error'
         });
     }
-    next(err);
+    next();
 };
 
 module.exports = { upload, handleUploadError }; 
