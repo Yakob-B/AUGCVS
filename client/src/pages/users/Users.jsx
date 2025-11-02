@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { useNotification } from '../contexts/NotificationContext'
+import { useAuth } from '../../contexts/AuthContext'
 import * as userService from '../../services/users'
+import UserForm from '../../components/users/UserForm'
 import { MdPeople, MdAdd, MdEdit, MdDelete } from 'react-icons/md'
 
 const Users = () => {
+  const { user: currentUser } = useAuth()
   const { showNotification } = useNotification()
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
+  const [showForm, setShowForm] = useState(false)
+  const [selectedUser, setSelectedUser] = useState(null)
 
   useEffect(() => {
     loadUsers()
@@ -21,6 +26,31 @@ const Users = () => {
       showNotification('error', 'Error loading users', error.message)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleFormSuccess = () => {
+    setShowForm(false)
+    setSelectedUser(null)
+    loadUsers()
+  }
+
+  const handleEdit = (user) => {
+    setSelectedUser(user._id)
+    setShowForm(true)
+  }
+
+  const handleDelete = async (user) => {
+    if (!window.confirm(`Are you sure you want to delete ${user.firstName} ${user.lastName}?`)) {
+      return
+    }
+
+    try {
+      await userService.deleteUser(user._id)
+      showNotification('success', 'User Deleted', 'User has been deleted successfully.')
+      loadUsers()
+    } catch (error) {
+      showNotification('error', 'Delete Failed', error.message)
     }
   }
 
@@ -52,11 +82,29 @@ const Users = () => {
           <h1 className="text-4xl font-heading font-bold text-white mb-2">User Management</h1>
           <p className="text-dark-muted">Manage system users and access</p>
         </div>
-        <button className="btn-primary mt-4 md:mt-0 inline-flex items-center">
+        <button
+          onClick={() => {
+            setSelectedUser(null)
+            setShowForm(true)
+          }}
+          className="btn-primary mt-4 md:mt-0 inline-flex items-center"
+        >
           <MdAdd className="mr-2" />
           Add User
         </button>
       </div>
+
+      {/* User Form Modal */}
+      {showForm && (
+        <UserForm
+          userId={selectedUser}
+          onClose={() => {
+            setShowForm(false)
+            setSelectedUser(null)
+          }}
+          onSuccess={handleFormSuccess}
+        />
+      )}
 
       <div className="card overflow-x-auto">
         {users.length === 0 ? (
@@ -86,12 +134,22 @@ const Users = () => {
                   <td className="p-4 text-dark-muted">{user.organization || '-'}</td>
                   <td className="p-4">
                     <div className="flex items-center space-x-2">
-                      <button className="p-2 text-primary-500 hover:bg-primary-500/10 rounded transition-colors">
+                      <button
+                        onClick={() => handleEdit(user)}
+                        className="p-2 text-primary-500 hover:bg-primary-500/10 rounded transition-colors"
+                        title="Edit"
+                      >
                         <MdEdit />
                       </button>
-                      <button className="p-2 text-red-400 hover:bg-red-500/10 rounded transition-colors">
-                        <MdDelete />
-                      </button>
+                      {currentUser?._id !== user._id && (
+                        <button
+                          onClick={() => handleDelete(user)}
+                          className="p-2 text-red-400 hover:bg-red-500/10 rounded transition-colors"
+                          title="Delete"
+                        >
+                          <MdDelete />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

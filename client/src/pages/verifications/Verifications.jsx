@@ -1,31 +1,95 @@
 import React, { useState, useEffect } from 'react'
 import { useNotification } from '../contexts/NotificationContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { useSocket } from '../../contexts/SocketContext'
 import * as verificationService from '../../services/verifications'
 import VerificationRequestForm from '../../components/verifications/VerificationRequestForm'
 import VerificationReviewModal from '../../components/verifications/VerificationReviewModal'
+import Pagination from '../../components/common/Pagination'
 import { MdVerifiedUser, MdPendingActions, MdCheckCircle, MdCancel, MdAddCircle } from 'react-icons/md'
 
 const Verifications = () => {
   const { user } = useAuth()
   const { showNotification } = useNotification()
+  const { socket } = useSocket()
   const [verifications, setVerifications] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
   const [showForm, setShowForm] = useState(false)
   const [selectedVerification, setSelectedVerification] = useState(null)
+  const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, pages: 0 })
 
   useEffect(() => {
-    loadVerifications()
-  }, [])
+    setPagination(prev => ({ ...prev, page: 1 }))
+    loadVerifications(1)
+  }, [filter])
 
-  const loadVerifications = async () => {
+  useEffect(() => {
+    if (pagination.page) {
+      loadVerifications(pagination.page)
+    }
+  }, [pagination.page])
+
+  // Listen for real-time verification updates
+  useEffect(() => {
+    if (socket) {
+      // Listen for new verification requests (for registrars)
+      socket.on('new-verification-request', (data) => {
+        if (user.role === 'registrar' || user.role === 'admin') {
+          showNotification('info', 'New Verification Request', `Request #${data.requestNumber} has been submitted.`)
+          loadVerifications()
+        }
+      })
+
+      // Listen for verification processed updates
+      socket.on('verification-processed', (data) => {
+        showNotification(
+          'success',
+          'Verification Processed',
+          `Your verification request #${data.requestNumber} has been ${data.status}.`
+        )
+        loadVerifications()
+      })
+
+      // Listen for verification created confirmation
+      socket.on('verification-created', (data) => {
+        const userId = user._id || user.id
+        if (data.requester === userId || userId === data.requester) {
+          showNotification(
+            'success',
+            'Request Submitted',
+            `Your verification request #${data.requestNumber} has been submitted.`
+          )
+          loadVerifications()
+        }
+      })
+
+      return () => {
+        socket.off('new-verification-request')
+        socket.off('verification-processed')
+        socket.off('verification-created')
+      }
+    }
+  }, [socket, user])
+
+  const loadVerifications = async (page = 1) => {
     try {
       setLoading(true)
+      const params = { 
+        page, 
+        limit: 10,
+        ...(filter !== 'all' && { status: filter })
+      }
       const response = user.role === 'external' 
-        ? await verificationService.getMyVerifications()
-        : await verificationService.getVerifications()
+        ? await verificationService.getMyVerifications(params)
+        : await verificationService.getVerifications(params)
       setVerifications(response.data || [])
+      setPagination({
+        page: response.page || page,
+        limit: 10,
+        total: response.total || 0,
+        pages: response.pages || 1
+      })
     } catch (error) {
       showNotification('error', 'Error loading verifications', error.message)
     } finally {
@@ -33,10 +97,9 @@ const Verifications = () => {
     }
   }
 
-  const filteredVerifications = verifications.filter((v) => {
-    if (filter === 'all') return true
-    return v.status === filter
-  })
+  const handlePageChange = (newPage) => {
+    setPagination(prev => ({ ...prev, page: newPage }))
+  }
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -111,39 +174,40 @@ const Verifications = () => {
             onClick={() => setFilter('all')}
             className={`badge ${filter === 'all' ? 'badge-info' : 'badge-pending'}`}
           >
-            All ({verifications.length})
+            All
           </button>
           <button
             onClick={() => setFilter('pending')}
             className={`badge ${filter === 'pending' ? 'badge-warning' : 'badge-pending'}`}
           >
-            Pending ({verifications.filter(v => v.status === 'pending').length})
+            Pending
           </button>
           <button
             onClick={() => setFilter('approved')}
             className={`badge ${filter === 'approved' ? 'badge-success' : 'badge-pending'}`}
           >
-            Approved ({verifications.filter(v => v.status === 'approved').length})
+            Approved
           </button>
           <button
             onClick={() => setFilter('rejected')}
             className={`badge ${filter === 'rejected' ? 'badge-danger' : 'badge-pending'}`}
           >
-            Rejected ({verifications.filter(v => v.status === 'rejected').length})
+            Rejected
           </button>
         </div>
       </div>
 
       {/* Verifications List */}
       <div className="card">
-        {filteredVerifications.length === 0 ? (
+        {verifications.length === 0 ? (
           <div className="text-center py-12 text-dark-muted">
             <MdVerifiedUser className="text-5xl mx-auto mb-4 opacity-50" />
             <p>No verification requests found</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {filteredVerifications.map((verification) => (
+          <>
+            <div className="space-y-4">
+              {verifications.map((verification) => (
               <div
                 key={verification._id}
                 className="p-6 bg-dark-surface rounded-lg hover:bg-dark-border transition-colors"
@@ -181,8 +245,18 @@ const Verifications = () => {
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+            {pagination.pages > 1 && (
+              <Pagination
+                currentPage={pagination.page}
+                totalPages={pagination.pages}
+                total={pagination.total}
+                limit={pagination.limit}
+                onPageChange={handlePageChange}
+              />
+            )}
+          </>
         )}
       </div>
     </div>

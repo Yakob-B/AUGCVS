@@ -1,6 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
+import { SocketProvider } from './contexts/SocketContext'
 import { NotificationProvider } from './pages/contexts/NotificationContext'
 import PrivateRoute from './components/routing/PrivateRoute'
 import Navbar from './components/layout/Navbar'
@@ -19,7 +20,8 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <NotificationProvider>
+        <SocketProvider>
+          <NotificationProvider>
           <div className="min-h-screen bg-dark-bg">
             <Navbar />
             <main className="container mx-auto px-4 py-8">
@@ -70,7 +72,8 @@ function App() {
             </main>
             <NotificationToast />
           </div>
-        </NotificationProvider>
+          </NotificationProvider>
+        </SocketProvider>
       </AuthProvider>
     </Router>
   )

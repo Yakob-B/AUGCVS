@@ -1,23 +1,43 @@
 import React, { useState, useEffect } from 'react'
 import { useNotification } from '../contexts/NotificationContext'
+import { useAuth } from '../../contexts/AuthContext'
 import * as graduateService from '../../services/graduates'
-import { MdSchool, MdAdd, MdSearch, MdEdit, MdDelete, MdFilterList } from 'react-icons/md'
+import GraduateForm from '../../components/graduates/GraduateForm'
+import Pagination from '../../components/common/Pagination'
+import { MdSchool, MdAdd, MdSearch, MdEdit, MdDelete } from 'react-icons/md'
 
 const Graduates = () => {
+  const { user } = useAuth()
   const { showNotification } = useNotification()
   const [graduates, setGraduates] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const [showForm, setShowForm] = useState(false)
+  const [selectedGraduate, setSelectedGraduate] = useState(null)
+  const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, pages: 0 })
 
   useEffect(() => {
-    loadGraduates()
+    loadGraduates(pagination.page)
   }, [])
 
-  const loadGraduates = async () => {
+  useEffect(() => {
+    if (pagination.page && !searchQuery) {
+      loadGraduates(pagination.page)
+    }
+  }, [pagination.page])
+
+  const loadGraduates = async (page = 1) => {
     try {
       setLoading(true)
-      const response = await graduateService.getGraduates()
+      const params = { page, limit: 10 }
+      const response = await graduateService.getGraduates(params)
       setGraduates(response.data || [])
+      setPagination({
+        page: response.page || page,
+        limit: 10,
+        total: response.total || 0,
+        pages: response.pages || 1
+      })
     } catch (error) {
       showNotification('error', 'Error loading graduates', error.message)
     } finally {
@@ -25,19 +45,52 @@ const Graduates = () => {
     }
   }
 
+  const handlePageChange = (newPage) => {
+    setPagination(prev => ({ ...prev, page: newPage }))
+    loadGraduates(newPage)
+  }
+
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
-      loadGraduates()
+      setPagination(prev => ({ ...prev, page: 1 }))
+      loadGraduates(1)
       return
     }
     try {
       setLoading(true)
       const response = await graduateService.searchGraduates(searchQuery)
       setGraduates(response.data || [])
+      // Reset pagination for search results
+      setPagination({ page: 1, limit: 10, total: response.count || 0, pages: 1 })
     } catch (error) {
       showNotification('error', 'Search failed', error.message)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleFormSuccess = () => {
+    setShowForm(false)
+    setSelectedGraduate(null)
+    loadGraduates()
+  }
+
+  const handleEdit = (graduate) => {
+    setSelectedGraduate(graduate._id)
+    setShowForm(true)
+  }
+
+  const handleDelete = async (graduate) => {
+    if (!window.confirm(`Are you sure you want to delete ${graduate.firstName} ${graduate.lastName}?`)) {
+      return
+    }
+
+    try {
+      await graduateService.deleteGraduate(graduate._id)
+      showNotification('success', 'Graduate Deleted', 'Graduate record has been deleted.')
+      loadGraduates()
+    } catch (error) {
+      showNotification('error', 'Delete Failed', error.message)
     }
   }
 
@@ -56,11 +109,31 @@ const Graduates = () => {
           <h1 className="text-4xl font-heading font-bold text-white mb-2">Graduate Management</h1>
           <p className="text-dark-muted">Manage graduate records and certificates</p>
         </div>
-        <button className="btn-primary mt-4 md:mt-0 inline-flex items-center">
-          <MdAdd className="mr-2" />
-          Add Graduate
-        </button>
+        {(user.role === 'admin' || user.role === 'registrar') && (
+          <button
+            onClick={() => {
+              setSelectedGraduate(null)
+              setShowForm(true)
+            }}
+            className="btn-primary mt-4 md:mt-0 inline-flex items-center"
+          >
+            <MdAdd className="mr-2" />
+            Add Graduate
+          </button>
+        )}
       </div>
+
+      {/* Graduate Form Modal */}
+      {showForm && (
+        <GraduateForm
+          graduateId={selectedGraduate}
+          onClose={() => {
+            setShowForm(false)
+            setSelectedGraduate(null)
+          }}
+          onSuccess={handleFormSuccess}
+        />
+      )}
 
       {/* Search Bar */}
       <div className="card mb-6">
@@ -113,18 +186,39 @@ const Graduates = () => {
                   <td className="p-4 text-dark-muted">{graduate.certificateNumber}</td>
                   <td className="p-4">
                     <div className="flex items-center space-x-2">
-                      <button className="p-2 text-primary-500 hover:bg-primary-500/10 rounded transition-colors">
-                        <MdEdit />
-                      </button>
-                      <button className="p-2 text-red-400 hover:bg-red-500/10 rounded transition-colors">
-                        <MdDelete />
-                      </button>
+                      {(user.role === 'admin' || user.role === 'registrar') && (
+                        <button
+                          onClick={() => handleEdit(graduate)}
+                          className="p-2 text-primary-500 hover:bg-primary-500/10 rounded transition-colors"
+                          title="Edit"
+                        >
+                          <MdEdit />
+                        </button>
+                      )}
+                      {user.role === 'admin' && (
+                        <button
+                          onClick={() => handleDelete(graduate)}
+                          className="p-2 text-red-400 hover:bg-red-500/10 rounded transition-colors"
+                          title="Delete"
+                        >
+                          <MdDelete />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        )}
+        {pagination.pages > 1 && !searchQuery && (
+          <Pagination
+            currentPage={pagination.page}
+            totalPages={pagination.pages}
+            total={pagination.total}
+            limit={pagination.limit}
+            onPageChange={handlePageChange}
+          />
         )}
       </div>
     </div>
