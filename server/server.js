@@ -17,8 +17,12 @@ const io = socketIo(server, {
 });
 
 // Middleware
-app.use(cors());
-app.use(express.json());
+app.use(cors({
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    credentials: true
+}));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'uploads')));
 
 // Database connection
@@ -53,7 +57,10 @@ io.on('connection', (socket) => {
 // Make io available to routes
 app.set('io', io);
 
-// Routes (to be implemented)
+// Health check route (before API routes)
+app.use('/api', require('./routes/health.routes'));
+
+// API Routes
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/users', require('./routes/user.routes'));
 app.use('/api/graduates', require('./routes/graduate.routes'));
@@ -62,7 +69,12 @@ app.use('/api/verifications', require('./routes/verification.routes'));
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).json({ message: 'Something went wrong!' });
+    res.status(err.status || 500).json({ 
+        success: false,
+        message: process.env.NODE_ENV === 'production' 
+            ? 'Something went wrong!' 
+            : err.message 
+    });
 });
 
 // Start server
