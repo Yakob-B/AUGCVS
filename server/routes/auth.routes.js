@@ -4,7 +4,10 @@ const {
     register,
     login,
     verifyEmail,
-    getMe
+    getMe,
+    forgotPassword,
+    resetPassword,
+    resendVerification
 } = require('../controllers/auth.controller');
 const { protect } = require('../middleware/auth.middleware');
 
@@ -38,6 +41,22 @@ router.post(
 
 // Verify email route
 router.get('/verify-email/:token', verifyEmail);
+
+// Password reset routes
+router.post(
+    '/forgot-password',
+    [check('email', 'Please include a valid email').isEmail()],
+    forgotPassword
+);
+
+router.put(
+    '/reset-password/:resettoken',
+    [check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 })],
+    resetPassword
+);
+
+// Resend verification email
+router.post('/resend-verification', protect, resendVerification);
 
 // Get current user route
 router.get('/me', protect, getMe);

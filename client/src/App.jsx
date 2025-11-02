@@ -10,6 +10,9 @@ import Home from './pages/Home'
 import About from './pages/About'
 import Login from './components/auth/Login'
 import Register from './components/auth/Register'
+import ForgotPassword from './components/auth/ForgotPassword'
+import ResetPassword from './components/auth/ResetPassword'
+import VerifyEmail from './components/auth/VerifyEmail'
 import AdminDashboard from './pages/dashboards/AdminDashboard'
 import RegistrarDashboard from './pages/dashboards/RegistrarDashboard'
 import ExternalDashboard from './pages/dashboards/ExternalDashboard'
@@ -17,6 +20,7 @@ import Graduates from './pages/graduates/Graduates'
 import Users from './pages/users/Users'
 import Verifications from './pages/verifications/Verifications'
 import NotificationToast from './components/common/NotificationToast'
+import EmailVerificationBanner from './components/common/EmailVerificationBanner'
 
 function App() {
   return (
@@ -28,11 +32,15 @@ function App() {
           <div className="min-h-screen dark:bg-dark-bg light:bg-light-bg">
             <Navbar />
             <main className="container mx-auto px-4 py-8">
+              <EmailVerificationBanner />
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password/:token" element={<ResetPassword />} />
+                <Route path="/verify-email/:token" element={<VerifyEmail />} />
                 
                 {/* Protected Routes */}
                 <Route

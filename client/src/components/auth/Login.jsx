@@ -174,8 +174,16 @@ const Login = () => {
             </button>
           </div>
 
-          {/* Register Link */}
-          <div className="text-center">
+          {/* Links */}
+          <div className="text-center space-y-2">
+            <p>
+              <Link
+                to="/forgot-password"
+                className="text-sm text-primary-500 hover:text-primary-400 font-medium transition-colors"
+              >
+                Forgot password?
+              </Link>
+            </p>
             <p className="dark:text-dark-muted light:text-light-muted">
               Don't have an account?{' '}
               <Link
