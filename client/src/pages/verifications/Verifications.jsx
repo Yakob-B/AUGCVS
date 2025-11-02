@@ -136,8 +136,8 @@ const Verifications = () => {
     <div className="animate-fade-in">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
         <div>
-          <h1 className="text-4xl font-heading font-bold text-white mb-2">Verification Requests</h1>
-          <p className="text-dark-muted">Manage and review verification requests</p>
+          <h1 className="text-4xl font-heading font-bold dark:text-white light:text-light-text mb-2">Verification Requests</h1>
+          <p className="dark:text-dark-muted light:text-light-muted">Manage and review verification requests</p>
         </div>
         {user.role === 'external' && (
           <button
@@ -200,7 +200,7 @@ const Verifications = () => {
       {/* Verifications List */}
       <div className="card">
         {verifications.length === 0 ? (
-          <div className="text-center py-12 text-dark-muted">
+          <div className="text-center py-12 dark:text-dark-muted light:text-light-muted">
             <MdVerifiedUser className="text-5xl mx-auto mb-4 opacity-50" />
             <p>No verification requests found</p>
           </div>
@@ -210,17 +210,17 @@ const Verifications = () => {
               {verifications.map((verification) => (
               <div
                 key={verification._id}
-                className="p-6 bg-dark-surface rounded-lg hover:bg-dark-border transition-colors"
+                className="p-6 dark:bg-dark-surface light:bg-light-surface rounded-lg hover:dark:bg-dark-border light:bg-gray-100 transition-colors"
               >
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-lg font-semibold text-white">
+                      <h3 className="text-lg font-semibold dark:text-white light:text-light-text">
                         {verification.graduate?.firstName} {verification.graduate?.lastName}
                       </h3>
                       {getStatusBadge(verification.status)}
                     </div>
-                    <div className="text-sm text-dark-muted space-y-1">
+                    <div className="text-sm dark:text-dark-muted light:text-light-muted space-y-1">
                       <p>Request #: {verification.requestNumber}</p>
                       <p>Certificate #: {verification.certificateNumber}</p>
                       {verification.requester?.organization && (

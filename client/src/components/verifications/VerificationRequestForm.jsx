@@ -204,18 +204,18 @@ const VerificationRequestForm = ({ onClose, onSuccess }) => {
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in overflow-y-auto">
-      <div className="bg-dark-card border border-dark-border rounded-2xl shadow-2xl w-full max-w-2xl my-8 animate-scale-in">
+      <div className="dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border rounded-2xl shadow-2xl w-full max-w-2xl my-8 animate-scale-in">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-dark-border">
+        <div className="flex items-center justify-between p-6 border-b dark:border-dark-border light:border-light-border">
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center">
-              <MdSchool className="text-white text-2xl" />
+              <MdSchool className="dark:text-white light:text-light-text text-2xl" />
             </div>
             <div>
-              <h2 className="text-2xl font-heading font-bold text-white">
+              <h2 className="text-2xl font-heading font-bold dark:text-white light:text-light-text">
                 Submit Verification Request
               </h2>
-              <p className="text-sm text-dark-muted">
+              <p className="text-sm dark:text-dark-muted light:text-light-muted">
                 Verify a graduation certificate
               </p>
             </div>
@@ -223,7 +223,7 @@ const VerificationRequestForm = ({ onClose, onSuccess }) => {
           {onClose && (
             <button
               onClick={onClose}
-              className="p-2 text-dark-muted hover:text-white hover:bg-dark-surface rounded-lg transition-colors"
+              className="p-2 dark:text-dark-muted light:text-light-muted hover:dark:text-white light:text-light-text hover:dark:bg-dark-surface light:bg-light-surface rounded-lg transition-colors"
             >
               <MdClose size={24} />
             </button>
@@ -234,11 +234,11 @@ const VerificationRequestForm = ({ onClose, onSuccess }) => {
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Student ID */}
           <div>
-            <label htmlFor="studentId" className="block text-sm font-medium text-dark-text mb-2">
+            <label htmlFor="studentId" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
               Student ID <span className="text-red-400">*</span>
             </label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-dark-muted">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none dark:text-dark-muted light:text-light-muted">
                 <MdSchool size={20} />
               </span>
               <input
@@ -259,11 +259,11 @@ const VerificationRequestForm = ({ onClose, onSuccess }) => {
 
           {/* Full Name */}
           <div>
-            <label htmlFor="fullName" className="block text-sm font-medium text-dark-text mb-2">
+            <label htmlFor="fullName" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
               Full Name <span className="text-red-400">*</span>
             </label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-dark-muted">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none dark:text-dark-muted light:text-light-muted">
                 <MdPerson size={20} />
               </span>
               <input
@@ -286,11 +286,11 @@ const VerificationRequestForm = ({ onClose, onSuccess }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Graduation Year */}
             <div>
-              <label htmlFor="graduationYear" className="block text-sm font-medium text-dark-text mb-2">
+              <label htmlFor="graduationYear" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                 Graduation Year <span className="text-red-400">*</span>
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-dark-muted">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none dark:text-dark-muted light:text-light-muted">
                   <MdCalendarToday size={20} />
                 </span>
                 <select
@@ -316,11 +316,11 @@ const VerificationRequestForm = ({ onClose, onSuccess }) => {
 
             {/* Degree Type */}
             <div>
-              <label htmlFor="degreeType" className="block text-sm font-medium text-dark-text mb-2">
+              <label htmlFor="degreeType" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                 Degree Type <span className="text-red-400">*</span>
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-dark-muted">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none dark:text-dark-muted light:text-light-muted">
                   <MdDescription size={20} />
                 </span>
                 <select
@@ -347,11 +347,11 @@ const VerificationRequestForm = ({ onClose, onSuccess }) => {
 
           {/* Certificate File Upload */}
           <div>
-            <label className="block text-sm font-medium text-dark-text mb-2">
+            <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
               Certificate File <span className="text-red-400">*</span>
             </label>
             {!formData.certificateFile ? (
-              <div className="border-2 border-dashed border-dark-border rounded-lg p-6 text-center hover:border-primary-500/50 transition-colors">
+              <div className="border-2 border-dashed dark:border-dark-border light:border-light-border rounded-lg p-6 text-center hover:border-primary-500/50 transition-colors">
                 <input
                   type="file"
                   id="certificateFile"
@@ -365,19 +365,19 @@ const VerificationRequestForm = ({ onClose, onSuccess }) => {
                   htmlFor="certificateFile"
                   className="cursor-pointer flex flex-col items-center"
                 >
-                  <div className="w-16 h-16 bg-dark-surface rounded-xl flex items-center justify-center mb-4">
+                  <div className="w-16 h-16 dark:bg-dark-surface light:bg-light-surface rounded-xl flex items-center justify-center mb-4">
                     <MdUpload className="text-primary-500 text-3xl" />
                   </div>
-                  <p className="text-dark-text font-medium mb-1">
+                  <p className="dark:text-dark-text light:text-light-text font-medium mb-1">
                     Click to upload certificate
                   </p>
-                  <p className="text-sm text-dark-muted">
+                  <p className="text-sm dark:text-dark-muted light:text-light-muted">
                     PDF, JPG, JPEG, or PNG (Max 5MB)
                   </p>
                 </label>
               </div>
             ) : (
-              <div className="border border-dark-border rounded-lg p-4 bg-dark-surface">
+              <div className="border dark:border-dark-border light:border-light-border rounded-lg p-4 dark:bg-dark-surface light:bg-light-surface">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3 flex-1">
                     {filePreview ? (
@@ -387,13 +387,13 @@ const VerificationRequestForm = ({ onClose, onSuccess }) => {
                         className="w-16 h-16 object-cover rounded-lg"
                       />
                     ) : (
-                      <div className="w-16 h-16 bg-dark-card rounded-lg flex items-center justify-center">
+                      <div className="w-16 h-16 dark:bg-dark-card light:bg-light-card rounded-lg flex items-center justify-center">
                         <MdDescription className="text-primary-500 text-2xl" />
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="text-dark-text font-medium truncate">{formData.certificateFile.name}</p>
-                      <p className="text-sm text-dark-muted">
+                      <p className="dark:text-dark-text light:text-light-text font-medium truncate">{formData.certificateFile.name}</p>
+                      <p className="text-sm dark:text-dark-muted light:text-light-muted">
                         {(formData.certificateFile.size / 1024 / 1024).toFixed(2)} MB
                       </p>
                     </div>
@@ -401,7 +401,7 @@ const VerificationRequestForm = ({ onClose, onSuccess }) => {
                   <button
                     type="button"
                     onClick={removeFile}
-                    className="p-2 text-dark-muted hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                    className="p-2 dark:text-dark-muted light:text-light-muted hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                   >
                     <MdClose size={20} />
                   </button>
@@ -422,7 +422,7 @@ const VerificationRequestForm = ({ onClose, onSuccess }) => {
           </div>
 
           {/* Submit Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-dark-border">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t dark:border-dark-border light:border-light-border">
             {onClose && (
               <button
                 type="button"

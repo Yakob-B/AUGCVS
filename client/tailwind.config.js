@@ -28,6 +28,14 @@ export default {
           border: '#2a2a2a',
           text: '#e5e5e5',
           muted: '#a3a3a3',
+        },
+        light: {
+          bg: '#f8f9fa',
+          surface: '#ffffff',
+          card: '#ffffff',
+          border: '#e0e0e0',
+          text: '#1a1a1a',
+          muted: '#6b7280',
         }
       },
       fontFamily: {

@@ -172,10 +172,10 @@ const UserForm = ({ userId, onClose, onSuccess }) => {
   if (fetching) {
     return (
       <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-dark-card border border-dark-border rounded-2xl shadow-2xl p-8">
+        <div className="dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border rounded-2xl shadow-2xl p-8">
           <div className="flex items-center space-x-4">
             <FaSpinner className="animate-spin text-primary-500 text-2xl" />
-            <p className="text-white">Loading user details...</p>
+            <p className="dark:text-white light:text-light-text">Loading user details...</p>
           </div>
         </div>
       </div>
@@ -184,25 +184,25 @@ const UserForm = ({ userId, onClose, onSuccess }) => {
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in overflow-y-auto">
-      <div className="bg-dark-card border border-dark-border rounded-2xl shadow-2xl w-full max-w-2xl my-8 animate-scale-in">
+      <div className="dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border rounded-2xl shadow-2xl w-full max-w-2xl my-8 animate-scale-in">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-dark-border">
+        <div className="flex items-center justify-between p-6 border-b dark:border-dark-border light:border-light-border">
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center">
-              <MdPerson className="text-white text-2xl" />
+              <MdPerson className="dark:text-white light:text-light-text text-2xl" />
             </div>
             <div>
-              <h2 className="text-2xl font-heading font-bold text-white">
+              <h2 className="text-2xl font-heading font-bold dark:text-white light:text-light-text">
                 {userId ? 'Edit User' : 'Add New User'}
               </h2>
-              <p className="text-sm text-dark-muted">
+              <p className="text-sm dark:text-dark-muted light:text-light-muted">
                 {userId ? 'Update user information' : 'Create a new user account'}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-dark-muted hover:text-white hover:bg-dark-surface rounded-lg transition-colors"
+            className="p-2 dark:text-dark-muted light:text-light-muted hover:dark:text-white light:text-light-text hover:dark:bg-dark-surface light:bg-light-surface rounded-lg transition-colors"
           >
             <MdClose size={24} />
           </button>
@@ -214,11 +214,11 @@ const UserForm = ({ userId, onClose, onSuccess }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* First Name */}
             <div>
-              <label className="block text-sm font-medium text-dark-text mb-2">
+              <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                 First Name <span className="text-red-400">*</span>
               </label>
               <div className="relative">
-                <MdPerson className="absolute left-3 top-1/2 transform -translate-y-1/2 text-dark-muted" size={20} />
+                <MdPerson className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
                 <input
                   type="text"
                   name="firstName"
@@ -233,11 +233,11 @@ const UserForm = ({ userId, onClose, onSuccess }) => {
 
             {/* Last Name */}
             <div>
-              <label className="block text-sm font-medium text-dark-text mb-2">
+              <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                 Last Name <span className="text-red-400">*</span>
               </label>
               <div className="relative">
-                <MdPerson className="absolute left-3 top-1/2 transform -translate-y-1/2 text-dark-muted" size={20} />
+                <MdPerson className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
                 <input
                   type="text"
                   name="lastName"
@@ -253,11 +253,11 @@ const UserForm = ({ userId, onClose, onSuccess }) => {
 
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-dark-text mb-2">
+            <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
               Email <span className="text-red-400">*</span>
             </label>
             <div className="relative">
-              <MdEmail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-dark-muted" size={20} />
+              <MdEmail className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
               <input
                 type="email"
                 name="email"
@@ -274,12 +274,12 @@ const UserForm = ({ userId, onClose, onSuccess }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-dark-text mb-2">
+              <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                 Password {!userId && <span className="text-red-400">*</span>}
-                {userId && <span className="text-dark-muted text-xs">(Leave empty to keep current)</span>}
+                {userId && <span className="dark:text-dark-muted light:text-light-muted text-xs">(Leave empty to keep current)</span>}
               </label>
               <div className="relative">
-                <MdLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-dark-muted" size={20} />
+                <MdLock className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
@@ -292,7 +292,7 @@ const UserForm = ({ userId, onClose, onSuccess }) => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-dark-muted hover:text-dark-text"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted hover:dark:text-dark-text light:text-light-text"
                 >
                   {showPassword ? 'Hide' : 'Show'}
                 </button>
@@ -302,11 +302,11 @@ const UserForm = ({ userId, onClose, onSuccess }) => {
 
             {/* Confirm Password */}
             <div>
-              <label className="block text-sm font-medium text-dark-text mb-2">
+              <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                 Confirm Password {!userId && <span className="text-red-400">*</span>}
               </label>
               <div className="relative">
-                <MdLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-dark-muted" size={20} />
+                <MdLock className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
                   name="confirmPassword"
@@ -319,7 +319,7 @@ const UserForm = ({ userId, onClose, onSuccess }) => {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-dark-muted hover:text-dark-text"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted hover:dark:text-dark-text light:text-light-text"
                 >
                   {showConfirmPassword ? 'Hide' : 'Show'}
                 </button>
@@ -332,11 +332,11 @@ const UserForm = ({ userId, onClose, onSuccess }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Role */}
             <div>
-              <label className="block text-sm font-medium text-dark-text mb-2">
+              <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                 Role <span className="text-red-400">*</span>
               </label>
               <div className="relative">
-                <MdAdminPanelSettings className="absolute left-3 top-1/2 transform -translate-y-1/2 text-dark-muted" size={20} />
+                <MdAdminPanelSettings className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
                 <select
                   name="role"
                   value={formData.role}
@@ -354,11 +354,11 @@ const UserForm = ({ userId, onClose, onSuccess }) => {
             {/* Organization (only for external) */}
             {formData.role === 'external' && (
               <div>
-                <label className="block text-sm font-medium text-dark-text mb-2">
+                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                   Organization <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
-                  <MdBusiness className="absolute left-3 top-1/2 transform -translate-y-1/2 text-dark-muted" size={20} />
+                  <MdBusiness className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
                   <input
                     type="text"
                     name="organization"
@@ -374,7 +374,7 @@ const UserForm = ({ userId, onClose, onSuccess }) => {
           </div>
 
           {/* Submit Buttons */}
-          <div className="flex gap-3 pt-4 border-t border-dark-border">
+          <div className="flex gap-3 pt-4 border-t dark:border-dark-border light:border-light-border">
             <button
               type="button"
               onClick={onClose}

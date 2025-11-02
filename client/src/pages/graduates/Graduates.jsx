@@ -106,8 +106,8 @@ const Graduates = () => {
     <div className="animate-fade-in">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
         <div>
-          <h1 className="text-4xl font-heading font-bold text-white mb-2">Graduate Management</h1>
-          <p className="text-dark-muted">Manage graduate records and certificates</p>
+          <h1 className="text-4xl font-heading font-bold dark:text-white light:text-light-text mb-2">Graduate Management</h1>
+          <p className="dark:text-dark-muted light:text-light-muted">Manage graduate records and certificates</p>
         </div>
         {(user.role === 'admin' || user.role === 'registrar') && (
           <button
@@ -139,7 +139,7 @@ const Graduates = () => {
       <div className="card mb-6">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
-            <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-dark-muted" size={20} />
+            <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
             <input
               type="text"
               placeholder="Search by name, student ID, or certificate number..."
@@ -158,7 +158,7 @@ const Graduates = () => {
       {/* Graduates Table */}
       <div className="card overflow-x-auto">
         {graduates.length === 0 ? (
-          <div className="text-center py-12 text-dark-muted">
+          <div className="text-center py-12 dark:text-dark-muted light:text-light-muted">
             <MdSchool className="text-5xl mx-auto mb-4 opacity-50" />
             <p>No graduates found</p>
           </div>
@@ -166,24 +166,24 @@ const Graduates = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-dark-border">
-                <th className="text-left p-4 text-dark-text font-semibold">Student ID</th>
-                <th className="text-left p-4 text-dark-text font-semibold">Name</th>
-                <th className="text-left p-4 text-dark-text font-semibold">Program</th>
-                <th className="text-left p-4 text-dark-text font-semibold">Graduation Year</th>
-                <th className="text-left p-4 text-dark-text font-semibold">Certificate #</th>
-                <th className="text-left p-4 text-dark-text font-semibold">Actions</th>
+                <th className="text-left p-4 dark:text-dark-text light:text-light-text font-semibold">Student ID</th>
+                <th className="text-left p-4 dark:text-dark-text light:text-light-text font-semibold">Name</th>
+                <th className="text-left p-4 dark:text-dark-text light:text-light-text font-semibold">Program</th>
+                <th className="text-left p-4 dark:text-dark-text light:text-light-text font-semibold">Graduation Year</th>
+                <th className="text-left p-4 dark:text-dark-text light:text-light-text font-semibold">Certificate #</th>
+                <th className="text-left p-4 dark:text-dark-text light:text-light-text font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
               {graduates.map((graduate) => (
                 <tr key={graduate._id} className="border-b border-dark-border hover:bg-dark-surface transition-colors">
-                  <td className="p-4 text-dark-text">{graduate.studentId}</td>
-                  <td className="p-4 text-dark-text">
+                  <td className="p-4 dark:text-dark-text light:text-light-text">{graduate.studentId}</td>
+                  <td className="p-4 dark:text-dark-text light:text-light-text">
                     {graduate.firstName} {graduate.lastName}
                   </td>
-                  <td className="p-4 text-dark-muted">{graduate.program}</td>
-                  <td className="p-4 text-dark-muted">{graduate.graduationYear}</td>
-                  <td className="p-4 text-dark-muted">{graduate.certificateNumber}</td>
+                  <td className="p-4 dark:text-dark-muted light:text-light-muted">{graduate.program}</td>
+                  <td className="p-4 dark:text-dark-muted light:text-light-muted">{graduate.graduationYear}</td>
+                  <td className="p-4 dark:text-dark-muted light:text-light-muted">{graduate.certificateNumber}</td>
                   <td className="p-4">
                     <div className="flex items-center space-x-2">
                       {(user.role === 'admin' || user.role === 'registrar') && (

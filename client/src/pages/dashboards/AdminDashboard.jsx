@@ -100,10 +100,10 @@ const AdminDashboard = () => {
     <div className="animate-fade-in">
       {/* Header */}
       <div className="mb-8 animate-slide-down">
-        <h1 className="text-4xl font-heading font-bold text-white mb-2">
+        <h1 className="text-4xl font-heading font-bold dark:dark:text-white light:text-light-text light:text-light-text mb-2">
           Admin Dashboard
         </h1>
-        <p className="text-dark-muted">
+        <p className="dark:dark:text-dark-muted light:text-light-muted light:text-light-muted">
           Welcome back, {user?.firstName} {user?.lastName}
         </p>
       </div>
@@ -118,15 +118,15 @@ const AdminDashboard = () => {
             style={{ animationDelay: `${index * 0.1}s` }}
           >
             <div className="flex items-start justify-between mb-4">
-              <div className={`w-14 h-14 bg-gradient-to-br ${card.color} rounded-xl flex items-center justify-center text-white text-2xl transform group-hover:scale-110 transition-transform duration-300`}>
+              <div className={`w-14 h-14 bg-gradient-to-br ${card.color} rounded-xl flex items-center justify-center dark:text-white light:text-light-text text-2xl transform group-hover:scale-110 transition-transform duration-300`}>
                 {card.icon}
               </div>
-              <MdArrowForward className="text-dark-muted group-hover:text-primary-500 transition-colors" />
+              <MdArrowForward className="dark:text-dark-muted light:text-light-muted group-hover:text-primary-500 transition-colors" />
             </div>
-            <div className="text-3xl font-heading font-bold text-white mb-1">
+            <div className="text-3xl font-heading font-bold dark:text-white light:text-light-text mb-1">
               {card.value}
             </div>
-            <div className="text-dark-muted mb-2">{card.title}</div>
+            <div className="dark:text-dark-muted light:text-light-muted mb-2">{card.title}</div>
             <div className="text-sm text-primary-500 font-medium group-hover:text-primary-400 transition-colors">
               {card.action} →
             </div>
@@ -137,55 +137,55 @@ const AdminDashboard = () => {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="card animate-slide-up" style={{ animationDelay: '0.4s' }}>
-          <h2 className="text-2xl font-heading font-semibold text-white mb-4">
+          <h2 className="text-2xl font-heading font-semibold dark:text-white light:text-light-text mb-4">
             Quick Actions
           </h2>
           <div className="space-y-3">
             <Link
               to="/admin/graduates"
-              className="flex items-center justify-between p-4 bg-dark-surface rounded-lg hover:bg-dark-border transition-colors group"
+              className="flex items-center justify-between p-4 dark:bg-dark-surface light:bg-light-surface rounded-lg hover:dark:bg-dark-border light:bg-gray-100 transition-colors group"
             >
               <div className="flex items-center space-x-3">
                 <MdSchool className="text-primary-500 text-xl" />
-                <span className="text-dark-text">Add New Graduate</span>
+                <span className="dark:text-dark-text light:text-light-text">Add New Graduate</span>
               </div>
-              <MdAdd className="text-dark-muted group-hover:text-primary-500 transition-colors" />
+              <MdAdd className="dark:text-dark-muted light:text-light-muted group-hover:text-primary-500 transition-colors" />
             </Link>
             <Link
               to="/admin/users"
-              className="flex items-center justify-between p-4 bg-dark-surface rounded-lg hover:bg-dark-border transition-colors group"
+              className="flex items-center justify-between p-4 dark:bg-dark-surface light:bg-light-surface rounded-lg hover:dark:bg-dark-border light:bg-gray-100 transition-colors group"
             >
               <div className="flex items-center space-x-3">
                 <MdPeople className="text-primary-500 text-xl" />
-                <span className="text-dark-text">Add New User</span>
+                <span className="dark:text-dark-text light:text-light-text">Add New User</span>
               </div>
-              <MdAdd className="text-dark-muted group-hover:text-primary-500 transition-colors" />
+              <MdAdd className="dark:text-dark-muted light:text-light-muted group-hover:text-primary-500 transition-colors" />
             </Link>
             <Link
               to="/admin/verifications"
-              className="flex items-center justify-between p-4 bg-dark-surface rounded-lg hover:bg-dark-border transition-colors group"
+              className="flex items-center justify-between p-4 dark:bg-dark-surface light:bg-light-surface rounded-lg hover:dark:bg-dark-border light:bg-gray-100 transition-colors group"
             >
               <div className="flex items-center space-x-3">
                 <MdVerifiedUser className="text-primary-500 text-xl" />
-                <span className="text-dark-text">Review Verifications</span>
+                <span className="dark:text-dark-text light:text-light-text">Review Verifications</span>
               </div>
-              <MdArrowForward className="text-dark-muted group-hover:text-primary-500 transition-colors" />
+              <MdArrowForward className="dark:text-dark-muted light:text-light-muted group-hover:text-primary-500 transition-colors" />
             </Link>
           </div>
         </div>
 
         <div className="card animate-slide-up" style={{ animationDelay: '0.5s' }}>
-          <h2 className="text-2xl font-heading font-semibold text-white mb-4">
+          <h2 className="text-2xl font-heading font-semibold dark:text-white light:text-light-text mb-4">
             System Overview
           </h2>
           <div className="space-y-4">
-            <div className="p-4 bg-dark-surface rounded-lg">
-              <div className="text-dark-muted text-sm mb-1">System Status</div>
+            <div className="p-4 dark:bg-dark-surface light:bg-light-surface rounded-lg">
+              <div className="dark:text-dark-muted light:text-light-muted text-sm mb-1">System Status</div>
               <div className="text-green-400 font-semibold">All Systems Operational</div>
             </div>
-            <div className="p-4 bg-dark-surface rounded-lg">
-              <div className="text-dark-muted text-sm mb-1">Total Records</div>
-              <div className="text-white font-semibold text-xl">
+            <div className="p-4 dark:bg-dark-surface light:bg-light-surface rounded-lg">
+              <div className="dark:text-dark-muted light:text-light-muted text-sm mb-1">Total Records</div>
+              <div className="dark:text-white light:text-light-text font-semibold text-xl">
                 {stats.graduates + stats.users + stats.verifications}
               </div>
             </div>

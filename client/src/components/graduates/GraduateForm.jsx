@@ -296,10 +296,10 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
   if (fetching) {
     return (
       <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-dark-card border border-dark-border rounded-2xl shadow-2xl p-8">
+        <div className="dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border rounded-2xl shadow-2xl p-8">
           <div className="flex items-center space-x-4">
             <FaSpinner className="animate-spin text-primary-500 text-2xl" />
-            <p className="text-white">Loading graduate details...</p>
+            <p className="dark:text-white light:text-light-text">Loading graduate details...</p>
           </div>
         </div>
       </div>
@@ -308,25 +308,25 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in overflow-y-auto">
-      <div className="bg-dark-card border border-dark-border rounded-2xl shadow-2xl w-full max-w-4xl my-8 animate-scale-in">
+      <div className="dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border rounded-2xl shadow-2xl w-full max-w-4xl my-8 animate-scale-in">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-dark-border">
+        <div className="flex items-center justify-between p-6 border-b dark:border-dark-border light:border-light-border">
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center">
-              <MdSchool className="text-white text-2xl" />
+              <MdSchool className="dark:text-white light:text-light-text text-2xl" />
             </div>
             <div>
-              <h2 className="text-2xl font-heading font-bold text-white">
+              <h2 className="text-2xl font-heading font-bold dark:text-white light:text-light-text">
                 {graduateId ? 'Edit Graduate' : 'Add New Graduate'}
               </h2>
-              <p className="text-sm text-dark-muted">
+              <p className="text-sm dark:text-dark-muted light:text-light-muted">
                 {graduateId ? 'Update graduate information' : 'Create a new graduate record'}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-dark-muted hover:text-white hover:bg-dark-surface rounded-lg transition-colors"
+            className="p-2 dark:text-dark-muted light:text-light-muted hover:dark:text-white light:text-light-text hover:dark:bg-dark-surface light:bg-light-surface rounded-lg transition-colors"
           >
             <MdClose size={24} />
           </button>
@@ -336,7 +336,7 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
         <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
           {/* Personal Information */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white flex items-center">
+            <h3 className="text-lg font-semibold dark:text-white light:text-light-text flex items-center">
               <MdPerson className="mr-2 text-primary-500" />
               Personal Information
             </h3>
@@ -344,18 +344,18 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Student ID */}
               <div>
-                <label className="block text-sm font-medium text-dark-text mb-2">
+                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                   Student ID <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
-                  <MdNumbers className="absolute left-3 top-1/2 transform -translate-y-1/2 text-dark-muted" size={20} />
+                  <MdNumbers className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
                   <input
                     type="text"
                     name="studentId"
                     value={formData.studentId}
                     onChange={handleChange}
                     disabled={loading || !!graduateId}
-                    className={`input pl-10 ${errors.studentId ? 'border-red-500' : ''} ${graduateId ? 'bg-dark-surface' : ''}`}
+                    className={`input pl-10 ${errors.studentId ? 'border-red-500' : ''} ${graduateId ? 'dark:bg-dark-surface light:bg-light-surface' : ''}`}
                   />
                 </div>
                 {errors.studentId && <p className="mt-1 text-sm text-red-400">{errors.studentId}</p>}
@@ -363,7 +363,7 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
 
               {/* Status */}
               <div>
-                <label className="block text-sm font-medium text-dark-text mb-2">Status</label>
+                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">Status</label>
                 <select
                   name="status"
                   value={formData.status}
@@ -380,7 +380,7 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* First Name */}
               <div>
-                <label className="block text-sm font-medium text-dark-text mb-2">
+                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                   First Name <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -396,7 +396,7 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
 
               {/* Middle Name */}
               <div>
-                <label className="block text-sm font-medium text-dark-text mb-2">Middle Name</label>
+                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">Middle Name</label>
                 <input
                   type="text"
                   name="middleName"
@@ -409,7 +409,7 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
 
               {/* Last Name */}
               <div>
-                <label className="block text-sm font-medium text-dark-text mb-2">
+                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                   Last Name <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -427,11 +427,11 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Date of Birth */}
               <div>
-                <label className="block text-sm font-medium text-dark-text mb-2">
+                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                   Date of Birth <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
-                  <MdCalendarToday className="absolute left-3 top-1/2 transform -translate-y-1/2 text-dark-muted" size={20} />
+                  <MdCalendarToday className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
                   <input
                     type="date"
                     name="dateOfBirth"
@@ -447,7 +447,7 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
 
               {/* Gender */}
               <div>
-                <label className="block text-sm font-medium text-dark-text mb-2">
+                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                   Gender <span className="text-red-400">*</span>
                 </label>
                 <select
@@ -467,7 +467,7 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
 
           {/* Academic Information */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white flex items-center">
+            <h3 className="text-lg font-semibold dark:text-white light:text-light-text flex items-center">
               <MdSchool className="mr-2 text-primary-500" />
               Academic Information
             </h3>
@@ -475,7 +475,7 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Program */}
               <div>
-                <label className="block text-sm font-medium text-dark-text mb-2">
+                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                   Program <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -491,7 +491,7 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
 
               {/* Department */}
               <div>
-                <label className="block text-sm font-medium text-dark-text mb-2">
+                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                   Department <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -509,7 +509,7 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* College */}
               <div>
-                <label className="block text-sm font-medium text-dark-text mb-2">
+                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                   College <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -525,7 +525,7 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
 
               {/* Degree Type */}
               <div>
-                <label className="block text-sm font-medium text-dark-text mb-2">
+                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                   Degree Type <span className="text-red-400">*</span>
                 </label>
                 <select
@@ -547,7 +547,7 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Graduation Year */}
               <div>
-                <label className="block text-sm font-medium text-dark-text mb-2">
+                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                   Graduation Year <span className="text-red-400">*</span>
                 </label>
                 <select
@@ -566,11 +566,11 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
 
               {/* Graduation Date */}
               <div>
-                <label className="block text-sm font-medium text-dark-text mb-2">
+                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                   Graduation Date <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
-                  <MdCalendarToday className="absolute left-3 top-1/2 transform -translate-y-1/2 text-dark-muted" size={20} />
+                  <MdCalendarToday className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
                   <input
                     type="date"
                     name="graduationDate"
@@ -585,11 +585,11 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
 
               {/* GPA */}
               <div>
-                <label className="block text-sm font-medium text-dark-text mb-2">
+                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                   GPA <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
-                  <MdStar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-dark-muted" size={20} />
+                  <MdStar className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
                   <input
                     type="number"
                     step="0.01"
@@ -610,7 +610,7 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
 
           {/* Certificate Information */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white flex items-center">
+            <h3 className="text-lg font-semibold dark:text-white light:text-light-text flex items-center">
               <MdDescription className="mr-2 text-primary-500" />
               Certificate Information
             </h3>
@@ -618,11 +618,11 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Certificate Number */}
               <div>
-                <label className="block text-sm font-medium text-dark-text mb-2">
+                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                   Certificate Number <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
-                  <MdNumbers className="absolute left-3 top-1/2 transform -translate-y-1/2 text-dark-muted" size={20} />
+                  <MdNumbers className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
                   <input
                     type="text"
                     name="certificateNumber"
@@ -637,11 +637,11 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
 
               {/* Certificate File */}
               <div>
-                <label className="block text-sm font-medium text-dark-text mb-2">
+                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                   Certificate File {!graduateId && <span className="text-red-400">*</span>}
                 </label>
                 {!formData.certificateFile ? (
-                  <div className="border-2 border-dashed border-dark-border rounded-lg p-4 text-center hover:border-primary-500/50 transition-colors">
+                  <div className="border-2 border-dashed dark:border-dark-border light:border-light-border rounded-lg p-4 text-center hover:border-primary-500/50 transition-colors">
                     <input
                       type="file"
                       id="certificateFile"
@@ -655,12 +655,12 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
                       className="cursor-pointer flex flex-col items-center"
                     >
                       <MdUpload className="text-primary-500 text-3xl mb-2" />
-                      <p className="text-dark-text text-sm">Click to upload</p>
-                      <p className="text-xs text-dark-muted">PDF, JPG, JPEG, PNG (Max 5MB)</p>
+                      <p className="dark:text-dark-text light:text-light-text text-sm">Click to upload</p>
+                      <p className="text-xs dark:text-dark-muted light:text-light-muted">PDF, JPG, JPEG, PNG (Max 5MB)</p>
                     </label>
                   </div>
                 ) : (
-                  <div className="border border-dark-border rounded-lg p-4 bg-dark-surface">
+                  <div className="border dark:border-dark-border light:border-light-border rounded-lg p-4 dark:bg-dark-surface light:bg-light-surface">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3 flex-1">
                         {filePreview ? (
@@ -669,8 +669,8 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
                           <MdDescription className="text-primary-500 text-2xl" />
                         )}
                         <div className="flex-1 min-w-0">
-                          <p className="text-dark-text text-sm truncate">{formData.certificateFile.name}</p>
-                          <p className="text-xs text-dark-muted">
+                          <p className="dark:text-dark-text light:text-light-text text-sm truncate">{formData.certificateFile.name}</p>
+                          <p className="text-xs dark:text-dark-muted light:text-light-muted">
                             {(formData.certificateFile.size / 1024 / 1024).toFixed(2)} MB
                           </p>
                         </div>
@@ -678,7 +678,7 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
                       <button
                         type="button"
                         onClick={removeFile}
-                        className="p-2 text-dark-muted hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
+                        className="p-2 dark:text-dark-muted light:text-light-muted hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
                       >
                         <MdClose size={20} />
                       </button>
@@ -687,14 +687,14 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
                 )}
                 {errors.certificateFile && <p className="mt-1 text-sm text-red-400">{errors.certificateFile}</p>}
                 {graduateId && (
-                  <p className="mt-1 text-xs text-dark-muted">Leave empty to keep existing certificate</p>
+                  <p className="mt-1 text-xs dark:text-dark-muted light:text-light-muted">Leave empty to keep existing certificate</p>
                 )}
               </div>
             </div>
           </div>
 
           {/* Submit Buttons */}
-          <div className="flex gap-3 pt-4 border-t border-dark-border">
+          <div className="flex gap-3 pt-4 border-t dark:border-dark-border light:border-light-border">
             <button
               type="button"
               onClick={onClose}

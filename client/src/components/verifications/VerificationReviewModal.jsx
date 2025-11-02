@@ -137,10 +137,10 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
   if (fetching) {
     return (
       <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-dark-card border border-dark-border rounded-2xl shadow-2xl p-8">
+        <div className="dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border rounded-2xl shadow-2xl p-8">
           <div className="flex items-center space-x-4">
             <FaSpinner className="animate-spin text-primary-500 text-2xl" />
-            <p className="text-white">Loading verification details...</p>
+            <p className="dark:text-white light:text-light-text">Loading verification details...</p>
           </div>
         </div>
       </div>
@@ -156,25 +156,25 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in overflow-y-auto">
-      <div className="bg-dark-card border border-dark-border rounded-2xl shadow-2xl w-full max-w-4xl my-8 animate-scale-in">
+      <div className="dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border rounded-2xl shadow-2xl w-full max-w-4xl my-8 animate-scale-in">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-dark-border">
+        <div className="flex items-center justify-between p-6 border-b dark:border-dark-border light:border-light-border">
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center">
-              <MdVerifiedUser className="text-white text-2xl" />
+              <MdVerifiedUser className="dark:text-white light:text-light-text text-2xl" />
             </div>
             <div>
-              <h2 className="text-2xl font-heading font-bold text-white">
+              <h2 className="text-2xl font-heading font-bold dark:text-white light:text-light-text">
                 Review Verification Request
               </h2>
-              <p className="text-sm text-dark-muted">
+              <p className="text-sm dark:text-dark-muted light:text-light-muted">
                 Request #{verification.requestNumber}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-dark-muted hover:text-white hover:bg-dark-surface rounded-lg transition-colors"
+            className="p-2 dark:text-dark-muted light:text-light-muted hover:dark:text-white light:text-light-text hover:dark:bg-dark-surface light:bg-light-surface rounded-lg transition-colors"
           >
             <MdClose size={24} />
           </button>
@@ -186,49 +186,49 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Graduate Information */}
             <div className="card">
-              <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+              <h3 className="text-lg font-semibold dark:text-white light:text-light-text mb-4 flex items-center">
                 <MdPerson className="mr-2 text-primary-500" />
                 Graduate Information
               </h3>
               <div className="space-y-3">
                 <div>
-                  <p className="text-sm text-dark-muted">Name</p>
-                  <p className="text-white font-medium">
+                  <p className="text-sm dark:text-dark-muted light:text-light-muted">Name</p>
+                  <p className="dark:text-white light:text-light-text font-medium">
                     {verification.graduate?.firstName} {verification.graduate?.lastName}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-dark-muted">Student ID</p>
-                  <p className="text-white font-medium">{verification.graduate?.studentId}</p>
+                  <p className="text-sm dark:text-dark-muted light:text-light-muted">Student ID</p>
+                  <p className="dark:text-white light:text-light-text font-medium">{verification.graduate?.studentId}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-dark-muted">Certificate Number</p>
-                  <p className="text-white font-medium">{verification.certificateNumber}</p>
+                  <p className="text-sm dark:text-dark-muted light:text-light-muted">Certificate Number</p>
+                  <p className="dark:text-white light:text-light-text font-medium">{verification.certificateNumber}</p>
                 </div>
               </div>
             </div>
 
             {/* Requester Information */}
             <div className="card">
-              <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+              <h3 className="text-lg font-semibold dark:text-white light:text-light-text mb-4 flex items-center">
                 <MdPerson className="mr-2 text-primary-500" />
                 Requester Information
               </h3>
               <div className="space-y-3">
                 <div>
-                  <p className="text-sm text-dark-muted">Name</p>
-                  <p className="text-white font-medium">
+                  <p className="text-sm dark:text-dark-muted light:text-light-muted">Name</p>
+                  <p className="dark:text-white light:text-light-text font-medium">
                     {verification.requester?.firstName} {verification.requester?.lastName}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-dark-muted">Email</p>
-                  <p className="text-white font-medium">{verification.requester?.email}</p>
+                  <p className="text-sm dark:text-dark-muted light:text-light-muted">Email</p>
+                  <p className="dark:text-white light:text-light-text font-medium">{verification.requester?.email}</p>
                 </div>
                 {verification.requester?.organization && (
                   <div>
-                    <p className="text-sm text-dark-muted">Organization</p>
-                    <p className="text-white font-medium">{verification.requester.organization}</p>
+                    <p className="text-sm dark:text-dark-muted light:text-light-muted">Organization</p>
+                    <p className="dark:text-white light:text-light-text font-medium">{verification.requester.organization}</p>
                   </div>
                 )}
               </div>
@@ -239,7 +239,7 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
           {certificateUrl && (
             <div className="card">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white flex items-center">
+                <h3 className="text-lg font-semibold dark:text-white light:text-light-text flex items-center">
                   <MdSchool className="mr-2 text-primary-500" />
                   Certificate File
                 </h3>
@@ -264,8 +264,8 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
                 </div>
               </div>
               {verification.certificateFile.endsWith('.pdf') ? (
-                <div className="bg-dark-surface rounded-lg p-4 border border-dark-border">
-                  <p className="text-dark-muted text-sm mb-2">PDF Certificate</p>
+                <div className="dark:bg-dark-surface light:bg-light-surface rounded-lg p-4 border dark:border-dark-border light:border-light-border">
+                  <p className="dark:text-dark-muted light:text-light-muted text-sm mb-2">PDF Certificate</p>
                   <iframe
                     src={certificateUrl}
                     className="w-full h-96 rounded-lg"
@@ -273,7 +273,7 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
                   />
                 </div>
               ) : (
-                <div className="bg-dark-surface rounded-lg p-4 border border-dark-border">
+                <div className="dark:bg-dark-surface light:bg-light-surface rounded-lg p-4 border dark:border-dark-border light:border-light-border">
                   <img
                     src={certificateUrl}
                     alt="Certificate"
@@ -287,14 +287,14 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
           {/* Processing Form (only if pending and user is registrar/admin) */}
           {!isProcessed && (user.role === 'registrar' || user.role === 'admin') && (
             <form onSubmit={handleSubmit} className="card space-y-6">
-              <h3 className="text-lg font-semibold text-white flex items-center">
+              <h3 className="text-lg font-semibold dark:text-white light:text-light-text flex items-center">
                 <MdDescription className="mr-2 text-primary-500" />
                 Process Verification
               </h3>
 
               {/* Status */}
               <div>
-                <label htmlFor="status" className="block text-sm font-medium text-dark-text mb-2">
+                <label htmlFor="status" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                   Status <span className="text-red-400">*</span>
                 </label>
                 <div className="grid grid-cols-2 gap-3">
@@ -304,14 +304,14 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
                     className={`p-4 rounded-lg border-2 transition-all ${
                       formData.status === 'approved'
                         ? 'border-green-500 bg-green-500/10'
-                        : 'border-dark-border bg-dark-surface hover:border-primary-500/50'
+                        : 'dark:border-dark-border light:border-light-border dark:bg-dark-surface light:bg-light-surface hover:border-primary-500/50'
                     }`}
                   >
                     <MdCheckCircle className={`text-2xl mx-auto mb-2 ${
-                      formData.status === 'approved' ? 'text-green-500' : 'text-dark-muted'
+                      formData.status === 'approved' ? 'text-green-500' : 'dark:text-dark-muted light:text-light-muted'
                     }`} />
                     <p className={`font-medium ${
-                      formData.status === 'approved' ? 'text-green-400' : 'text-dark-text'
+                      formData.status === 'approved' ? 'text-green-400' : 'dark:text-dark-text light:text-light-text'
                     }`}>
                       Approve
                     </p>
@@ -322,14 +322,14 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
                     className={`p-4 rounded-lg border-2 transition-all ${
                       formData.status === 'rejected'
                         ? 'border-red-500 bg-red-500/10'
-                        : 'border-dark-border bg-dark-surface hover:border-primary-500/50'
+                        : 'dark:border-dark-border light:border-light-border dark:bg-dark-surface light:bg-light-surface hover:border-primary-500/50'
                     }`}
                   >
                     <MdCancel className={`text-2xl mx-auto mb-2 ${
-                      formData.status === 'rejected' ? 'text-red-500' : 'text-dark-muted'
+                      formData.status === 'rejected' ? 'text-red-500' : 'dark:text-dark-muted light:text-light-muted'
                     }`} />
                     <p className={`font-medium ${
-                      formData.status === 'rejected' ? 'text-red-400' : 'text-dark-text'
+                      formData.status === 'rejected' ? 'text-red-400' : 'dark:text-dark-text light:text-light-text'
                     }`}>
                       Reject
                     </p>
@@ -342,7 +342,7 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
 
               {/* Verification Result */}
               <div>
-                <label htmlFor="verificationResult" className="block text-sm font-medium text-dark-text mb-2">
+                <label htmlFor="verificationResult" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                   Verification Result <span className="text-red-400">*</span>
                 </label>
                 <select
@@ -364,7 +364,7 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
 
               {/* Comments */}
               <div>
-                <label htmlFor="comments" className="block text-sm font-medium text-dark-text mb-2">
+                <label htmlFor="comments" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                   Comments <span className="text-red-400">*</span>
                 </label>
                 <textarea
@@ -380,13 +380,13 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
                 {errors.comments && (
                   <p className="mt-1 text-sm text-red-400">{errors.comments}</p>
                 )}
-                <p className="mt-1 text-xs text-dark-muted">
+                <p className="mt-1 text-xs dark:text-dark-muted light:text-light-muted">
                   Minimum 10 characters required
                 </p>
               </div>
 
               {/* Submit Button */}
-              <div className="flex gap-3 pt-4 border-t border-dark-border">
+              <div className="flex gap-3 pt-4 border-t dark:border-dark-border light:border-light-border">
                 <button
                   type="button"
                   onClick={onClose}
@@ -417,11 +417,11 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
 
           {/* Already Processed Info */}
           {isProcessed && (
-            <div className="card bg-dark-surface">
-              <h3 className="text-lg font-semibold text-white mb-4">Processing Details</h3>
+            <div className="card dark:bg-dark-surface light:bg-light-surface">
+              <h3 className="text-lg font-semibold dark:text-white light:text-light-text mb-4">Processing Details</h3>
               <div className="space-y-3">
                 <div>
-                  <p className="text-sm text-dark-muted">Status</p>
+                  <p className="text-sm dark:text-dark-muted light:text-light-muted">Status</p>
                   <p className={`font-semibold ${
                     verification.status === 'approved' ? 'text-green-400' : 'text-red-400'
                   }`}>
@@ -429,25 +429,25 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-dark-muted">Result</p>
-                  <p className="text-white font-medium capitalize">{verification.verificationResult}</p>
+                  <p className="text-sm dark:text-dark-muted light:text-light-muted">Result</p>
+                  <p className="dark:text-white light:text-light-text font-medium capitalize">{verification.verificationResult}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-dark-muted">Comments</p>
-                  <p className="text-white">{verification.comments || 'No comments'}</p>
+                  <p className="text-sm dark:text-dark-muted light:text-light-muted">Comments</p>
+                  <p className="dark:text-white light:text-light-text">{verification.comments || 'No comments'}</p>
                 </div>
                 {verification.processedBy && (
                   <div>
-                    <p className="text-sm text-dark-muted">Processed By</p>
-                    <p className="text-white">
+                    <p className="text-sm dark:text-dark-muted light:text-light-muted">Processed By</p>
+                    <p className="dark:text-white light:text-light-text">
                       {verification.processedBy.firstName} {verification.processedBy.lastName}
                     </p>
                   </div>
                 )}
                 {verification.processedAt && (
                   <div>
-                    <p className="text-sm text-dark-muted">Processed At</p>
-                    <p className="text-white">
+                    <p className="text-sm dark:text-dark-muted light:text-light-muted">Processed At</p>
+                    <p className="dark:text-white light:text-light-text">
                       {new Date(verification.processedAt).toLocaleString()}
                     </p>
                   </div>

@@ -31,7 +31,7 @@ const NotificationToast = () => {
       case 'info':
         return 'bg-blue-500/10 border-blue-500/30'
       default:
-        return 'bg-dark-card border-dark-border'
+        return 'dark:bg-dark-card light:bg-light-card dark:border-dark-border light:border-light-border'
     }
   }
 
@@ -45,12 +45,12 @@ const NotificationToast = () => {
           <div className="flex items-start space-x-3">
             <div className="flex-shrink-0 text-xl">{getIcon(notification.type)}</div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-dark-text">{notification.title}</p>
-              <p className="text-sm text-dark-muted mt-1">{notification.message}</p>
+              <p className="text-sm font-semibold dark:text-dark-text light:text-light-text">{notification.title}</p>
+              <p className="text-sm dark:text-dark-muted light:text-light-muted mt-1">{notification.message}</p>
             </div>
             <button
               onClick={() => removeNotification(notification.id)}
-              className="flex-shrink-0 text-dark-muted hover:text-dark-text transition-colors"
+              className="flex-shrink-0 dark:text-dark-muted light:text-light-muted hover:dark:text-dark-text light:text-light-text transition-colors"
             >
               <MdClose size={20} />
             </button>

@@ -51,13 +51,13 @@ const Home = () => {
               <MdSchool className="text-white text-5xl" />
             </div>
           </div>
-          <h1 className="text-5xl md:text-6xl font-heading font-bold text-white mb-4 animate-slide-down">
+          <h1 className="text-5xl md:text-6xl font-heading font-bold dark:text-white light:text-light-text mb-4 animate-slide-down">
             Ambo University
           </h1>
           <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary-500 mb-6 animate-slide-up">
             Credential Verification System
           </h2>
-          <p className="text-xl text-dark-muted mb-8 max-w-2xl mx-auto animate-fade-in">
+          <p className="text-xl dark:text-dark-muted light:text-light-muted mb-8 max-w-2xl mx-auto animate-fade-in">
             Digitize and streamline the process of verifying graduation credentials with our secure, 
             efficient, and user-friendly platform.
           </p>
@@ -97,7 +97,7 @@ const Home = () => {
       {/* Features Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto">
-          <h2 className="text-4xl font-heading font-bold text-center text-white mb-12">
+          <h2 className="text-4xl font-heading font-bold text-center dark:text-white light:text-light-text mb-12">
             Key Features
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -110,10 +110,10 @@ const Home = () => {
                 <div className={`w-16 h-16 bg-gradient-to-br ${feature.color} rounded-xl flex items-center justify-center mb-4 text-white transform group-hover:scale-110 transition-transform duration-300`}>
                   {feature.icon}
                 </div>
-                <h3 className="text-xl font-heading font-semibold text-white mb-2">
+                <h3 className="text-xl font-heading font-semibold dark:text-white light:text-light-text mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-dark-muted">
+                <p className="dark:text-dark-muted light:text-light-muted">
                   {feature.description}
                 </p>
               </div>
@@ -123,20 +123,20 @@ const Home = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 px-4 bg-dark-surface">
+      <section className="py-20 px-4 dark:bg-dark-surface light:bg-gray-100">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div className="animate-fade-in">
               <div className="text-4xl font-heading font-bold text-primary-500 mb-2">100%</div>
-              <div className="text-dark-muted">Secure</div>
+              <div className="dark:text-dark-muted light:text-light-muted">Secure</div>
             </div>
             <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
               <div className="text-4xl font-heading font-bold text-primary-500 mb-2">24/7</div>
-              <div className="text-dark-muted">Available</div>
+              <div className="dark:text-dark-muted light:text-light-muted">Available</div>
             </div>
             <div className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
               <div className="text-4xl font-heading font-bold text-primary-500 mb-2">Fast</div>
-              <div className="text-dark-muted">Processing</div>
+              <div className="dark:text-dark-muted light:text-light-muted">Processing</div>
             </div>
           </div>
         </div>

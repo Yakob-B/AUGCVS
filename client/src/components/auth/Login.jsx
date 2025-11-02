@@ -84,10 +84,10 @@ const Login = () => {
               <MdSchool className="text-white text-4xl" />
             </div>
           </div>
-          <h2 className="text-4xl font-heading font-bold text-white">
+          <h2 className="text-4xl font-heading font-bold dark:text-white light:text-light-text">
             Welcome Back
           </h2>
-          <p className="mt-2 text-dark-muted">
+          <p className="mt-2 dark:text-dark-muted light:text-light-muted">
             Sign in to your account to continue
           </p>
         </div>
@@ -97,11 +97,11 @@ const Login = () => {
           <div className="space-y-4">
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-dark-text mb-2">
+              <label htmlFor="email" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                 Email Address
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-dark-muted">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none dark:text-dark-muted light:text-light-muted">
                   <MdEmail size={20} />
                 </span>
                 <input
@@ -123,11 +123,11 @@ const Login = () => {
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-dark-text mb-2">
+              <label htmlFor="password" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                 Password
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-dark-muted">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none dark:text-dark-muted light:text-light-muted">
                   <MdLock size={20} />
                 </span>
                 <input
@@ -144,7 +144,7 @@ const Login = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 px-3 flex items-center text-dark-muted hover:text-dark-text transition-colors"
+                  className="absolute inset-y-0 right-0 px-3 flex items-center dark:text-dark-muted light:text-light-muted hover:dark:text-dark-text hover:light:text-light-text transition-colors"
                   tabIndex={-1}
                 >
                   {showPassword ? 'Hide' : 'Show'}
@@ -176,7 +176,7 @@ const Login = () => {
 
           {/* Register Link */}
           <div className="text-center">
-            <p className="text-dark-muted">
+            <p className="dark:text-dark-muted light:text-light-muted">
               Don't have an account?{' '}
               <Link
                 to="/register"

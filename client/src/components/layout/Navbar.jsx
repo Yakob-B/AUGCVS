@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import { useTheme } from '../../contexts/ThemeContext'
 import { 
   MdMenu, 
   MdClose, 
@@ -11,11 +12,15 @@ import {
   MdVerifiedUser,
   MdLogout,
   MdLogin,
-  MdPersonAdd
+  MdPersonAdd,
+  MdLightMode,
+  MdDarkMode,
+  MdInfo
 } from 'react-icons/md'
 
 const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth()
+  const { theme, toggleTheme, isDark } = useTheme()
   const navigate = useNavigate()
   const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -43,7 +48,7 @@ const Navbar = () => {
   const isActive = (path) => location.pathname === path
 
   return (
-    <nav className="bg-dark-surface border-b border-dark-border sticky top-0 z-50 backdrop-blur-lg bg-opacity-95">
+    <nav className="dark:bg-dark-surface light:bg-light-surface dark:border-dark-border light:border-light-border border-b sticky top-0 z-50 backdrop-blur-lg bg-opacity-95">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -51,7 +56,7 @@ const Navbar = () => {
             <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
               <MdSchool className="text-white text-xl" />
             </div>
-            <span className="text-xl font-heading font-bold text-white">
+            <span className="text-xl font-heading font-bold dark:text-white light:text-light-text">
               AU<span className="text-primary-500">GCVS</span>
             </span>
           </Link>
@@ -63,11 +68,22 @@ const Navbar = () => {
               className={`px-4 py-2 rounded-lg transition-all duration-200 ${
                 isActive('/')
                   ? 'bg-primary-500 text-white'
-                  : 'text-dark-text hover:bg-dark-card'
+                  : 'dark:text-dark-text light:text-light-text hover:dark:bg-dark-card hover:light:bg-gray-100'
               }`}
             >
               <MdHome className="inline mr-2" />
               Home
+            </Link>
+            <Link
+              to="/about"
+              className={`px-4 py-2 rounded-lg transition-all duration-200 ${
+                isActive('/about')
+                  ? 'bg-primary-500 text-white'
+                  : 'dark:text-dark-text light:text-light-text hover:dark:bg-dark-card hover:light:bg-gray-100'
+              }`}
+            >
+              <MdInfo className="inline mr-2" />
+              About
             </Link>
 
             {isAuthenticated ? (
@@ -125,9 +141,17 @@ const Navbar = () => {
                   </Link>
                 )}
 
-                <div className="ml-4 px-4 py-2 text-dark-muted">
+                <div className="ml-4 px-4 py-2 dark:text-dark-muted light:text-light-muted">
                   {user.firstName} {user.lastName} ({user.role})
                 </div>
+
+                <button
+                  onClick={toggleTheme}
+                  className="ml-2 px-4 py-2 rounded-lg dark:text-yellow-400 light:text-yellow-600 hover:dark:bg-yellow-500/10 hover:light:bg-yellow-500/20 transition-all duration-200"
+                  title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                >
+                  {isDark ? <MdLightMode className="inline" size={20} /> : <MdDarkMode className="inline" size={20} />}
+                </button>
 
                 <button
                   onClick={handleLogout}
@@ -140,11 +164,29 @@ const Navbar = () => {
             ) : (
               <>
                 <Link
+                  to="/about"
+                  className={`px-4 py-2 rounded-lg transition-all duration-200 ${
+                    isActive('/about')
+                      ? 'bg-primary-500 text-white'
+                      : 'dark:text-dark-text light:text-light-text hover:dark:bg-dark-card hover:light:bg-gray-100'
+                  }`}
+                >
+                  <MdInfo className="inline mr-2" />
+                  About
+                </Link>
+                <button
+                  onClick={toggleTheme}
+                  className="px-4 py-2 rounded-lg dark:text-yellow-400 light:text-yellow-600 hover:dark:bg-yellow-500/10 hover:light:bg-yellow-500/20 transition-all duration-200"
+                  title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                >
+                  {isDark ? <MdLightMode size={20} /> : <MdDarkMode size={20} />}
+                </button>
+                <Link
                   to="/login"
                   className={`px-4 py-2 rounded-lg transition-all duration-200 ${
                     isActive('/login')
                       ? 'bg-primary-500 text-white'
-                      : 'text-dark-text hover:bg-dark-card'
+                      : 'dark:text-dark-text light:text-light-text hover:dark:bg-dark-card hover:light:bg-gray-100'
                   }`}
                 >
                   <MdLogin className="inline mr-2" />
@@ -155,7 +197,7 @@ const Navbar = () => {
                   className={`px-4 py-2 rounded-lg transition-all duration-200 ${
                     isActive('/register')
                       ? 'bg-primary-500 text-white'
-                      : 'text-dark-text hover:bg-dark-card'
+                      : 'dark:text-dark-text light:text-light-text hover:dark:bg-dark-card hover:light:bg-gray-100'
                   }`}
                 >
                   <MdPersonAdd className="inline mr-2" />
@@ -181,11 +223,21 @@ const Navbar = () => {
               to="/"
               onClick={() => setMobileMenuOpen(false)}
               className={`block px-4 py-2 rounded-lg ${
-                isActive('/') ? 'bg-primary-500 text-white' : 'text-dark-text hover:bg-dark-card'
+                isActive('/') ? 'bg-primary-500 text-white' : 'dark:text-dark-text light:text-light-text hover:dark:bg-dark-card hover:light:bg-gray-100'
               }`}
             >
               <MdHome className="inline mr-2" />
               Home
+            </Link>
+            <Link
+              to="/about"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block px-4 py-2 rounded-lg ${
+                isActive('/about') ? 'bg-primary-500 text-white' : 'dark:text-dark-text light:text-light-text hover:dark:bg-dark-card hover:light:bg-gray-100'
+              }`}
+            >
+              <MdInfo className="inline mr-2" />
+              About
             </Link>
 
             {isAuthenticated ? (
@@ -228,7 +280,16 @@ const Navbar = () => {
                     Verifications
                   </Link>
                 )}
-                <div className="px-4 py-2 text-dark-muted text-sm">
+                <button
+                  onClick={() => {
+                    toggleTheme()
+                    setMobileMenuOpen(false)
+                  }}
+                  className="w-full text-left px-4 py-2 rounded-lg dark:text-yellow-400 light:text-yellow-600 hover:dark:bg-yellow-500/10 hover:light:bg-yellow-500/20"
+                >
+                  {isDark ? <><MdLightMode className="inline mr-2" /> Light Mode</> : <><MdDarkMode className="inline mr-2" /> Dark Mode</>}
+                </button>
+                <div className="px-4 py-2 dark:text-dark-muted light:text-light-muted text-sm">
                   {user.firstName} {user.lastName} ({user.role})
                 </div>
                 <button
@@ -242,9 +303,26 @@ const Navbar = () => {
             ) : (
               <>
                 <Link
+                  to="/about"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-4 py-2 rounded-lg dark:text-dark-text light:text-light-text hover:dark:bg-dark-card hover:light:bg-gray-100"
+                >
+                  <MdInfo className="inline mr-2" />
+                  About
+                </Link>
+                <button
+                  onClick={() => {
+                    toggleTheme()
+                    setMobileMenuOpen(false)
+                  }}
+                  className="w-full text-left px-4 py-2 rounded-lg dark:text-yellow-400 light:text-yellow-600 hover:dark:bg-yellow-500/10 hover:light:bg-yellow-500/20"
+                >
+                  {isDark ? <><MdLightMode className="inline mr-2" /> Light Mode</> : <><MdDarkMode className="inline mr-2" /> Dark Mode</>}
+                </button>
+                <Link
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-2 rounded-lg text-dark-text hover:bg-dark-card"
+                  className="block px-4 py-2 rounded-lg dark:text-dark-text light:text-light-text hover:dark:bg-dark-card hover:light:bg-gray-100"
                 >
                   <MdLogin className="inline mr-2" />
                   Login
@@ -252,7 +330,7 @@ const Navbar = () => {
                 <Link
                   to="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-2 rounded-lg text-dark-text hover:bg-dark-card"
+                  className="block px-4 py-2 rounded-lg dark:text-dark-text light:text-light-text hover:dark:bg-dark-card hover:light:bg-gray-100"
                 >
                   <MdPersonAdd className="inline mr-2" />
                   Register

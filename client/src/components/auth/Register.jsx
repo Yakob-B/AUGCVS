@@ -107,10 +107,10 @@ const Register = () => {
               <MdSchool className="text-white text-4xl" />
             </div>
           </div>
-          <h2 className="text-4xl font-heading font-bold text-white">
+          <h2 className="text-4xl font-heading font-bold dark:text-white light:text-light-text">
             Create Account
           </h2>
-          <p className="mt-2 text-dark-muted">
+          <p className="mt-2 dark:text-dark-muted light:text-light-muted">
             Join Ambo University Credential Verification System
           </p>
         </div>
@@ -120,11 +120,11 @@ const Register = () => {
           <div className="space-y-4">
             {/* First Name */}
             <div>
-              <label htmlFor="firstName" className="block text-sm font-medium text-dark-text mb-2">
+              <label htmlFor="firstName" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                 First Name
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-dark-muted">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none dark:text-dark-muted light:text-light-muted">
                   <MdPerson size={20} />
                 </span>
                 <input
@@ -145,11 +145,11 @@ const Register = () => {
 
             {/* Last Name */}
             <div>
-              <label htmlFor="lastName" className="block text-sm font-medium text-dark-text mb-2">
+              <label htmlFor="lastName" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                 Last Name
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-dark-muted">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none dark:text-dark-muted light:text-light-muted">
                   <MdPerson size={20} />
                 </span>
                 <input
@@ -170,11 +170,11 @@ const Register = () => {
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-dark-text mb-2">
+              <label htmlFor="email" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                 Email Address
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-dark-muted">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none dark:text-dark-muted light:text-light-muted">
                   <MdEmail size={20} />
                 </span>
                 <input
@@ -195,11 +195,11 @@ const Register = () => {
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-dark-text mb-2">
+              <label htmlFor="password" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                 Password
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-dark-muted">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none dark:text-dark-muted light:text-light-muted">
                   <MdLock size={20} />
                 </span>
                 <input
@@ -215,7 +215,7 @@ const Register = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 px-3 flex items-center text-dark-muted hover:text-dark-text transition-colors"
+                  className="absolute inset-y-0 right-0 px-3 flex items-center dark:text-dark-muted light:text-light-muted hover:dark:text-dark-text light:text-light-text transition-colors"
                   tabIndex={-1}
                 >
                   {showPassword ? 'Hide' : 'Show'}
@@ -228,11 +228,11 @@ const Register = () => {
 
             {/* Confirm Password */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-dark-text mb-2">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                 Confirm Password
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-dark-muted">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none dark:text-dark-muted light:text-light-muted">
                   <MdLock size={20} />
                 </span>
                 <input
@@ -248,7 +248,7 @@ const Register = () => {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute inset-y-0 right-0 px-3 flex items-center text-dark-muted hover:text-dark-text transition-colors"
+                  className="absolute inset-y-0 right-0 px-3 flex items-center dark:text-dark-muted light:text-light-muted hover:dark:text-dark-text light:text-light-text transition-colors"
                   tabIndex={-1}
                 >
                   {showConfirmPassword ? 'Hide' : 'Show'}
@@ -261,7 +261,7 @@ const Register = () => {
 
             {/* Role */}
             <div>
-              <label htmlFor="role" className="block text-sm font-medium text-dark-text mb-2">
+              <label htmlFor="role" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                 Role
               </label>
               <select
@@ -281,11 +281,11 @@ const Register = () => {
             {/* Organization (only for external) */}
             {formData.role === 'external' && (
               <div>
-                <label htmlFor="organization" className="block text-sm font-medium text-dark-text mb-2">
+                <label htmlFor="organization" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
                   Organization
                 </label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-dark-muted">
+                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none dark:text-dark-muted light:text-light-muted">
                     <MdBusiness size={20} />
                   </span>
                   <input
@@ -326,7 +326,7 @@ const Register = () => {
 
           {/* Login Link */}
           <div className="text-center">
-            <p className="text-dark-muted">
+            <p className="dark:text-dark-muted light:text-light-muted">
               Already have an account?{' '}
               <Link
                 to="/login"

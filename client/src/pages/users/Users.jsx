@@ -79,8 +79,8 @@ const Users = () => {
     <div className="animate-fade-in">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
         <div>
-          <h1 className="text-4xl font-heading font-bold text-white mb-2">User Management</h1>
-          <p className="text-dark-muted">Manage system users and access</p>
+          <h1 className="text-4xl font-heading font-bold dark:text-white light:text-light-text mb-2">User Management</h1>
+          <p className="dark:text-dark-muted light:text-light-muted">Manage system users and access</p>
         </div>
         <button
           onClick={() => {
@@ -108,7 +108,7 @@ const Users = () => {
 
       <div className="card overflow-x-auto">
         {users.length === 0 ? (
-          <div className="text-center py-12 text-dark-muted">
+          <div className="text-center py-12 dark:text-dark-muted light:text-light-muted">
             <MdPeople className="text-5xl mx-auto mb-4 opacity-50" />
             <p>No users found</p>
           </div>
@@ -116,22 +116,22 @@ const Users = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-dark-border">
-                <th className="text-left p-4 text-dark-text font-semibold">Name</th>
-                <th className="text-left p-4 text-dark-text font-semibold">Email</th>
-                <th className="text-left p-4 text-dark-text font-semibold">Role</th>
-                <th className="text-left p-4 text-dark-text font-semibold">Organization</th>
-                <th className="text-left p-4 text-dark-text font-semibold">Actions</th>
+                <th className="text-left p-4 dark:text-dark-text light:text-light-text font-semibold">Name</th>
+                <th className="text-left p-4 dark:text-dark-text light:text-light-text font-semibold">Email</th>
+                <th className="text-left p-4 dark:text-dark-text light:text-light-text font-semibold">Role</th>
+                <th className="text-left p-4 dark:text-dark-text light:text-light-text font-semibold">Organization</th>
+                <th className="text-left p-4 dark:text-dark-text light:text-light-text font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
               {users.map((user) => (
                 <tr key={user._id} className="border-b border-dark-border hover:bg-dark-surface transition-colors">
-                  <td className="p-4 text-dark-text">
+                  <td className="p-4 dark:text-dark-text light:text-light-text">
                     {user.firstName} {user.lastName}
                   </td>
-                  <td className="p-4 text-dark-muted">{user.email}</td>
+                  <td className="p-4 dark:text-dark-muted light:text-light-muted">{user.email}</td>
                   <td className="p-4">{getRoleBadge(user.role)}</td>
-                  <td className="p-4 text-dark-muted">{user.organization || '-'}</td>
+                  <td className="p-4 dark:text-dark-muted light:text-light-muted">{user.organization || '-'}</td>
                   <td className="p-4">
                     <div className="flex items-center space-x-2">
                       <button

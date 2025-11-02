@@ -1,11 +1,13 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
+import { ThemeProvider } from './contexts/ThemeContext'
 import { SocketProvider } from './contexts/SocketContext'
 import { NotificationProvider } from './pages/contexts/NotificationContext'
 import PrivateRoute from './components/routing/PrivateRoute'
 import Navbar from './components/layout/Navbar'
 import Home from './pages/Home'
+import About from './pages/About'
 import Login from './components/auth/Login'
 import Register from './components/auth/Register'
 import AdminDashboard from './pages/dashboards/AdminDashboard'
@@ -19,14 +21,16 @@ import NotificationToast from './components/common/NotificationToast'
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <SocketProvider>
-          <NotificationProvider>
-          <div className="min-h-screen bg-dark-bg">
+      <ThemeProvider>
+        <AuthProvider>
+          <SocketProvider>
+            <NotificationProvider>
+          <div className="min-h-screen dark:bg-dark-bg light:bg-light-bg">
             <Navbar />
             <main className="container mx-auto px-4 py-8">
               <Routes>
                 <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 
@@ -75,6 +79,7 @@ function App() {
           </NotificationProvider>
         </SocketProvider>
       </AuthProvider>
+      </ThemeProvider>
     </Router>
   )
 }
