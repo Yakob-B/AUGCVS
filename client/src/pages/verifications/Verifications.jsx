@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { useNotification } from '../contexts/NotificationContext'
 import { useAuth } from '../../contexts/AuthContext'
 import * as verificationService from '../../services/verifications'
-import { MdVerifiedUser, MdPendingActions, MdCheckCircle, MdCancel } from 'react-icons/md'
+import VerificationRequestForm from '../../components/verifications/VerificationRequestForm'
+import VerificationReviewModal from '../../components/verifications/VerificationReviewModal'
+import { MdVerifiedUser, MdPendingActions, MdCheckCircle, MdCancel, MdAddCircle } from 'react-icons/md'
 
 const Verifications = () => {
   const { user } = useAuth()
@@ -10,6 +12,8 @@ const Verifications = () => {
   const [verifications, setVerifications] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
+  const [showForm, setShowForm] = useState(false)
+  const [selectedVerification, setSelectedVerification] = useState(null)
 
   useEffect(() => {
     loadVerifications()
@@ -55,12 +59,50 @@ const Verifications = () => {
     )
   }
 
+  const handleFormSuccess = (newVerification) => {
+    setShowForm(false)
+    loadVerifications() // Reload the list
+  }
+
+  const handleReviewSuccess = () => {
+    setSelectedVerification(null)
+    loadVerifications() // Reload the list
+  }
+
   return (
     <div className="animate-fade-in">
-      <div className="mb-8">
-        <h1 className="text-4xl font-heading font-bold text-white mb-2">Verification Requests</h1>
-        <p className="text-dark-muted">Manage and review verification requests</p>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+        <div>
+          <h1 className="text-4xl font-heading font-bold text-white mb-2">Verification Requests</h1>
+          <p className="text-dark-muted">Manage and review verification requests</p>
+        </div>
+        {user.role === 'external' && (
+          <button
+            onClick={() => setShowForm(true)}
+            className="btn-primary mt-4 md:mt-0 inline-flex items-center"
+          >
+            <MdAddCircle className="mr-2" />
+            New Verification Request
+          </button>
+        )}
       </div>
+
+      {/* Verification Request Form Modal */}
+      {showForm && (
+        <VerificationRequestForm
+          onClose={() => setShowForm(false)}
+          onSuccess={handleFormSuccess}
+        />
+      )}
+
+      {/* Verification Review Modal */}
+      {selectedVerification && (
+        <VerificationReviewModal
+          verificationId={selectedVerification}
+          onClose={() => setSelectedVerification(null)}
+          onSuccess={handleReviewSuccess}
+        />
+      )}
 
       {/* Filters */}
       <div className="card mb-6">
@@ -123,11 +165,20 @@ const Verifications = () => {
                       <p>Date: {new Date(verification.createdAt).toLocaleDateString()}</p>
                     </div>
                   </div>
-                  {(user.role === 'admin' || user.role === 'registrar') && verification.status === 'pending' && (
-                    <div className="mt-4 md:mt-0 md:ml-4">
-                      <button className="btn-primary">Review</button>
-                    </div>
-                  )}
+                  <div className="mt-4 md:mt-0 md:ml-4">
+                    <button
+                      onClick={() => setSelectedVerification(verification._id)}
+                      className={`btn-secondary ${
+                        user.role === 'admin' || user.role === 'registrar' 
+                          ? (verification.status === 'pending' ? 'btn-primary' : '')
+                          : ''
+                      }`}
+                    >
+                      {user.role === 'admin' || user.role === 'registrar'
+                        ? (verification.status === 'pending' ? 'Review' : 'View Details')
+                        : 'View Details'}
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

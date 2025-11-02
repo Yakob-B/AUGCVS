@@ -11,8 +11,10 @@ import {
   MdCancel,
   MdArrowForward
 } from 'react-icons/md'
+import { useNavigate } from 'react-router-dom'
 
 const ExternalDashboard = () => {
+  const navigate = useNavigate()
   const { user } = useAuth()
   const { showNotification } = useNotification()
   const [stats, setStats] = useState({
@@ -192,16 +194,16 @@ const ExternalDashboard = () => {
             Quick Actions
           </h2>
           <div className="space-y-3">
-            <Link
-              to="/external/verifications"
-              className="flex items-center justify-between p-4 bg-dark-surface rounded-lg hover:bg-dark-border transition-colors group"
+            <button
+              onClick={() => navigate('/external/verifications')}
+              className="w-full flex items-center justify-between p-4 bg-dark-surface rounded-lg hover:bg-dark-border transition-colors group text-left"
             >
               <div className="flex items-center space-x-3">
                 <MdAddCircle className="text-primary-500 text-xl" />
                 <span className="text-dark-text">New Request</span>
               </div>
               <MdArrowForward className="text-dark-muted group-hover:text-primary-500 transition-colors" />
-            </Link>
+            </button>
             <div className="p-4 bg-dark-surface rounded-lg">
               <div className="text-dark-muted text-sm mb-1">Organization</div>
               <div className="text-white font-semibold">{user?.organization || 'N/A'}</div>
