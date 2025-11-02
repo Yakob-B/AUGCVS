@@ -130,19 +130,34 @@ exports.createVerification = async (req, res) => {
     }
 };
 
-// @desc    Get all verification requests
+// @desc    Get all verification requests with pagination
 // @route   GET /api/verifications
 // @access  Private (Admin, Registrar)
 exports.getVerifications = async (req, res) => {
     try {
-        const verifications = await Verification.find()
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+        const status = req.query.status;
+
+        const query = status ? { status } : {};
+
+        const verifications = await Verification.find(query)
             .populate('requester', 'firstName lastName email organization')
             .populate('graduate', 'firstName lastName studentId certificateNumber')
-            .populate('processedBy', 'firstName lastName email');
+            .populate('processedBy', 'firstName lastName email')
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: -1 });
+
+        const total = await Verification.countDocuments(query);
 
         res.status(200).json({
             success: true,
             count: verifications.length,
+            total,
+            page,
+            pages: Math.ceil(total / limit),
             data: verifications
         });
     } catch (err) {
@@ -270,18 +285,30 @@ exports.processVerification = async (req, res) => {
     }
 };
 
-// @desc    Get user's verification requests
+// @desc    Get user's verification requests with pagination
 // @route   GET /api/verifications/my-requests
 // @access  Private (External)
 exports.getMyVerifications = async (req, res) => {
     try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
         const verifications = await Verification.find({ requester: req.user.id })
             .populate('graduate', 'firstName lastName studentId certificateNumber')
-            .populate('processedBy', 'firstName lastName email');
+            .populate('processedBy', 'firstName lastName email')
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: -1 });
+
+        const total = await Verification.countDocuments({ requester: req.user.id });
 
         res.status(200).json({
             success: true,
             count: verifications.length,
+            total,
+            page,
+            pages: Math.ceil(total / limit),
             data: verifications
         });
     } catch (err) {

@@ -63,4 +63,12 @@ verificationSchema.pre('validate', async function(next) {
     next();
 });
 
+// Create indexes for performance
+verificationSchema.index({ requestNumber: 1 }, { unique: true });
+verificationSchema.index({ requester: 1 });
+verificationSchema.index({ graduate: 1 });
+verificationSchema.index({ status: 1 });
+verificationSchema.index({ createdAt: -1 });
+verificationSchema.index({ requester: 1, status: 1 });
+
 module.exports = mongoose.model('Verification', verificationSchema); 

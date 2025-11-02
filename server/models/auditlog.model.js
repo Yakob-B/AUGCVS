@@ -24,4 +24,10 @@ const auditLogSchema = new mongoose.Schema({
   },
 });
 
+// Create indexes for performance
+auditLogSchema.index({ user: 1 });
+auditLogSchema.index({ action: 1 });
+auditLogSchema.index({ createdAt: -1 });
+auditLogSchema.index({ user: 1, createdAt: -1 });
+
 module.exports = mongoose.model('AuditLog', auditLogSchema); 

@@ -89,4 +89,11 @@ graduateSchema.pre('save', function(next) {
     next();
 });
 
+// Create indexes for performance
+graduateSchema.index({ studentId: 1 }, { unique: true });
+graduateSchema.index({ certificateNumber: 1 }, { unique: true });
+graduateSchema.index({ firstName: 1, lastName: 1 });
+graduateSchema.index({ graduationYear: -1 });
+graduateSchema.index({ status: 1 });
+
 module.exports = mongoose.model('Graduate', graduateSchema); 

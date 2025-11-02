@@ -53,15 +53,27 @@ exports.createGraduate = async (req, res) => {
     }
 };
 
-// @desc    Get all graduates
+// @desc    Get all graduates with pagination
 exports.getGraduates = async (req, res) => {
     try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
         const graduates = await Graduate.find()
-            .populate('addedBy', 'firstName lastName email');
+            .populate('addedBy', 'firstName lastName email')
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: -1 });
+
+        const total = await Graduate.countDocuments();
 
         res.status(200).json({
             success: true,
             count: graduates.length,
+            total,
+            page,
+            pages: Math.ceil(total / limit),
             data: graduates
         });
     } catch (err) {
