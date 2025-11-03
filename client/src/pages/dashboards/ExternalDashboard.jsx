@@ -11,8 +11,10 @@ import {
   MdCancel,
   MdArrowForward
 } from 'react-icons/md'
+import { useNavigate } from 'react-router-dom'
 
 const ExternalDashboard = () => {
+  const navigate = useNavigate()
   const { user } = useAuth()
   const { showNotification } = useNotification()
   const [stats, setStats] = useState({
@@ -102,10 +104,10 @@ const ExternalDashboard = () => {
     <div className="animate-fade-in">
       {/* Header */}
       <div className="mb-8 animate-slide-down">
-        <h1 className="text-4xl font-heading font-bold text-white mb-2">
+        <h1 className="text-4xl font-heading font-bold dark:dark:text-white light:text-light-text light:text-light-text mb-2">
           My Dashboard
         </h1>
-        <p className="text-dark-muted">
+        <p className="dark:dark:text-dark-muted light:text-light-muted light:text-light-muted">
           Welcome back, {user?.firstName} {user?.lastName}
         </p>
       </div>
@@ -118,13 +120,13 @@ const ExternalDashboard = () => {
             className="card-hover animate-slide-up"
             style={{ animationDelay: `${index * 0.1}s` }}
           >
-            <div className={`w-14 h-14 bg-gradient-to-br ${card.color} rounded-xl flex items-center justify-center text-white text-2xl mb-4`}>
+            <div className={`w-14 h-14 bg-gradient-to-br ${card.color} rounded-xl flex items-center justify-center dark:text-white light:text-light-text text-2xl mb-4`}>
               {card.icon}
             </div>
-            <div className="text-3xl font-heading font-bold text-white mb-1">
+            <div className="text-3xl font-heading font-bold dark:text-white light:text-light-text mb-1">
               {card.value}
             </div>
-            <div className="text-dark-muted">{card.title}</div>
+            <div className="dark:text-dark-muted light:text-light-muted">{card.title}</div>
           </div>
         ))}
       </div>
@@ -133,7 +135,7 @@ const ExternalDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 card animate-slide-up" style={{ animationDelay: '0.4s' }}>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-heading font-semibold text-white">
+            <h2 className="text-2xl font-heading font-semibold dark:text-white light:text-light-text">
               My Verification Requests
             </h2>
             <Link
@@ -145,8 +147,8 @@ const ExternalDashboard = () => {
             </Link>
           </div>
           {myVerifications.length === 0 ? (
-            <div className="text-center py-8 text-dark-muted">
-              <MdVerifiedUser className="text-4xl mx-auto mb-4 text-dark-muted" />
+            <div className="text-center py-8 dark:text-dark-muted light:text-light-muted">
+              <MdVerifiedUser className="text-4xl mx-auto mb-4 dark:text-dark-muted light:text-light-muted" />
               <p className="mb-4">No verification requests yet</p>
               <Link
                 to="/external/verifications"
@@ -162,23 +164,23 @@ const ExternalDashboard = () => {
                 <Link
                   key={verification._id}
                   to={`/external/verifications`}
-                  className="block p-4 bg-dark-surface rounded-lg hover:bg-dark-border transition-colors group"
+                  className="block p-4 dark:bg-dark-surface light:bg-light-surface rounded-lg hover:dark:bg-dark-border light:bg-gray-100 transition-colors group"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <div className="text-white font-semibold">
+                    <div className="dark:text-white light:text-light-text font-semibold">
                       {verification.graduate?.firstName} {verification.graduate?.lastName}
                     </div>
                     {getStatusBadge(verification.status)}
                   </div>
-                  <div className="text-sm text-dark-muted">
+                  <div className="text-sm dark:text-dark-muted light:text-light-muted">
                     Request #{verification.requestNumber}
                   </div>
                   {verification.verificationResult && verification.verificationResult !== 'pending' && (
-                    <div className="text-xs text-dark-muted mt-1">
+                    <div className="text-xs dark:text-dark-muted light:text-light-muted mt-1">
                       Result: {verification.verificationResult}
                     </div>
                   )}
-                  <div className="text-xs text-dark-muted mt-1">
+                  <div className="text-xs dark:text-dark-muted light:text-light-muted mt-1">
                     {new Date(verification.createdAt).toLocaleDateString()}
                   </div>
                 </Link>
@@ -188,23 +190,23 @@ const ExternalDashboard = () => {
         </div>
 
         <div className="card animate-slide-up" style={{ animationDelay: '0.5s' }}>
-          <h2 className="text-2xl font-heading font-semibold text-white mb-4">
+          <h2 className="text-2xl font-heading font-semibold dark:text-white light:text-light-text mb-4">
             Quick Actions
           </h2>
           <div className="space-y-3">
-            <Link
-              to="/external/verifications"
-              className="flex items-center justify-between p-4 bg-dark-surface rounded-lg hover:bg-dark-border transition-colors group"
+            <button
+              onClick={() => navigate('/external/verifications')}
+              className="w-full flex items-center justify-between p-4 dark:bg-dark-surface light:bg-light-surface rounded-lg hover:dark:bg-dark-border light:bg-gray-100 transition-colors group text-left"
             >
               <div className="flex items-center space-x-3">
                 <MdAddCircle className="text-primary-500 text-xl" />
-                <span className="text-dark-text">New Request</span>
+                <span className="dark:text-dark-text light:text-light-text">New Request</span>
               </div>
-              <MdArrowForward className="text-dark-muted group-hover:text-primary-500 transition-colors" />
-            </Link>
-            <div className="p-4 bg-dark-surface rounded-lg">
-              <div className="text-dark-muted text-sm mb-1">Organization</div>
-              <div className="text-white font-semibold">{user?.organization || 'N/A'}</div>
+              <MdArrowForward className="dark:text-dark-muted light:text-light-muted group-hover:text-primary-500 transition-colors" />
+            </button>
+            <div className="p-4 dark:bg-dark-surface light:bg-light-surface rounded-lg">
+              <div className="dark:text-dark-muted light:text-light-muted text-sm mb-1">Organization</div>
+              <div className="dark:text-white light:text-light-text font-semibold">{user?.organization || 'N/A'}</div>
             </div>
           </div>
         </div>

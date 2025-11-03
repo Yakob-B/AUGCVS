@@ -4,11 +4,11 @@
 
 @layer base {
   * {
-    @apply border-dark-border;
+    @apply dark:border-dark-border light:border-light-border;
   }
   
   body {
-    @apply bg-dark-bg text-dark-text font-sans antialiased;
+    @apply dark:bg-dark-bg light:bg-light-bg dark:text-dark-text light:text-light-text font-sans antialiased;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -26,7 +26,7 @@
   }
 
   .btn-secondary {
-    @apply btn bg-dark-card text-dark-text border border-dark-border hover:bg-dark-surface focus:ring-dark-border;
+    @apply btn dark:bg-dark-card light:bg-light-card dark:text-dark-text light:text-light-text dark:border-dark-border light:border-light-border hover:dark:bg-dark-surface hover:light:bg-gray-50 focus:ring-dark-border;
   }
 
   .btn-danger {
@@ -34,15 +34,15 @@
   }
 
   .input {
-    @apply w-full px-4 py-3 bg-dark-card border border-dark-border rounded-lg text-dark-text placeholder-dark-muted focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
+    @apply w-full px-4 py-3 dark:bg-dark-card light:bg-light-card dark:border-dark-border light:border-light-border rounded-lg dark:text-dark-text light:text-light-text dark:placeholder-dark-muted light:placeholder-light-muted focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
   }
 
   .card {
-    @apply bg-dark-card border border-dark-border rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300;
+    @apply dark:bg-dark-card light:bg-light-card dark:border-dark-border light:border-light-border rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300;
   }
 
   .card-hover {
-    @apply card hover:border-primary-500/50 hover:scale-[1.02];
+    @apply card hover:border-primary-500/50 hover:scale-[1.02] dark:hover:bg-dark-surface light:hover:bg-gray-50;
   }
 
   .badge {
