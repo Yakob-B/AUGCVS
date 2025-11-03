@@ -1,3 +1,5 @@
+import plugin from 'tailwindcss/plugin'
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -69,5 +71,11 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(function({ addVariant }) {
+      // Add a 'light' variant that applies when dark mode is NOT active
+      // This works with class-based dark mode (darkMode: 'class')
+      addVariant('light', 'html:not(.dark) &');
+    }),
+  ],
 }
