@@ -3,12 +3,24 @@
 @tailwind utilities;
 
 @layer base {
+  /* Default light mode styles */
   * {
-    @apply dark:border-dark-border light:border-light-border;
+    border-color: rgb(224 224 224); /* light:border-light-border */
   }
   
   body {
-    @apply dark:bg-dark-bg light:bg-light-bg dark:text-dark-text light:text-light-text font-sans antialiased;
+    @apply font-sans antialiased;
+    background-color: rgb(248 249 250); /* light:bg-light-bg */
+    color: rgb(26 26 26); /* light:text-light-text */
+  }
+  
+  /* Dark mode overrides */
+  .dark * {
+    @apply dark:border-dark-border;
+  }
+  
+  .dark body {
+    @apply dark:bg-dark-bg dark:text-dark-text;
   }
 
   h1, h2, h3, h4, h5, h6 {
