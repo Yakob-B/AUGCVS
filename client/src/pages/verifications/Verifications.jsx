@@ -5,8 +5,10 @@ import { useSocket } from '../../contexts/SocketContext'
 import * as verificationService from '../../services/verifications'
 import VerificationRequestForm from '../../components/verifications/VerificationRequestForm'
 import VerificationReviewModal from '../../components/verifications/VerificationReviewModal'
+import ChatModal from '../../components/chat/ChatModal'
 import Pagination from '../../components/common/Pagination'
-import { MdVerifiedUser, MdPendingActions, MdCheckCircle, MdCancel, MdAddCircle } from 'react-icons/md'
+import * as chatService from '../../services/chat'
+import { MdVerifiedUser, MdPendingActions, MdCheckCircle, MdCancel, MdAddCircle, MdChat } from 'react-icons/md'
 
 const Verifications = () => {
   const { user } = useAuth()
@@ -17,7 +19,9 @@ const Verifications = () => {
   const [filter, setFilter] = useState('all')
   const [showForm, setShowForm] = useState(false)
   const [selectedVerification, setSelectedVerification] = useState(null)
+  const [chatVerificationId, setChatVerificationId] = useState(null)
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, pages: 0 })
+  const [chatUnreadCounts, setChatUnreadCounts] = useState({})
 
   useEffect(() => {
     setPagination(prev => ({ ...prev, page: 1 }))
@@ -64,13 +68,42 @@ const Verifications = () => {
         }
       })
 
+      // Listen for chat message notifications
+      socket.on('chat-message-notification', (data) => {
+        if (chatVerificationId !== data.verificationId) {
+          showNotification(
+            'info',
+            'New Chat Message',
+            `${data.sender.firstName} ${data.sender.lastName}: ${data.message}`
+          )
+          
+          // Update unread count
+          setChatUnreadCounts(prev => ({
+            ...prev,
+            [data.verificationId]: data.unreadCount[user.role === 'external' ? 'external' : 'registrar'] || 0
+          }))
+        }
+      })
+
+      // Listen for new messages to update unread counts
+      socket.on('new-message', (data) => {
+        if (chatVerificationId !== data.verificationId) {
+          setChatUnreadCounts(prev => ({
+            ...prev,
+            [data.verificationId]: data.unreadCount[user.role === 'external' ? 'external' : 'registrar'] || 0
+          }))
+        }
+      })
+
       return () => {
         socket.off('new-verification-request')
         socket.off('verification-processed')
         socket.off('verification-created')
+        socket.off('chat-message-notification')
+        socket.off('new-message')
       }
     }
-  }, [socket, user])
+  }, [socket, user, chatVerificationId])
 
   const loadVerifications = async (page = 1) => {
     try {
@@ -90,10 +123,33 @@ const Verifications = () => {
         total: response.total || 0,
         pages: response.pages || 1
       })
+
+      // Load unread counts for chats
+      loadChatUnreadCounts(response.data || [])
     } catch (error) {
       showNotification('error', 'Error loading verifications', error.message)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const loadChatUnreadCounts = async (verifications) => {
+    try {
+      const chatsResponse = await chatService.getMyChats()
+      const chats = chatsResponse.data || []
+      
+      const unreadMap = {}
+      chats.forEach(chat => {
+        const unread = user.role === 'external' 
+          ? chat.unreadCount?.external || 0 
+          : chat.unreadCount?.registrar || 0
+        unreadMap[chat.verification._id] = unread
+      })
+      
+      setChatUnreadCounts(unreadMap)
+    } catch (error) {
+      // Silently fail - not critical
+      console.error('Error loading chat unread counts:', error)
     }
   }
 
@@ -167,6 +223,14 @@ const Verifications = () => {
         />
       )}
 
+      {/* Chat Modal */}
+      {chatVerificationId && (
+        <ChatModal
+          verificationId={chatVerificationId}
+          onClose={() => setChatVerificationId(null)}
+        />
+      )}
+
       {/* Filters */}
       <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 shadow-lg mb-6">
         <div className="flex flex-wrap gap-2">
@@ -229,7 +293,32 @@ const Verifications = () => {
                       <p>Date: {new Date(verification.createdAt).toLocaleDateString()}</p>
                     </div>
                   </div>
-                  <div className="mt-4 md:mt-0 md:ml-4">
+                  <div className="mt-4 md:mt-0 md:ml-4 flex items-center space-x-2">
+                    <button
+                      onClick={async () => {
+                        setChatVerificationId(verification._id)
+                        // Mark as read when opening
+                        try {
+                          await chatService.markAsRead(verification._id)
+                          setChatUnreadCounts(prev => ({
+                            ...prev,
+                            [verification._id]: 0
+                          }))
+                        } catch (error) {
+                          console.error('Error marking chat as read:', error)
+                        }
+                      }}
+                      className="relative px-4 py-2 rounded-lg font-medium bg-gray-700/50 border border-gray-600/50 text-white hover:bg-gray-700/70 transition-all duration-300 flex items-center space-x-2 hover:border-purple-500/50"
+                      title="Open Chat"
+                    >
+                      <MdChat size={18} />
+                      <span>Chat</span>
+                      {chatUnreadCounts[verification._id] > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                          {chatUnreadCounts[verification._id] > 9 ? '9+' : chatUnreadCounts[verification._id]}
+                        </span>
+                      )}
+                    </button>
                     <button
                       onClick={() => setSelectedVerification(verification._id)}
                       className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
