@@ -24,6 +24,7 @@ const Navbar = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [logoError, setLogoError] = useState(false)
 
   const handleLogout = () => {
     logout()
@@ -53,7 +54,15 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
-            <span className="text-xl font-heading font-bold text-purple-300">
+            {!logoError ? (
+              <img 
+                src="/images/logo.png" 
+                alt="Ambo University Logo" 
+                className="h-10 w-auto object-contain"
+                onError={() => setLogoError(true)}
+              />
+            ) : null}
+            <span className={`text-xl font-heading font-bold text-purple-300 ${!logoError ? 'ml-2' : ''}`}>
               Ambo Portal
             </span>
           </Link>
