@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { useTheme } from '../../contexts/ThemeContext'
+import Logo from '../common/Logo'
 import { 
   MdMenu, 
   MdClose, 
@@ -24,7 +25,6 @@ const Navbar = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [logoError, setLogoError] = useState(false)
 
   const handleLogout = () => {
     logout()
@@ -53,19 +53,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3 group">
-            {!logoError ? (
-              <img 
-                src="/images/logo.png" 
-                alt="Ambo University Logo" 
-                className="h-10 w-auto object-contain"
-                onError={() => setLogoError(true)}
-              />
-            ) : null}
-            <span className={`text-xl font-heading font-bold text-purple-300 ${!logoError ? 'ml-2' : ''}`}>
-              Ambo Portal
-            </span>
-          </Link>
+          <Logo size="medium" animated={true} />
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-1">

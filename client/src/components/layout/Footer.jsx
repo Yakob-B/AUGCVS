@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import Logo from '../common/Logo'
 import { 
-  MdSchool, 
   MdEmail, 
   MdLocationOn, 
   MdPhone,
@@ -14,7 +14,6 @@ import {
 
 const Footer = () => {
   const { isAuthenticated } = useAuth()
-  const [logoError, setLogoError] = useState(false)
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -45,23 +44,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {/* Brand Section */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              {!logoError ? (
-                <img 
-                  src="/images/logo.png" 
-                  alt="Ambo University Logo" 
-                  className="h-10 w-auto object-contain"
-                  onError={() => setLogoError(true)}
-                />
-              ) : (
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg flex items-center justify-center shadow-lg shadow-purple-500/30">
-                  <MdSchool className="text-white text-xl" />
-                </div>
-              )}
-              <span className="text-xl font-heading font-bold text-purple-300">
-                Ambo Portal
-              </span>
-            </div>
+            <Logo size="medium" animated={false} />
             <p className="text-white/70 text-sm leading-relaxed">
               Ambo University Graduation Credential Verification System - Secure, efficient, and reliable credential verification platform.
             </p>

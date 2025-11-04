@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import CampusCarousel from '../components/common/CampusCarousel'
 import { 
   MdSchool, 
   MdPeople,
@@ -57,6 +58,11 @@ const Home = () => {
 
   return (
     <div className="animate-fade-in">
+      {/* Hero Campus Carousel */}
+      <div className="mb-12 h-[400px] md:h-[500px] rounded-xl overflow-hidden shadow-2xl border border-gray-700/50 animate-slide-down">
+        <CampusCarousel autoPlay={true} interval={6000} />
+      </div>
+
       {/* Search Bar */}
       <div className="max-w-2xl mx-auto mb-8">
         <div className="relative">

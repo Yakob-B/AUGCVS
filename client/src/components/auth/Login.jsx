@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { useNotification } from '../../pages/contexts/NotificationContext'
-import { MdEmail, MdLock, MdSchool } from 'react-icons/md'
+import Logo from '../common/Logo'
+import { MdEmail, MdLock } from 'react-icons/md'
 import { FaSpinner } from 'react-icons/fa'
 
 const Login = () => {
@@ -10,7 +11,6 @@ const Login = () => {
   const { login } = useAuth()
   const { showNotification } = useNotification()
   const [loading, setLoading] = useState(false)
-  const [logoError, setLogoError] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -81,18 +81,7 @@ const Login = () => {
         {/* Header */}
         <div className="text-center animate-slide-down">
           <div className="flex justify-center mb-4">
-            {!logoError ? (
-              <img 
-                src="/images/logo.png" 
-                alt="Ambo University Logo" 
-                className="h-20 w-auto object-contain animate-float"
-                onError={() => setLogoError(true)}
-              />
-            ) : (
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/30 animate-float">
-                <MdSchool className="text-white text-4xl" />
-              </div>
-            )}
+            <Logo size="xl" showText={false} animated={true} />
           </div>
           <h2 className="text-4xl font-heading font-bold text-white">
             Welcome Back

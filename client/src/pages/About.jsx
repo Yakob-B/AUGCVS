@@ -1,4 +1,5 @@
 import React from 'react'
+import CampusGallery from '../components/common/CampusGallery'
 import { 
   MdSchool, 
   MdSecurity, 
@@ -7,7 +8,8 @@ import {
   MdGroup, 
   MdCloudDone,
   MdDescription,
-  MdAccessTime
+  MdAccessTime,
+  MdPhotoLibrary
 } from 'react-icons/md'
 import { FaUniversity, FaShieldAlt, FaChartLine } from 'react-icons/fa'
 
@@ -104,6 +106,22 @@ const About = () => {
               <div className="text-sm text-white/70">{stat.label}</div>
           </div>
         ))}
+      </div>
+
+      {/* Campus Gallery Section */}
+      <div className="mb-12">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-700 rounded-xl mb-4">
+            <MdPhotoLibrary className="text-white text-2xl" />
+          </div>
+          <h2 className="text-3xl font-heading font-bold text-white mb-2">
+            Campus Showcase
+          </h2>
+          <p className="text-white/70">
+            Explore our beautiful campus and modern facilities
+          </p>
+        </div>
+        <CampusGallery />
       </div>
 
       {/* Features Section */}
