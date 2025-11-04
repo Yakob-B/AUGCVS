@@ -80,28 +80,28 @@ const Login = () => {
         {/* Header */}
         <div className="text-center animate-slide-down">
           <div className="flex justify-center mb-4">
-            <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/30 animate-pulse-slow">
+            <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/30 animate-float">
               <MdSchool className="text-white text-4xl" />
             </div>
           </div>
-          <h2 className="text-4xl font-heading font-bold dark:text-white light:text-light-text">
+          <h2 className="text-4xl font-heading font-bold text-white">
             Welcome Back
           </h2>
-          <p className="mt-2 dark:text-dark-muted light:text-light-muted">
+          <p className="mt-2 text-white/70">
             Sign in to your account to continue
           </p>
         </div>
 
         {/* Form */}
-        <form className="mt-8 space-y-6 card animate-slide-up" onSubmit={handleSubmit} noValidate>
+        <form className="mt-8 space-y-6 bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 shadow-xl animate-slide-up" onSubmit={handleSubmit} noValidate>
           <div className="space-y-4">
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
                 Email Address
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none dark:text-dark-muted light:text-light-muted">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-white/50">
                   <MdEmail size={20} />
                 </span>
                 <input
@@ -113,7 +113,7 @@ const Login = () => {
                   value={formData.email}
                   onChange={handleChange}
                   disabled={loading}
-                  className={`input pl-10 ${errors.email ? 'border-red-500 focus:ring-red-500' : ''}`}
+                  className={`w-full px-4 py-3 pl-10 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 ${errors.email ? 'border-red-500 focus:ring-red-500' : ''}`}
                 />
               </div>
               {errors.email && (
@@ -123,11 +123,11 @@ const Login = () => {
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
                 Password
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none dark:text-dark-muted light:text-light-muted">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-white/50">
                   <MdLock size={20} />
                 </span>
                 <input
@@ -139,12 +139,12 @@ const Login = () => {
                   value={formData.password}
                   onChange={handleChange}
                   disabled={loading}
-                  className={`input pl-10 pr-10 ${errors.password ? 'border-red-500 focus:ring-red-500' : ''}`}
+                  className={`w-full px-4 py-3 pl-10 pr-10 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 ${errors.password ? 'border-red-500 focus:ring-red-500' : ''}`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 px-3 flex items-center dark:text-dark-muted light:text-light-muted hover:dark:text-dark-text hover:light:text-light-text transition-colors"
+                  className="absolute inset-y-0 right-0 px-3 flex items-center text-white/50 hover:text-white transition-colors"
                   tabIndex={-1}
                 >
                   {showPassword ? 'Hide' : 'Show'}
@@ -161,7 +161,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full py-3 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 px-6 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg font-semibold text-lg hover:from-purple-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg shadow-purple-500/30 animate-glow"
             >
               {loading ? (
                 <span className="flex items-center justify-center">
@@ -179,16 +179,16 @@ const Login = () => {
             <p>
               <Link
                 to="/forgot-password"
-                className="text-sm text-primary-500 hover:text-primary-400 font-medium transition-colors"
+                className="text-sm text-purple-400 hover:text-purple-300 font-medium transition-colors"
               >
                 Forgot password?
               </Link>
             </p>
-            <p className="dark:text-dark-muted light:text-light-muted">
+            <p className="text-white/70">
               Don't have an account?{' '}
               <Link
                 to="/register"
-                className="text-primary-500 hover:text-primary-400 font-medium transition-colors"
+                className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
               >
                 Register here
               </Link>

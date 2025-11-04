@@ -58,21 +58,21 @@ const ForgotPassword = () => {
         <div className="max-w-md w-full space-y-8">
           <div className="text-center animate-slide-down">
             <div className="flex justify-center mb-4">
-              <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center shadow-lg">
+              <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/30 animate-float">
                 <MdEmail className="text-white text-4xl" />
               </div>
             </div>
-            <h2 className="text-4xl font-heading font-bold dark:text-white light:text-light-text">
+            <h2 className="text-4xl font-heading font-bold text-white">
               Check Your Email
             </h2>
-            <p className="mt-4 dark:text-dark-muted light:text-light-muted">
-              We've sent a password reset link to <strong>{email}</strong>
+            <p className="mt-4 text-white/70">
+              We've sent a password reset link to <strong className="text-white">{email}</strong>
             </p>
-            <p className="mt-2 text-sm dark:text-dark-muted light:text-light-muted">
+            <p className="mt-2 text-sm text-white/70">
               Click the link in the email to reset your password. The link will expire in 10 minutes.
             </p>
             <div className="mt-6 space-y-3">
-              <Link to="/login" className="btn-primary inline-flex items-center justify-center">
+              <Link to="/login" className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg shadow-purple-500/30">
                 <MdArrowBack className="mr-2" />
                 Back to Login
               </Link>
@@ -81,7 +81,7 @@ const ForgotPassword = () => {
                   setEmailSent(false)
                   setEmail('')
                 }}
-                className="btn-secondary w-full"
+                className="w-full px-6 py-3 bg-gray-700/50 border border-gray-600/50 text-white rounded-lg hover:bg-gray-700/70 transition-colors"
               >
                 Send to Different Email
               </button>
@@ -98,26 +98,26 @@ const ForgotPassword = () => {
         {/* Header */}
         <div className="text-center animate-slide-down">
           <div className="flex justify-center mb-4">
-            <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/30">
+            <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/30 animate-float">
               <MdSchool className="text-white text-4xl" />
             </div>
           </div>
-          <h2 className="text-4xl font-heading font-bold dark:text-white light:text-light-text">
+          <h2 className="text-4xl font-heading font-bold text-white">
             Forgot Password?
           </h2>
-          <p className="mt-2 dark:text-dark-muted light:text-light-muted">
+          <p className="mt-2 text-white/70">
             Enter your email address and we'll send you a link to reset your password
           </p>
         </div>
 
         {/* Form */}
-        <form className="mt-8 space-y-6 card animate-slide-up" onSubmit={handleSubmit} noValidate>
+        <form className="mt-8 space-y-6 bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 shadow-xl animate-slide-up" onSubmit={handleSubmit} noValidate>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
               Email Address
             </label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none dark:text-dark-muted light:text-light-muted">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-white/50">
                 <MdEmail size={20} />
               </span>
               <input
@@ -129,7 +129,7 @@ const ForgotPassword = () => {
                 value={email}
                 onChange={handleChange}
                 disabled={loading}
-                className={`input pl-10 ${errors.email ? 'border-red-500 focus:ring-red-500' : ''}`}
+                className={`w-full px-4 py-3 pl-10 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 ${errors.email ? 'border-red-500 focus:ring-red-500' : ''}`}
               />
             </div>
             {errors.email && (
@@ -142,7 +142,7 @@ const ForgotPassword = () => {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full py-3 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 px-6 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg font-semibold text-lg hover:from-purple-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg shadow-purple-500/30 animate-glow"
             >
               {loading ? (
                 <span className="flex items-center justify-center">
@@ -159,7 +159,7 @@ const ForgotPassword = () => {
           <div className="text-center">
             <Link
               to="/login"
-              className="text-primary-500 hover:text-primary-400 font-medium transition-colors inline-flex items-center"
+              className="text-purple-400 hover:text-purple-300 font-medium transition-colors inline-flex items-center"
             >
               <MdArrowBack className="mr-2" />
               Back to Login
