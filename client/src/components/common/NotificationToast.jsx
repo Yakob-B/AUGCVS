@@ -40,17 +40,17 @@ const NotificationToast = () => {
       {notifications.map((notification) => (
         <div
           key={notification.id}
-          className={`${getBgColor(notification.type)} border rounded-lg p-4 shadow-xl animate-slide-down backdrop-blur-lg`}
+          className={`${getBgColor(notification.type)} border rounded-lg p-4 shadow-xl animate-slide-down backdrop-blur-lg bg-gray-800/95 border-gray-700/50`}
         >
           <div className="flex items-start space-x-3">
             <div className="flex-shrink-0 text-xl">{getIcon(notification.type)}</div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold dark:text-dark-text light:text-light-text">{notification.title}</p>
-              <p className="text-sm dark:text-dark-muted light:text-light-muted mt-1">{notification.message}</p>
+              <p className="text-sm font-semibold text-white">{notification.title}</p>
+              <p className="text-sm text-white/70 mt-1">{notification.message}</p>
             </div>
             <button
               onClick={() => removeNotification(notification.id)}
-              className="flex-shrink-0 dark:text-dark-muted light:text-light-muted hover:dark:text-dark-text light:text-light-text transition-colors"
+              className="flex-shrink-0 text-white/50 hover:text-white transition-colors"
             >
               <MdClose size={20} />
             </button>

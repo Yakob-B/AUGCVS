@@ -28,21 +28,21 @@ const EmailVerificationBanner = () => {
   }
 
   return (
-    <div className="bg-yellow-500/20 border border-yellow-500/30 rounded-lg p-4 mb-6 animate-slide-down">
+    <div className="bg-purple-500/20 border border-purple-500/30 rounded-lg p-4 mb-6 animate-slide-down">
       <div className="flex items-start justify-between">
         <div className="flex items-start space-x-3 flex-1">
-          <MdEmail className="text-yellow-400 text-xl flex-shrink-0 mt-0.5" />
+          <MdEmail className="text-purple-400 text-xl flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <h3 className="text-sm font-semibold dark:text-white light:text-light-text mb-1">
+            <h3 className="text-sm font-semibold text-white mb-1">
               Email Verification Required
             </h3>
-            <p className="text-sm dark:text-dark-muted light:text-light-muted mb-3">
+            <p className="text-sm text-white/70 mb-3">
               Please verify your email address to access all features. Check your inbox ({user.email}) for the verification link.
             </p>
             <button
               onClick={handleResend}
               disabled={sending}
-              className="text-sm text-primary-500 hover:text-primary-400 font-medium inline-flex items-center disabled:opacity-50"
+              className="text-sm text-purple-400 hover:text-purple-300 font-medium inline-flex items-center disabled:opacity-50 transition-colors"
             >
               {sending ? (
                 <>
@@ -60,7 +60,7 @@ const EmailVerificationBanner = () => {
         </div>
         <button
           onClick={() => setDismissed(true)}
-          className="dark:text-dark-muted light:text-light-muted hover:dark:text-dark-text hover:light:text-light-text transition-colors flex-shrink-0 ml-4"
+          className="text-white/50 hover:text-white transition-colors flex-shrink-0 ml-4"
         >
           <MdClose size={20} />
         </button>

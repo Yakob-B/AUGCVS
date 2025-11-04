@@ -49,6 +49,38 @@ io.on('connection', (socket) => {
     console.log('Registrar joined verification room');
   });
 
+  // Join chat room for a specific verification
+  socket.on('join-chat-room', (verificationId) => {
+    socket.join(`chat-${verificationId}`);
+    console.log(`User joined chat room for verification: ${verificationId}`);
+  });
+
+  // Leave chat room
+  socket.on('leave-chat-room', (verificationId) => {
+    socket.leave(`chat-${verificationId}`);
+    console.log(`User left chat room for verification: ${verificationId}`);
+  });
+
+  // Typing indicators
+  socket.on('typing-start', (data) => {
+    const { verificationId, userId, userName } = data;
+    socket.to(`chat-${verificationId}`).emit('user-typing', {
+      verificationId,
+      userId,
+      userName,
+      isTyping: true
+    });
+  });
+
+  socket.on('typing-stop', (data) => {
+    const { verificationId, userId } = data;
+    socket.to(`chat-${verificationId}`).emit('user-typing', {
+      verificationId,
+      userId,
+      isTyping: false
+    });
+  });
+
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
   });
@@ -65,6 +97,7 @@ app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/users', require('./routes/user.routes'));
 app.use('/api/graduates', require('./routes/graduate.routes'));
 app.use('/api/verifications', require('./routes/verification.routes'));
+app.use('/api/chat', require('./routes/chat.routes'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

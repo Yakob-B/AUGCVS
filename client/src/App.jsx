@@ -6,6 +6,8 @@ import { SocketProvider } from './contexts/SocketContext'
 import { NotificationProvider } from './pages/contexts/NotificationContext'
 import PrivateRoute from './components/routing/PrivateRoute'
 import Navbar from './components/layout/Navbar'
+import Footer from './components/layout/Footer'
+import ChatList from './components/chat/ChatList'
 import Home from './pages/Home'
 import About from './pages/About'
 import Login from './components/auth/Login'
@@ -29,9 +31,9 @@ function App() {
         <AuthProvider>
           <SocketProvider>
             <NotificationProvider>
-          <div className="min-h-screen dark:bg-dark-bg light:bg-light-bg">
+          <div className="min-h-screen bg-gradient-to-b from-purple-900 via-purple-950 to-black">
             <Navbar />
-            <main className="container mx-auto px-4 py-8">
+            <main className="container mx-auto px-4 py-8 min-h-[calc(100vh-200px)]">
               <EmailVerificationBanner />
               <Routes>
                 <Route path="/" element={<Home />} />
@@ -82,6 +84,8 @@ function App() {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </main>
+            <Footer />
+            <ChatList />
             <NotificationToast />
           </div>
           </NotificationProvider>
