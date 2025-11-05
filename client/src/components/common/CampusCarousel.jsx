@@ -36,11 +36,11 @@ const CampusCarousel = ({ images, autoPlay = true, interval = 5000 }) => {
     if (!autoPlay) return
 
     const timer = setInterval(() => {
-      nextSlide()
+      setCurrentIndex((prev) => (prev + 1) % images_list.length)
     }, interval)
 
     return () => clearInterval(timer)
-  }, [currentIndex, autoPlay, interval])
+  }, [autoPlay, interval, images_list.length])
 
   const nextSlide = () => {
     setIsTransitioning(true)
