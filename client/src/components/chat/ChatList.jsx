@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useSocket } from '../../contexts/SocketContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { useNotification } from '../../pages/contexts/NotificationContext'
@@ -11,49 +11,72 @@ const ChatList = () => {
   const { socket } = useSocket()
   const { user, isAuthenticated } = useAuth()
   const { showNotification } = useNotification()
+
   const [chats, setChats] = useState([])
   const [loading, setLoading] = useState(true)
   const [openChatId, setOpenChatId] = useState(null)
   const [isOpen, setIsOpen] = useState(false)
   const [totalUnread, setTotalUnread] = useState(0)
 
-  // Don't show chat if not authenticated
-  if (!isAuthenticated || !user) {
-    return null
-  }
+  const renderCountRef = useRef(0)
+  renderCountRef.current += 1
+  console.log('ChatList render', renderCountRef.current, { isOpen, openChatId, chatsLength: chats.length })
+
+  // ✅ Always declare hooks first (no conditional return before them)
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && isAuthenticated && user) {
       loadChats()
     }
-  }, [isOpen])
+  }, [isOpen, isAuthenticated, user])
 
   useEffect(() => {
-    if (socket) {
-      socket.on('new-message', handleNewMessage)
-      socket.on('chat-message-notification', handleChatNotification)
+    if (!socket || !user) return
+
+    const onNewMessage = (data) => {
+      setChats((prev) =>
+        prev.map((chat) => {
+          if (chat.verification._id === data.verificationId) {
+            return {
+              ...chat,
+              messages: [...(chat.messages || []), data.message],
+              unreadCount: data.unreadCount,
+              lastMessage: new Date(),
+            }
+          }
+          return chat
+        })
+      )
+      recalcUnread()
     }
 
-    return () => {
-      if (socket) {
-        socket.off('new-message')
-        socket.off('chat-message-notification')
-      }
+    const onChatNotification = (data) => {
+      setChats((prev) =>
+        prev.map((chat) => {
+          if (chat.verification._id === data.verificationId) {
+            return { ...chat, unreadCount: data.unreadCount }
+          }
+          return chat
+        })
+      )
+      recalcUnread()
     }
-  }, [socket, chats])
+
+    socket.on('new-message', onNewMessage)
+    socket.on('chat-message-notification', onChatNotification)
+
+    return () => {
+      socket.off('new-message', onNewMessage)
+      socket.off('chat-message-notification', onChatNotification)
+    }
+  }, [socket, user?.role])
 
   const loadChats = async () => {
     try {
       setLoading(true)
       const response = await chatService.getMyChats()
       setChats(response.data || [])
-      
-      // Calculate total unread
-      const total = response.data?.reduce((sum, chat) => {
-        const unread = user.role === 'external' ? chat.unreadCount?.external || 0 : chat.unreadCount?.registrar || 0
-        return sum + unread
-      }, 0) || 0
-      setTotalUnread(total)
+      recalcUnread(response.data)
     } catch (error) {
       showNotification('error', 'Error loading chats', error.message)
     } finally {
@@ -61,44 +84,14 @@ const ChatList = () => {
     }
   }
 
-  const handleNewMessage = (data) => {
-    setChats(prev => prev.map(chat => {
-      if (chat.verification._id === data.verificationId) {
-        return {
-          ...chat,
-          messages: [...chat.messages, data.message],
-          unreadCount: data.unreadCount,
-          lastMessage: new Date()
-        }
-      }
-      return chat
-    }))
-
-    // Update total unread
-    updateTotalUnread()
-  }
-
-  const handleChatNotification = (data) => {
-    // Update unread count in chat list
-    setChats(prev => prev.map(chat => {
-      if (chat.verification._id === data.verificationId) {
-        return {
-          ...chat,
-          unreadCount: data.unreadCount
-        }
-      }
-      return chat
-    }))
-
-    updateTotalUnread()
-  }
-
-  const updateTotalUnread = () => {
-    setChats(prev => {
-      const total = prev.reduce((sum, chat) => {
-        const unread = user.role === 'external' ? chat.unreadCount?.external || 0 : chat.unreadCount?.registrar || 0
-        return sum + unread
-      }, 0)
+  const recalcUnread = (data) => {
+    setChats((prev) => {
+      const source = data || prev
+      const total =
+        source?.reduce((sum, chat) => {
+          const unread = user.role === 'external' ? chat.unreadCount?.external || 0 : chat.unreadCount?.registrar || 0
+          return sum + unread
+        }, 0) || 0
       setTotalUnread(total)
       return prev
     })
@@ -107,8 +100,6 @@ const ChatList = () => {
   const handleChatClick = async (verificationId) => {
     setOpenChatId(verificationId)
     setIsOpen(false)
-    
-    // Mark as read
     try {
       await chatService.markAsRead(verificationId)
       loadChats()
@@ -126,17 +117,19 @@ const ChatList = () => {
   const formatTime = (date) => {
     const msgDate = new Date(date)
     const now = new Date()
-    const diffMs = now - msgDate
-    const diffMins = Math.floor(diffMs / 60000)
-    
+    const diffMins = Math.floor((now - msgDate) / 60000)
     if (diffMins < 1) return 'Just now'
     if (diffMins < 60) return `${diffMins}m ago`
     if (diffMins < 1440) return `${Math.floor(diffMins / 60)}h ago`
     return msgDate.toLocaleDateString()
   }
 
-  const getUnreadCount = (chat) => {
-    return user.role === 'external' ? chat.unreadCount?.external || 0 : chat.unreadCount?.registrar || 0
+  const getUnreadCount = (chat) =>
+    user.role === 'external' ? chat.unreadCount?.external || 0 : chat.unreadCount?.registrar || 0
+
+  // ✅ Handle unauthorized users *after* hooks
+  if (!isAuthenticated || !user) {
+    return null
   }
 
   if (!isOpen) {
@@ -154,15 +147,6 @@ const ChatList = () => {
             </span>
           )}
         </button>
-        {openChatId && (
-          <ChatModal
-            verificationId={openChatId}
-            onClose={() => {
-              setOpenChatId(null)
-              loadChats()
-            }}
-          />
-        )}
       </>
     )
   }
@@ -264,5 +248,4 @@ const ChatList = () => {
   )
 }
 
-export default ChatList
-
+export default ChatList;

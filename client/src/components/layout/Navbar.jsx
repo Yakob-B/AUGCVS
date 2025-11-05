@@ -75,7 +75,7 @@ const Navbar = () => {
                   : 'text-white hover:bg-purple-600/20'
               }`}
             >
-              Schools
+              About
             </Link>
 
             {isAuthenticated ? (

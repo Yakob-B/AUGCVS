@@ -1,16 +1,15 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import Logo from '../common/Logo'
-import { 
-  MdEmail, 
-  MdLocationOn, 
+import {
+  MdEmail,
+  MdLocationOn,
   MdPhone,
   MdFacebook,
-  MdTwitter,
   MdArrowUpward
 } from 'react-icons/md'
-import { FaLinkedIn } from 'react-icons/fa'
+import { FaLinkedin, FaTwitter } from 'react-icons/fa'
 
 const Footer = () => {
   const { isAuthenticated } = useAuth()
@@ -19,13 +18,25 @@ const Footer = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  // Fade-in animation
+  useEffect(() => {
+    const footer = document.querySelector('footer')
+    footer.classList.add('opacity-0', 'translate-y-4')
+    setTimeout(() => {
+      footer.classList.remove('opacity-0', 'translate-y-4')
+      footer.classList.add('opacity-100', 'translate-y-0', 'transition-all', 'duration-700', 'ease-out')
+    }, 100)
+  }, [])
+
   const quickLinks = [
     { name: 'Home', path: '/' },
     { name: 'About', path: '/about' },
-    ...(isAuthenticated ? [] : [
-      { name: 'Login', path: '/login' },
-      { name: 'Register', path: '/register' }
-    ])
+    ...(isAuthenticated
+      ? []
+      : [
+          { name: 'Login', path: '/login' },
+          { name: 'Register', path: '/register' }
+        ])
   ]
 
   const resources = [
@@ -36,39 +47,39 @@ const Footer = () => {
   ]
 
   return (
-    <footer className="relative mt-20 border-t border-gray-700/50 bg-gradient-to-b from-gray-900/50 to-black">
+    <footer className="relative mt-20 border-t border-gray-700/50 bg-gradient-to-b from-gray-900/50 to-black opacity-0 translate-y-4">
       {/* Decorative Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-purple-900/20 via-transparent to-purple-900/20 pointer-events-none" />
-      
+
       <div className="relative container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {/* Brand Section */}
           <div className="space-y-4">
             <Logo size="medium" animated={false} />
             <p className="text-white/70 text-sm leading-relaxed">
-              Ambo University Graduation Credential Verification System - Secure, efficient, and reliable credential verification platform.
+              Ambo University Graduation Credential Verification System — secure, efficient, and reliable platform.
             </p>
             <div className="flex space-x-4">
-              <a 
-                href="#" 
-                className="w-10 h-10 bg-gray-800/50 border border-gray-700/50 rounded-lg flex items-center justify-center text-white/70 hover:text-purple-400 hover:border-purple-500/50 transition-all duration-300 hover:scale-110"
+              <a
+                href="#"
                 aria-label="Facebook"
+                className="w-10 h-10 bg-gray-800/50 border border-gray-700/50 rounded-lg flex items-center justify-center text-white/70 hover:text-purple-400 hover:border-purple-500/50 transition-all duration-300 hover:scale-110"
               >
                 <MdFacebook size={20} />
               </a>
-              <a 
-                href="#" 
-                className="w-10 h-10 bg-gray-800/50 border border-gray-700/50 rounded-lg flex items-center justify-center text-white/70 hover:text-purple-400 hover:border-purple-500/50 transition-all duration-300 hover:scale-110"
+              <a
+                href="#"
                 aria-label="Twitter"
-              >
-                <MdTwitter size={20} />
-              </a>
-              <a 
-                href="#" 
                 className="w-10 h-10 bg-gray-800/50 border border-gray-700/50 rounded-lg flex items-center justify-center text-white/70 hover:text-purple-400 hover:border-purple-500/50 transition-all duration-300 hover:scale-110"
-                aria-label="LinkedIn"
               >
-                <FaLinkedIn size={20} />
+                <FaTwitter size={20} />
+              </a>
+              <a
+                href="#"
+                aria-label="LinkedIn"
+                className="w-10 h-10 bg-gray-800/50 border border-gray-700/50 rounded-lg flex items-center justify-center text-white/70 hover:text-purple-400 hover:border-purple-500/50 transition-all duration-300 hover:scale-110"
+              >
+                <FaLinkedin size={20} />
               </a>
             </div>
           </div>
@@ -115,17 +126,25 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-start space-x-3 text-white/70">
                 <MdLocationOn className="text-purple-400 mt-1 flex-shrink-0" size={20} />
-                <span className="text-sm">Ambo University, Hachalu Hundessa Campus, Ambo, Ethiopia</span>
+                <span className="text-sm">
+                  Ambo University, Hachalu Hundessa Campus, Ambo, Ethiopia
+                </span>
               </li>
               <li className="flex items-center space-x-3 text-white/70">
                 <MdEmail className="text-purple-400 flex-shrink-0" size={20} />
-                <a href="mailto:support@augcvs.edu.et" className="hover:text-purple-400 transition-colors">
+                <a
+                  href="mailto:support@augcvs.edu.et"
+                  className="hover:text-purple-400 transition-colors"
+                >
                   support@augcvs.edu.et
                 </a>
               </li>
               <li className="flex items-center space-x-3 text-white/70">
                 <MdPhone className="text-purple-400 flex-shrink-0" size={20} />
-                <a href="tel:+251112345678" className="hover:text-purple-400 transition-colors">
+                <a
+                  href="tel:+251112345678"
+                  className="hover:text-purple-400 transition-colors"
+                >
                   +251 11 234 5678
                 </a>
               </li>
@@ -152,11 +171,10 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Animated Background Elements */}
+      {/* Animated Bottom Glow */}
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/50 to-transparent" />
     </footer>
   )
 }
 
-export default Footer
-
+export default Footer;
