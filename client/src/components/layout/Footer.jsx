@@ -8,9 +8,9 @@ import {
   MdPhone,
   MdFacebook,
   MdTwitter,
-  MdLinkedIn,
   MdArrowUpward
 } from 'react-icons/md'
+import { FaLinkedIn } from 'react-icons/fa'
 
 const Footer = () => {
   const { isAuthenticated } = useAuth()
@@ -68,7 +68,7 @@ const Footer = () => {
                 className="w-10 h-10 bg-gray-800/50 border border-gray-700/50 rounded-lg flex items-center justify-center text-white/70 hover:text-purple-400 hover:border-purple-500/50 transition-all duration-300 hover:scale-110"
                 aria-label="LinkedIn"
               >
-                <MdLinkedIn size={20} />
+                <FaLinkedIn size={20} />
               </a>
             </div>
           </div>
