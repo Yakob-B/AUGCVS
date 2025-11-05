@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { io } from 'socket.io-client'
 import { useAuth } from './AuthContext'
+import { io } from 'socket.io-client'
 
 const SocketContext = createContext()
 
@@ -19,11 +19,12 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      const socketUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'
-      const newSocket = io(socketUrl, {
-        transports: ['websocket', 'polling'],
-        withCredentials: true,
-      })
+      try {
+        const socketUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'
+        const newSocket = io(socketUrl, {
+          transports: ['websocket', 'polling'],
+          withCredentials: true,
+        })
 
       newSocket.on('connect', () => {
         console.log('Socket connected:', newSocket.id)
@@ -51,10 +52,15 @@ export const SocketProvider = ({ children }) => {
         setConnected(false)
       })
 
-      setSocket(newSocket)
+        setSocket(newSocket)
 
-      return () => {
-        newSocket.close()
+        return () => {
+          newSocket.close()
+        }
+      } catch (error) {
+        console.error('Error initializing socket:', error)
+        setSocket(null)
+        setConnected(false)
       }
     } else {
       if (socket) {
