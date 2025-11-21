@@ -50,6 +50,11 @@ export default {
         'slide-down': 'slideDown 0.5s ease-out',
         'scale-in': 'scaleIn 0.3s ease-out',
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'bounce-subtle': 'bounceSubtle 0.6s ease-in-out',
+        'float': 'float 3s ease-in-out infinite',
+        'slide-in-left': 'slideInLeft 0.6s ease-out',
+        'slide-in-right': 'slideInRight 0.6s ease-out',
+        'glow-pulse': 'glowPulse 2s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {
@@ -68,11 +73,31 @@ export default {
           '0%': { transform: 'scale(0.95)', opacity: '0' },
           '100%': { transform: 'scale(1)', opacity: '1' },
         },
+        bounceSubtle: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-20px)' },
+        },
+        slideInLeft: {
+          '0%': { transform: 'translateX(-50px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        slideInRight: {
+          '0%': { transform: 'translateX(50px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        glowPulse: {
+          '0%, 100%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.3)' },
+          '50%': { boxShadow: '0 0 40px rgba(59, 130, 246, 0.6)' },
+        },
       },
     },
   },
   plugins: [
-    plugin(function({ addVariant }) {
+    plugin(function ({ addVariant }) {
       // Add a 'light' variant that applies when dark mode is NOT active
       // This works with class-based dark mode (darkMode: 'class')
       addVariant('light', 'html:not(.dark) &');

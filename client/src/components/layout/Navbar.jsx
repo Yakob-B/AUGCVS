@@ -3,13 +3,13 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { useTheme } from '../../contexts/ThemeContext'
 import Logo from '../common/Logo'
-import { 
-  MdMenu, 
-  MdClose, 
-  MdHome, 
-  MdDashboard, 
-  MdPeople, 
-  MdSchool, 
+import {
+  MdMenu,
+  MdClose,
+  MdHome,
+  MdDashboard,
+  MdPeople,
+  MdSchool,
   MdVerifiedUser,
   MdLogout,
   MdLogin,
@@ -59,21 +59,19 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-1">
             <Link
               to="/"
-              className={`px-4 py-2 rounded-lg transition-all duration-200 ${
-                isActive('/')
-                  ? 'bg-purple-600 text-white'
-                  : 'text-white hover:bg-purple-600/20'
-              }`}
+              className={`px-4 py-2 rounded-lg transition-all duration-200 ${isActive('/')
+                ? 'bg-purple-600 text-white'
+                : 'text-white hover:bg-purple-600/20'
+                }`}
             >
               Home
             </Link>
             <Link
               to="/about"
-              className={`px-4 py-2 rounded-lg transition-all duration-200 ${
-                isActive('/about')
-                  ? 'bg-purple-600 text-white'
-                  : 'text-white hover:bg-purple-600/20'
-              }`}
+              className={`px-4 py-2 rounded-lg transition-all duration-200 ${isActive('/about')
+                ? 'bg-purple-600 text-white'
+                : 'text-white hover:bg-purple-600/20'
+                }`}
             >
               About
             </Link>
@@ -82,11 +80,10 @@ const Navbar = () => {
               <>
                 <Link
                   to={getDashboardPath()}
-                  className={`px-4 py-2 rounded-lg transition-all duration-200 ${
-                    location.pathname.startsWith(getDashboardPath())
-                      ? 'bg-purple-600 text-white'
-                      : 'text-white hover:bg-purple-600/20'
-                  }`}
+                  className={`px-4 py-2 rounded-lg transition-all duration-200 ${location.pathname.startsWith(getDashboardPath())
+                    ? 'bg-purple-600 text-white'
+                    : 'text-white hover:bg-purple-600/20'
+                    }`}
                 >
                   <MdDashboard className="inline mr-2" />
                   Dashboard
@@ -96,22 +93,20 @@ const Navbar = () => {
                   <>
                     <Link
                       to="/admin/graduates"
-                      className={`px-4 py-2 rounded-lg transition-all duration-200 ${
-                        location.pathname.includes('/graduates')
-                          ? 'bg-purple-600 text-white'
-                          : 'text-white hover:bg-purple-600/20'
-                      }`}
+                      className={`px-4 py-2 rounded-lg transition-all duration-200 ${location.pathname.includes('/graduates')
+                        ? 'bg-purple-600 text-white'
+                        : 'text-white hover:bg-purple-600/20'
+                        }`}
                     >
                       <MdSchool className="inline mr-2" />
                       Graduates
                     </Link>
                     <Link
                       to="/admin/users"
-                      className={`px-4 py-2 rounded-lg transition-all duration-200 ${
-                        location.pathname.includes('/users')
-                          ? 'bg-purple-600 text-white'
-                          : 'text-white hover:bg-purple-600/20'
-                      }`}
+                      className={`px-4 py-2 rounded-lg transition-all duration-200 ${location.pathname.includes('/users')
+                        ? 'bg-purple-600 text-white'
+                        : 'text-white hover:bg-purple-600/20'
+                        }`}
                     >
                       <MdPeople className="inline mr-2" />
                       Users
@@ -122,11 +117,10 @@ const Navbar = () => {
                 {(user.role === 'admin' || user.role === 'registrar') && (
                   <Link
                     to={`/${user.role === 'admin' ? 'admin' : 'registrar'}/verifications`}
-                    className={`px-4 py-2 rounded-lg transition-all duration-200 ${
-                      location.pathname.includes('/verifications')
-                        ? 'bg-purple-600 text-white'
-                        : 'text-white hover:bg-purple-600/20'
-                    }`}
+                    className={`px-4 py-2 rounded-lg transition-all duration-200 ${location.pathname.includes('/verifications')
+                      ? 'bg-purple-600 text-white'
+                      : 'text-white hover:bg-purple-600/20'
+                      }`}
                   >
                     <MdVerifiedUser className="inline mr-2" />
                     Verifications
@@ -155,17 +149,6 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <Link
-                  to="/about"
-                  className={`px-4 py-2 rounded-lg transition-all duration-200 ${
-                    isActive('/about')
-                      ? 'bg-primary-500 text-white'
-                      : 'dark:text-dark-text light:text-light-text hover:dark:bg-dark-card hover:light:bg-gray-100'
-                  }`}
-                >
-                  <MdInfo className="inline mr-2" />
-                  About
-                </Link>
                 <button
                   onClick={toggleTheme}
                   className="px-4 py-2 rounded-lg dark:text-yellow-400 light:text-yellow-600 hover:dark:bg-yellow-500/10 hover:light:bg-yellow-500/20 transition-all duration-200"
@@ -175,22 +158,20 @@ const Navbar = () => {
                 </button>
                 <Link
                   to="/login"
-                  className={`px-4 py-2 rounded-lg transition-all duration-200 ${
-                    isActive('/login')
-                      ? 'bg-purple-600 text-white'
-                      : 'text-white hover:bg-purple-600/20'
-                  }`}
+                  className={`px-4 py-2 rounded-lg transition-all duration-200 ${isActive('/login')
+                    ? 'bg-purple-600 text-white'
+                    : 'text-white hover:bg-purple-600/20'
+                    }`}
                 >
                   <MdLogin className="inline mr-2" />
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className={`px-4 py-2 rounded-lg transition-all duration-200 ${
-                    isActive('/register')
-                      ? 'bg-purple-600 text-white'
-                      : 'text-white hover:bg-purple-600/20'
-                  }`}
+                  className={`px-4 py-2 rounded-lg transition-all duration-200 ${isActive('/register')
+                    ? 'bg-purple-600 text-white'
+                    : 'text-white hover:bg-purple-600/20'
+                    }`}
                 >
                   <MdPersonAdd className="inline mr-2" />
                   Register
@@ -214,9 +195,8 @@ const Navbar = () => {
             <Link
               to="/"
               onClick={() => setMobileMenuOpen(false)}
-              className={`block px-4 py-2 rounded-lg ${
-                isActive('/') ? 'bg-purple-600 text-white' : 'text-white hover:bg-purple-600/20'
-              }`}
+              className={`block px-4 py-2 rounded-lg ${isActive('/') ? 'bg-purple-600 text-white' : 'text-white hover:bg-purple-600/20'
+                }`}
             >
               <MdHome className="inline mr-2" />
               Home
@@ -224,9 +204,8 @@ const Navbar = () => {
             <Link
               to="/about"
               onClick={() => setMobileMenuOpen(false)}
-              className={`block px-4 py-2 rounded-lg ${
-                isActive('/about') ? 'bg-purple-600 text-white' : 'text-white hover:bg-purple-600/20'
-              }`}
+              className={`block px-4 py-2 rounded-lg ${isActive('/about') ? 'bg-purple-600 text-white' : 'text-white hover:bg-purple-600/20'
+                }`}
             >
               Schools
             </Link>
@@ -293,14 +272,6 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <Link
-                  to="/about"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-2 rounded-lg text-white hover:bg-purple-600/20"
-                >
-                  <MdInfo className="inline mr-2" />
-                  About
-                </Link>
                 <button
                   onClick={() => {
                     toggleTheme()

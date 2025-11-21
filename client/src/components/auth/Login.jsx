@@ -2,8 +2,6 @@ import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { useNotification } from '../../pages/contexts/NotificationContext'
-import Logo from '../common/Logo'
-import { MdEmail, MdLock } from 'react-icons/md'
 import { FaSpinner } from 'react-icons/fa'
 
 const Login = () => {
@@ -16,7 +14,6 @@ const Login = () => {
     password: '',
   })
   const [errors, setErrors] = useState({})
-  const [showPassword, setShowPassword] = useState(false)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -76,128 +73,95 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 animate-fade-in">
-      <div className="max-w-md w-full space-y-8">
-        {/* Header */}
-        <div className="text-center animate-slide-down">
-          <div className="flex justify-center mb-4">
-            <Logo size="xl" showText={false} animated={true} />
-          </div>
-          <h2 className="text-4xl font-heading font-bold dark:text-dark-text light:text-light-text">
-            Welcome Back
-          </h2>
-          <p className="mt-2 dark:text-dark-muted light:text-light-muted">
-            Sign in to your account to continue
-          </p>
-        </div>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center relative overflow-hidden">
+      {/* Decorative Circles */}
+      <div className="absolute w-64 h-64 rounded-full bg-gradient-to-br from-pink-400 to-red-500 -top-10 -left-10 opacity-80 animate-pulse-slow"></div>
+      <div className="absolute w-40 h-40 rounded-full bg-yellow-400 top-0 left-40 opacity-90"></div>
+      <div className="absolute w-96 h-96 rounded-full bg-purple-400 -bottom-20 -right-20 opacity-80 animate-pulse-slow delay-700"></div>
+      <div className="absolute w-48 h-48 rounded-full bg-teal-400 bottom-0 right-60 opacity-90"></div>
 
-        {/* Form */}
-        <form
-          className="mt-8 space-y-6 card shadow-xl animate-slide-up"
-          onSubmit={handleSubmit}
-          noValidate
-        >
-          <div className="space-y-4">
-            {/* Email */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                Email Address
-              </label>
+      {/* Login Card */}
+      <div className="bg-white w-full max-w-md shadow-2xl rounded-sm z-10 overflow-hidden animate-scale-in">
+        <div className="p-10 pb-6">
+          <h2 className="text-2xl font-heading font-bold text-gray-700 tracking-widest mb-10 uppercase">
+            Login
+          </h2>
+
+          <form onSubmit={handleSubmit} noValidate>
+            <div className="space-y-8">
+              {/* Email */}
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none dark:text-dark-muted light:text-light-muted">
-                  <MdEmail size={20} />
-                </span>
+                <label
+                  htmlFor="email"
+                  className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1"
+                >
+                  Email
+                </label>
                 <input
                   id="email"
                   name="email"
                   type="email"
-                  autoComplete="email"
-                  placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleChange}
                   disabled={loading}
-                  className={`input pl-10 ${errors.email ? 'border-red-500 focus:ring-red-500' : ''}`}
+                  className={`w-full border-b border-gray-300 py-2 text-gray-700 focus:outline-none focus:border-purple-500 transition-colors bg-transparent ${errors.email ? 'border-red-500' : ''}`}
                 />
+                {errors.email && (
+                  <p className="absolute text-xs text-red-400 mt-1">{errors.email}</p>
+                )}
               </div>
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-400 animate-slide-down">{errors.email}</p>
-              )}
-            </div>
 
-            {/* Password */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                Password
-              </label>
+              {/* Password */}
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none dark:text-dark-muted light:text-light-muted">
-                  <MdLock size={20} />
-                </span>
+                <label
+                  htmlFor="password"
+                  className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1"
+                >
+                  Password
+                </label>
                 <input
                   id="password"
                   name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="current-password"
-                  placeholder="Enter your password"
+                  type="password"
                   value={formData.password}
                   onChange={handleChange}
                   disabled={loading}
-                  className={`input pl-10 pr-10 ${errors.password ? 'border-red-500 focus:ring-red-500' : ''}`}
+                  className={`w-full border-b border-gray-300 py-2 text-gray-700 focus:outline-none focus:border-purple-500 transition-colors bg-transparent ${errors.password ? 'border-red-500' : ''}`}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 px-3 flex items-center dark:text-dark-muted light:text-light-muted hover:dark:text-dark-text hover:light:text-light-text transition-colors"
-                  tabIndex={-1}
-                >
-                  {showPassword ? 'Hide' : 'Show'}
-                </button>
+                {errors.password && (
+                  <p className="absolute text-xs text-red-400 mt-1">{errors.password}</p>
+                )}
               </div>
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-400 animate-slide-down">{errors.password}</p>
-              )}
+
+              {/* Forgot Password */}
+              <div className="text-center pt-4">
+                <Link
+                  to="/forgot-password"
+                  className="text-xs font-bold text-gray-400 hover:text-gray-600 uppercase tracking-wide transition-colors"
+                >
+                  Forgot your password?
+                </Link>
+              </div>
             </div>
-          </div>
+          </form>
+        </div>
 
-          {/* Submit Button */}
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 px-6 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg font-semibold text-lg hover:from-purple-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg shadow-purple-500/30 animate-glow"
-            >
-              {loading ? (
-                <span className="flex items-center justify-center">
-                  <FaSpinner className="animate-spin mr-2" />
-                  Signing in...
-                </span>
-              ) : (
-                'Sign In'
-              )}
-            </button>
-          </div>
-
-          {/* Links */}
-          <div className="text-center space-y-2">
-            <p>
-              <Link
-                to="/forgot-password"
-              className="text-sm text-primary-400 hover:text-primary-300 font-medium transition-colors"
-              >
-                Forgot password?
-              </Link>
-            </p>
-          <p className="dark:text-dark-muted light:text-light-muted">
-              Don't have an account?{' '}
-              <Link
-                to="/register"
-              className="text-primary-400 hover:text-primary-300 font-medium transition-colors"
-              >
-                Register here
-              </Link>
-            </p>
-          </div>
-        </form>
+        {/* Footer Actions */}
+        <div className="flex h-16 mt-6">
+          <Link
+            to="/register"
+            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-500 font-bold text-sm uppercase tracking-wider flex items-center justify-center transition-colors"
+          >
+            Register
+          </Link>
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="flex-1 bg-[#2d3b55] hover:bg-[#1a2233] text-white font-bold text-sm uppercase tracking-wider flex items-center justify-center transition-colors disabled:opacity-70"
+          >
+            {loading ? <FaSpinner className="animate-spin" /> : 'Sign In'}
+          </button>
+        </div>
       </div>
     </div>
   )
