@@ -11,16 +11,22 @@ const socketIo = require('socket.io');
 // Initialize express app
 const app = express();
 const server = http.createServer(app);
+
+// Normalize client URL (remove trailing slash if present)
+const clientUrl = process.env.CLIENT_URL || "http://localhost:3000";
+const normalizedClientUrl = clientUrl.replace(/\/$/, "");
+const allowedOrigins = [clientUrl, normalizedClientUrl];
+
 const io = socketIo(server, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: allowedOrigins,
     methods: ["GET", "POST"]
   }
 });
 
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_URL || "http://localhost:3000",
+  origin: allowedOrigins,
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
@@ -32,8 +38,8 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/augcvs', 
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-.then(() => console.log('✅ Connected to MongoDB'))
-.catch(err => console.error('❌ MongoDB connection error:', err));
+  .then(() => console.log('✅ Connected to MongoDB'))
+  .catch(err => console.error('❌ MongoDB connection error:', err));
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
