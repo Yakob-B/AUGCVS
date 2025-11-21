@@ -47,7 +47,7 @@ const Footer = () => {
   ]
 
   return (
-    <footer className="relative mt-20 border-t border-gray-700/50 bg-gradient-to-b from-gray-900/50 to-black opacity-0 translate-y-4">
+    <footer className="relative mt-20 border-t dark:border-dark-border light:border-light-border dark:bg-gradient-to-b dark:from-dark-surface/80 dark:to-black/90 light:bg-light-surface/90 opacity-0 translate-y-4">
       {/* Decorative Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-purple-900/20 via-transparent to-purple-900/20 pointer-events-none" />
 
@@ -56,28 +56,28 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="space-y-4">
             <Logo size="medium" animated={false} />
-            <p className="text-white/70 text-sm leading-relaxed">
+            <p className="dark:text-dark-muted light:text-light-muted text-sm leading-relaxed">
               Ambo University Graduation Credential Verification System — secure, efficient, and reliable platform.
             </p>
             <div className="flex space-x-4">
               <a
                 href="#"
                 aria-label="Facebook"
-                className="w-10 h-10 bg-gray-800/50 border border-gray-700/50 rounded-lg flex items-center justify-center text-white/70 hover:text-purple-400 hover:border-purple-500/50 transition-all duration-300 hover:scale-110"
+                className="w-10 h-10 rounded-lg flex items-center justify-center dark:bg-dark-card/80 light:bg-light-card/80 dark:border-dark-border light:border-light-border dark:text-dark-muted light:text-light-muted hover:text-primary-400 hover:border-primary-500/50 transition-all duration-300 hover:scale-110"
               >
                 <MdFacebook size={20} />
               </a>
               <a
                 href="#"
                 aria-label="Twitter"
-                className="w-10 h-10 bg-gray-800/50 border border-gray-700/50 rounded-lg flex items-center justify-center text-white/70 hover:text-purple-400 hover:border-purple-500/50 transition-all duration-300 hover:scale-110"
+                className="w-10 h-10 rounded-lg flex items-center justify-center dark:bg-dark-card/80 light:bg-light-card/80 dark:border-dark-border light:border-light-border dark:text-dark-muted light:text-light-muted hover:text-primary-400 hover:border-primary-500/50 transition-all duration-300 hover:scale-110"
               >
                 <FaTwitter size={20} />
               </a>
               <a
                 href="#"
                 aria-label="LinkedIn"
-                className="w-10 h-10 bg-gray-800/50 border border-gray-700/50 rounded-lg flex items-center justify-center text-white/70 hover:text-purple-400 hover:border-purple-500/50 transition-all duration-300 hover:scale-110"
+                className="w-10 h-10 rounded-lg flex items-center justify-center dark:bg-dark-card/80 light:bg-light-card/80 dark:border-dark-border light:border-light-border dark:text-dark-muted light:text-light-muted hover:text-primary-400 hover:border-primary-500/50 transition-all duration-300 hover:scale-110"
               >
                 <FaLinkedin size={20} />
               </a>
@@ -86,13 +86,13 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-white font-semibold mb-4 text-lg">Quick Links</h3>
+            <h3 className="dark:text-dark-text light:text-light-text font-semibold mb-4 text-lg">Quick Links</h3>
             <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.path}>
                   <Link
                     to={link.path}
-                    className="text-white/70 hover:text-purple-400 transition-colors duration-200 flex items-center group"
+                    className="dark:text-dark-muted light:text-light-muted hover:text-primary-400 transition-colors duration-200 flex items-center group"
                   >
                     <span className="w-0 group-hover:w-2 h-0.5 bg-purple-400 mr-0 group-hover:mr-2 transition-all duration-200" />
                     {link.name}
@@ -104,13 +104,13 @@ const Footer = () => {
 
           {/* Resources */}
           <div>
-            <h3 className="text-white font-semibold mb-4 text-lg">Resources</h3>
+            <h3 className="dark:text-dark-text light:text-light-text font-semibold mb-4 text-lg">Resources</h3>
             <ul className="space-y-3">
               {resources.map((resource) => (
                 <li key={resource.path}>
                   <Link
                     to={resource.path}
-                    className="text-white/70 hover:text-purple-400 transition-colors duration-200 flex items-center group"
+                    className="dark:text-dark-muted light:text-light-muted hover:text-primary-400 transition-colors duration-200 flex items-center group"
                   >
                     <span className="w-0 group-hover:w-2 h-0.5 bg-purple-400 mr-0 group-hover:mr-2 transition-all duration-200" />
                     {resource.name}
@@ -122,28 +122,28 @@ const Footer = () => {
 
           {/* Contact Info */}
           <div>
-            <h3 className="text-white font-semibold mb-4 text-lg">Contact Us</h3>
+            <h3 className="dark:text-dark-text light:text-light-text font-semibold mb-4 text-lg">Contact Us</h3>
             <ul className="space-y-3">
-              <li className="flex items-start space-x-3 text-white/70">
+              <li className="flex items-start space-x-3 dark:text-dark-muted light:text-light-muted">
                 <MdLocationOn className="text-purple-400 mt-1 flex-shrink-0" size={20} />
                 <span className="text-sm">
                   Ambo University, Hachalu Hundessa Campus, Ambo, Ethiopia
                 </span>
               </li>
-              <li className="flex items-center space-x-3 text-white/70">
+              <li className="flex items-center space-x-3 dark:text-dark-muted light:text-light-muted">
                 <MdEmail className="text-purple-400 flex-shrink-0" size={20} />
                 <a
                   href="mailto:support@augcvs.edu.et"
-                  className="hover:text-purple-400 transition-colors"
+                  className="hover:text-primary-400 transition-colors"
                 >
                   support@augcvs.edu.et
                 </a>
               </li>
-              <li className="flex items-center space-x-3 text-white/70">
+              <li className="flex items-center space-x-3 dark:text-dark-muted light:text-light-muted">
                 <MdPhone className="text-purple-400 flex-shrink-0" size={20} />
                 <a
                   href="tel:+251112345678"
-                  className="hover:text-purple-400 transition-colors"
+                  className="hover:text-primary-400 transition-colors"
                 >
                   +251 11 234 5678
                 </a>
@@ -153,9 +153,9 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-700/50 pt-8 mt-8">
+        <div className="border-t dark:border-dark-border light:border-light-border pt-8 mt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="text-white/70 text-sm text-center md:text-left">
+            <div className="dark:text-dark-muted light:text-light-muted text-sm text-center md:text-left">
               <p>© {new Date().getFullYear()} Ambo University. All rights reserved.</p>
               <p className="mt-1">Graduation Credential Verification System</p>
             </div>

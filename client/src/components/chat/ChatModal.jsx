@@ -201,10 +201,10 @@ const ChatModal = ({ verificationId, onClose }) => {
 
   if (loading) {
     return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-gray-800 rounded-xl p-8 max-w-md w-full">
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="rounded-xl p-8 max-w-md w-full dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border shadow-2xl">
           <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
           </div>
         </div>
       </div>
@@ -212,15 +212,15 @@ const ChatModal = ({ verificationId, onClose }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gray-800/95 rounded-xl border border-gray-700/50 shadow-2xl w-full max-w-2xl h-[80vh] flex flex-col">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="rounded-xl border dark:border-dark-border light:border-light-border shadow-2xl w-full max-w-2xl h-[80vh] flex flex-col dark:bg-dark-card/95 light:bg-light-card">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-700/50">
+        <div className="flex items-center justify-between p-6 border-b dark:border-dark-border light:border-light-border">
           <div>
-            <h2 className="text-xl font-heading font-bold text-white">
+            <h2 className="text-xl font-heading font-bold dark:text-dark-text light:text-light-text">
               Chat - Verification #{chat?.verification?.requestNumber}
             </h2>
-            <p className="text-sm text-white/70 mt-1">
+            <p className="text-sm dark:text-dark-muted light:text-light-muted mt-1">
               {chat?.participants?.filter(p => p._id !== user._id).map(p => 
                 `${p.firstName} ${p.lastName} (${getParticipantRole(p)})`
               ).join(', ')}
@@ -228,7 +228,7 @@ const ChatModal = ({ verificationId, onClose }) => {
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-white/70 hover:text-white hover:bg-gray-700/50 rounded-lg transition-colors"
+            className="p-2 rounded-lg dark:text-dark-muted light:text-light-muted hover:dark:text-dark-text hover:light:text-light-text hover:dark:bg-dark-surface hover:light:bg-gray-100 transition-colors"
           >
             <MdClose size={24} />
           </button>
@@ -237,7 +237,7 @@ const ChatModal = ({ verificationId, onClose }) => {
         {/* Messages */}
         <div 
           ref={chatContainerRef}
-          className="flex-1 overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-gray-900/50 to-gray-800/50"
+          className="flex-1 overflow-y-auto p-6 space-y-4 dark:bg-gradient-to-b dark:from-dark-bg/40 dark:to-dark-card/60 light:bg-gradient-to-b light:from-light-bg/40 light:to-light-card/70"
         >
           {chat?.messages?.map((msg, index) => {
             const isMine = msg.sender._id === user._id
@@ -247,7 +247,7 @@ const ChatModal = ({ verificationId, onClose }) => {
             return (
               <div key={msg._id}>
                 {showDate && (
-                  <div className="text-center text-white/50 text-xs mb-4">
+                  <div className="text-center dark:text-dark-muted light:text-light-muted text-xs mb-4">
                     {formatDate(msg.createdAt)}
                   </div>
                 )}
@@ -264,12 +264,12 @@ const ChatModal = ({ verificationId, onClose }) => {
                     <div
                       className={`rounded-lg px-4 py-2 ${
                         isMine
-                          ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white'
-                          : 'bg-gray-700/50 text-white border border-gray-600/50'
+                          ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg shadow-primary-500/20'
+                          : 'dark:bg-dark-surface light:bg-light-surface dark:text-dark-text light:text-light-text border dark:border-dark-border light:border-light-border'
                       }`}
                     >
                       <p className="text-sm whitespace-pre-wrap break-words">{msg.message}</p>
-                      <p className={`text-xs mt-1 ${isMine ? 'text-white/70' : 'text-white/50'}`}>
+                      <p className={`text-xs mt-1 ${isMine ? 'text-white/80' : 'dark:text-dark-muted light:text-light-muted'}`}>
                         {formatTime(msg.createdAt)}
                       </p>
                     </div>
@@ -280,7 +280,7 @@ const ChatModal = ({ verificationId, onClose }) => {
           })}
           {/* Typing Indicator */}
           {Object.keys(typingUsers).length > 0 && (
-            <div className="flex items-center space-x-2 text-white/50 text-sm italic mb-4">
+            <div className="flex items-center space-x-2 text-sm italic mb-4 dark:text-dark-muted light:text-light-muted">
               <div className="flex space-x-1">
                 <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                 <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -295,7 +295,7 @@ const ChatModal = ({ verificationId, onClose }) => {
         </div>
 
         {/* Input */}
-        <form onSubmit={handleSendMessage} className="p-6 border-t border-gray-700/50">
+        <form onSubmit={handleSendMessage} className="p-6 border-t dark:border-dark-border light:border-light-border">
           <div className="flex space-x-3">
             <input
               type="text"
@@ -311,13 +311,13 @@ const ChatModal = ({ verificationId, onClose }) => {
                 }
               }}
               placeholder="Type your message... (Press Enter to send)"
-              className="flex-1 px-4 py-3 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+              className="input flex-1"
               disabled={sending}
             />
             <button
               type="submit"
               disabled={!message.trim() || sending}
-              className="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg shadow-purple-500/30"
+              className="btn-primary px-6 py-3 font-semibold disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {sending ? (
                 <FaSpinner className="animate-spin" size={20} />

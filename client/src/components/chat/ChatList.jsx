@@ -20,7 +20,6 @@ const ChatList = () => {
 
   const renderCountRef = useRef(0)
   renderCountRef.current += 1
-  console.log('ChatList render', renderCountRef.current, { isOpen, openChatId, chatsLength: chats.length })
 
   // ✅ Always declare hooks first (no conditional return before them)
 
@@ -153,23 +152,23 @@ const ChatList = () => {
 
   return (
     <>
-      <div className="fixed bottom-6 right-6 w-80 h-[600px] bg-gray-800/95 rounded-xl border border-gray-700/50 shadow-2xl flex flex-col z-50">
+      <div className="fixed bottom-6 right-6 w-80 h-[600px] rounded-xl border dark:border-dark-border light:border-light-border shadow-2xl flex flex-col z-50 dark:bg-dark-card/95 light:bg-light-card">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-700/50">
+        <div className="flex items-center justify-between p-4 border-b dark:border-dark-border light:border-light-border">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg flex items-center justify-center">
               <MdChat className="text-white" size={20} />
             </div>
             <div>
-              <h3 className="text-white font-semibold">Chats</h3>
+              <h3 className="dark:text-dark-text light:text-light-text font-semibold">Chats</h3>
               {totalUnread > 0 && (
-                <p className="text-xs text-purple-400">{totalUnread} unread {totalUnread === 1 ? 'message' : 'messages'}</p>
+                <p className="text-xs text-primary-400">{totalUnread} unread {totalUnread === 1 ? 'message' : 'messages'}</p>
               )}
             </div>
           </div>
           <button
             onClick={() => setIsOpen(false)}
-            className="p-2 text-white/70 hover:text-white hover:bg-gray-700/50 rounded-lg transition-colors"
+            className="p-2 rounded-lg dark:text-dark-muted light:text-light-muted hover:dark:text-dark-text hover:light:text-light-text hover:dark:bg-dark-surface hover:light:bg-gray-100 transition-colors"
           >
             <MdClose size={20} />
           </button>
@@ -182,8 +181,8 @@ const ChatList = () => {
               <FaSpinner className="animate-spin text-purple-400" size={24} />
             </div>
           ) : chats.length === 0 ? (
-            <div className="text-center py-12 text-white/70">
-              <MdVerifiedUser className="text-4xl mx-auto mb-4 opacity-50" />
+            <div className="text-center py-12 dark:text-dark-muted light:text-light-muted">
+              <MdVerifiedUser className="text-4xl mx-auto mb-4 opacity-50 text-primary-400" />
               <p>No chats yet</p>
             </div>
           ) : (
@@ -194,12 +193,12 @@ const ChatList = () => {
                   <button
                     key={chat._id}
                     onClick={() => handleChatClick(chat.verification._id)}
-                    className="w-full p-3 bg-gray-700/30 rounded-lg hover:bg-gray-700/50 transition-colors text-left border border-transparent hover:border-purple-500/30"
+                    className="w-full p-3 rounded-lg transition-colors text-left border dark:border-dark-border/60 light:border-light-border/80 dark:bg-dark-surface light:bg-light-surface hover:dark:bg-dark-card hover:light:bg-gray-100"
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-2">
-                          <p className="text-white font-semibold text-sm truncate">
+                          <p className="dark:text-dark-text light:text-light-text font-semibold text-sm truncate">
                             Verification #{chat.verification.requestNumber}
                           </p>
                           {chat.verification.status === 'pending' && (
@@ -208,7 +207,7 @@ const ChatList = () => {
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-white/70 mt-1">
+                        <p className="text-xs dark:text-dark-muted light:text-light-muted mt-1">
                           {chat.verification.graduate?.firstName} {chat.verification.graduate?.lastName}
                         </p>
                       </div>
@@ -218,11 +217,11 @@ const ChatList = () => {
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-white/60 truncate">{formatLastMessage(chat)}</p>
+                    <p className="text-xs dark:text-dark-muted light:text-light-muted truncate">{formatLastMessage(chat)}</p>
                     <div className="flex items-center justify-between mt-1">
-                      <p className="text-xs text-white/50">{formatTime(chat.lastMessage)}</p>
+                      <p className="text-xs dark:text-dark-muted light:text-light-muted">{formatTime(chat.lastMessage)}</p>
                       {chat.messages && chat.messages.length > 0 && (
-                        <span className="text-xs text-purple-400">
+                        <span className="text-xs text-primary-400">
                           {chat.messages.length} {chat.messages.length === 1 ? 'msg' : 'msgs'}
                         </span>
                       )}

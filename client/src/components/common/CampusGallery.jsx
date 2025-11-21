@@ -56,7 +56,7 @@ const CampusGallery = ({ images }) => {
         {images_list.map((image, index) => (
           <div
             key={index}
-            className="group relative overflow-hidden rounded-xl bg-gray-800/50 border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300 cursor-pointer transform hover:scale-105"
+            className="group relative overflow-hidden rounded-xl border dark:border-dark-border light:border-light-border dark:bg-dark-card light:bg-light-card hover:border-primary-500/50 transition-all duration-300 cursor-pointer transform hover:scale-105"
             onClick={() => openModal(index)}
           >
             {/* Image Container */}
@@ -66,11 +66,9 @@ const CampusGallery = ({ images }) => {
                 alt={image.alt}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 onError={(e) => {
-                  e.target.parentElement.innerHTML = `
-                    <div class="w-full h-full flex items-center justify-center bg-gray-700/50">
-                      <p class="text-white/50 text-sm">Image not found</p>
-                    </div>
-                  `
+                  e.currentTarget.onerror = null
+                  e.currentTarget.src = '/images/logo.png'
+                  e.currentTarget.classList.add('object-contain', 'p-6')
                 }}
               />
               
@@ -86,7 +84,7 @@ const CampusGallery = ({ images }) => {
 
               {/* Category Badge */}
               {image.category && (
-                <div className="absolute top-4 left-4 px-3 py-1 bg-purple-600/80 backdrop-blur-sm rounded-full text-white text-xs font-semibold">
+                <div className="absolute top-4 left-4 px-3 py-1 bg-primary-600/80 backdrop-blur-sm rounded-full text-white text-xs font-semibold">
                   {image.category}
                 </div>
               )}
@@ -95,7 +93,7 @@ const CampusGallery = ({ images }) => {
             {/* Title */}
             {image.title && (
               <div className="p-4">
-                <h3 className="text-white font-semibold group-hover:text-purple-300 transition-colors">
+                <h3 className="dark:text-dark-text light:text-light-text font-semibold group-hover:text-primary-300 transition-colors">
                   {image.title}
                 </h3>
               </div>
@@ -112,7 +110,7 @@ const CampusGallery = ({ images }) => {
         >
           <button
             onClick={closeModal}
-            className="absolute top-4 right-4 p-3 bg-gray-800/90 hover:bg-gray-700 rounded-full text-white transition-colors z-50"
+            className="absolute top-4 right-4 p-3 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors z-50"
             aria-label="Close"
           >
             <MdClose size={24} />
@@ -128,7 +126,7 @@ const CampusGallery = ({ images }) => {
                 e.stopPropagation()
                 prevImage()
               }}
-              className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-gray-800/90 hover:bg-gray-700 rounded-full text-white transition-all hover:scale-110 z-40"
+              className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 hover:bg-black/70 rounded-full text-white transition-all hover:scale-110 z-40"
               aria-label="Previous image"
             >
               <MdChevronLeft size={28} />
@@ -138,7 +136,7 @@ const CampusGallery = ({ images }) => {
                 e.stopPropagation()
                 nextImage()
               }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-gray-800/90 hover:bg-gray-700 rounded-full text-white transition-all hover:scale-110 z-40"
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 hover:bg-black/70 rounded-full text-white transition-all hover:scale-110 z-40"
               aria-label="Next image"
             >
               <MdChevronRight size={28} />

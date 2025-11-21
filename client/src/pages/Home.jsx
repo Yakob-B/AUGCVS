@@ -26,62 +26,58 @@ const Home = () => {
       title: 'Departments',
       value: stats.departments,
       icon: <MdAccountBalance className="text-3xl" />,
-      color: 'text-blue-400',
-      iconBg: 'text-purple-400',
-      border: 'border-purple-500',
+      accent: 'text-primary-400',
+      highlight: true,
     },
     {
       title: 'Schools',
       value: stats.schools,
       icon: <MdSchool className="text-3xl" />,
-      color: 'text-white',
-      iconBg: 'text-purple-400',
-      border: '',
+      accent: 'text-sky-400',
     },
     {
       title: 'Students',
       value: stats.students.toLocaleString(),
       icon: <MdPeople className="text-3xl" />,
-      color: 'text-blue-400',
-      iconBg: 'text-purple-400',
-      border: '',
+      accent: 'text-emerald-400',
     },
     {
       title: 'Faculty',
       value: stats.faculty,
       icon: <MdPerson className="text-3xl" />,
-      color: 'text-blue-400',
-      iconBg: 'text-purple-400',
-      border: '',
+      accent: 'text-amber-400',
     },
   ]
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in space-y-10">
       {/* Hero Campus Carousel */}
-      <div className="mb-12 h-[400px] md:h-[500px] rounded-xl overflow-hidden shadow-2xl border border-gray-700/50 animate-slide-down">
+      <div className="mb-12 h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-2xl border dark:border-dark-border light:border-light-border bg-transparent animate-slide-down">
         <CampusCarousel autoPlay={true} interval={6000} />
       </div>
 
       {/* Search Bar */}
       <div className="max-w-2xl mx-auto mb-8">
         <div className="relative">
-          <MdSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/50" size={20} />
+          <MdSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
           <input
             type="text"
             placeholder="Search departments..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="input pl-12"
           />
         </div>
       </div>
 
       {/* Main Heading */}
-      <div className="text-center mb-8">
-        <h1 className="text-4xl md:text-5xl font-heading font-bold text-white mb-4">
+      <div className="text-center mb-4">
+        <h1 className="text-4xl md:text-5xl font-heading font-bold dark:text-dark-text light:text-light-text mb-3">
           Hachalu Hundessa Campus Statistics
         </h1>
+        <p className="max-w-2xl mx-auto text-sm md:text-base dark:text-dark-muted light:text-light-muted">
+          At a glance view of departments, schools, students, and faculty at Hachalu Hundessa Campus.
+        </p>
       </div>
 
       {/* Statistics Cards */}
@@ -89,32 +85,37 @@ const Home = () => {
         {statCards.map((card, index) => (
           <div
             key={index}
-            className={`bg-gray-800/50 rounded-xl p-6 border-2 ${card.border} ${card.border ? 'border-purple-500' : 'border-transparent'} transition-all duration-300 hover:bg-gray-800/70`}
+            className={`card-hover border-2 ${card.highlight ? 'border-primary-500/60' : 'border-transparent'} flex flex-col justify-between`}
           >
-            <div className={`${card.iconBg} mb-4`}>
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-primary-500/10 text-primary-400">
               {card.icon}
+              </div>
+              <span className="text-xs uppercase tracking-wide dark:text-dark-muted light:text-light-muted">
+                {card.title}
+              </span>
             </div>
-            <div className={`text-3xl font-heading font-bold ${card.color} mb-2`}>
+            <div className={`text-3xl font-heading font-bold ${card.accent} mb-1`}>
               {card.value}
             </div>
-            <div className="text-white text-sm font-medium">
-              {card.title}
+            <div className="text-xs dark:text-dark-muted light:text-light-muted">
+              Total {card.title.toLowerCase()} on campus
             </div>
           </div>
         ))}
       </div>
 
       {/* Departments Overview Section */}
-      <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
+      <div className="card mt-4">
         <div className="flex items-center mb-4">
-          <MdAccountBalance className="text-white text-2xl mr-3" />
-          <h2 className="text-2xl font-heading font-bold text-white">
+          <MdAccountBalance className="dark:text-dark-text light:text-light-text text-2xl mr-3" />
+          <h2 className="text-2xl font-heading font-bold dark:text-dark-text light:text-light-text">
             Departments Overview
           </h2>
         </div>
         
         {/* Progress Bar */}
-        <div className="w-full bg-gray-700/50 rounded-full h-3 mb-4 overflow-hidden">
+        <div className="w-full dark:bg-dark-surface light:bg-light-surface rounded-full h-3 mb-4 overflow-hidden">
           <div 
             className="bg-purple-500 h-full rounded-full transition-all duration-500"
             style={{ width: `${(stats.departments / 20) * 100}%` }}
@@ -122,7 +123,7 @@ const Home = () => {
         </div>
         
         {/* Current Count */}
-        <div className="text-white">
+        <div className="dark:text-dark-text light:text-light-text">
           Current count: <span className="text-blue-400 font-bold">{stats.departments}</span> departments
         </div>
       </div>

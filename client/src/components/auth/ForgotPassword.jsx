@@ -63,13 +63,13 @@ const ForgotPassword = () => {
                 <MdEmail className="text-white text-4xl" />
               </div>
             </div>
-            <h2 className="text-4xl font-heading font-bold text-white">
+            <h2 className="text-4xl font-heading font-bold dark:text-dark-text light:text-light-text">
               Check Your Email
             </h2>
-            <p className="mt-4 text-white/70">
-              We've sent a password reset link to <strong className="text-white">{email}</strong>
+            <p className="mt-4 dark:text-dark-muted light:text-light-muted">
+              We've sent a password reset link to <strong className="dark:text-dark-text light:text-light-text">{email}</strong>
             </p>
-            <p className="mt-2 text-sm text-white/70">
+            <p className="mt-2 text-sm dark:text-dark-muted light:text-light-muted">
               Click the link in the email to reset your password. The link will expire in 10 minutes.
             </p>
             <div className="mt-6 space-y-3">
@@ -82,7 +82,7 @@ const ForgotPassword = () => {
                   setEmailSent(false)
                   setEmail('')
                 }}
-                className="w-full px-6 py-3 bg-gray-700/50 border border-gray-600/50 text-white rounded-lg hover:bg-gray-700/70 transition-colors"
+                className="w-full px-6 py-3 rounded-lg dark:bg-dark-card light:bg-light-card dark:text-dark-text light:text-light-text dark:border-dark-border light:border-light-border hover:dark:bg-dark-surface hover:light:bg-gray-100 transition-colors"
               >
                 Send to Different Email
               </button>
@@ -101,22 +101,26 @@ const ForgotPassword = () => {
           <div className="flex justify-center mb-4">
             <Logo size="xl" showText={false} animated={true} />
           </div>
-          <h2 className="text-4xl font-heading font-bold text-white">
+          <h2 className="text-4xl font-heading font-bold dark:text-dark-text light:text-light-text">
             Forgot Password?
           </h2>
-          <p className="mt-2 text-white/70">
+          <p className="mt-2 dark:text-dark-muted light:text-light-muted">
             Enter your email address and we'll send you a link to reset your password
           </p>
         </div>
 
         {/* Form */}
-        <form className="mt-8 space-y-6 bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 shadow-xl animate-slide-up" onSubmit={handleSubmit} noValidate>
+        <form
+          className="mt-8 space-y-6 card shadow-xl animate-slide-up"
+          onSubmit={handleSubmit}
+          noValidate
+        >
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
+            <label htmlFor="email" className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
               Email Address
             </label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-white/50">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none dark:text-dark-muted light:text-light-muted">
                 <MdEmail size={20} />
               </span>
               <input
@@ -128,7 +132,7 @@ const ForgotPassword = () => {
                 value={email}
                 onChange={handleChange}
                 disabled={loading}
-                className={`w-full px-4 py-3 pl-10 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 ${errors.email ? 'border-red-500 focus:ring-red-500' : ''}`}
+                className={`input pl-10 ${errors.email ? 'border-red-500 focus:ring-red-500' : ''}`}
               />
             </div>
             {errors.email && (
@@ -158,7 +162,7 @@ const ForgotPassword = () => {
           <div className="text-center">
             <Link
               to="/login"
-              className="text-purple-400 hover:text-purple-300 font-medium transition-colors inline-flex items-center"
+              className="text-primary-400 hover:text-primary-300 font-medium transition-colors inline-flex items-center"
             >
               <MdArrowBack className="mr-2" />
               Back to Login

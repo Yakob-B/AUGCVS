@@ -98,13 +98,13 @@ const RegistrarDashboard = () => {
   }
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in dark:text-dark-text light:text-light-text">
       {/* Header */}
       <div className="mb-8 animate-slide-down">
-        <h1 className="text-4xl font-heading font-bold text-white mb-2">
+        <h1 className="text-4xl font-heading font-bold dark:text-dark-text light:text-light-text mb-2">
           Registrar Dashboard
         </h1>
-        <p className="text-white/70">
+        <p className="dark:text-dark-muted light:text-light-muted">
           Welcome back, {user?.firstName} {user?.lastName}
         </p>
       </div>
@@ -114,7 +114,7 @@ const RegistrarDashboard = () => {
         {statCards.map((card, index) => (
           <div
             key={index}
-            className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300 hover:bg-gray-800/70 animate-slide-up"
+            className="card-hover border hover:border-primary-500/50 transition-all duration-300 animate-slide-up"
             style={{ animationDelay: `${index * 0.1}s` }}
           >
             <div className={`w-14 h-14 bg-gradient-to-br ${card.color} rounded-xl flex items-center justify-center text-white text-2xl mb-4`}>
@@ -123,28 +123,28 @@ const RegistrarDashboard = () => {
             <div className="text-3xl font-heading font-bold text-blue-400 mb-1">
               {card.value}
             </div>
-            <div className="text-white/70">{card.title}</div>
+            <div className="dark:text-dark-muted light:text-light-muted">{card.title}</div>
           </div>
         ))}
       </div>
 
       {/* Recent Verifications */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 shadow-lg animate-slide-up" style={{ animationDelay: '0.4s' }}>
+        <div className="lg:col-span-2 card shadow-lg animate-slide-up" style={{ animationDelay: '0.4s' }}>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-heading font-semibold text-white">
+            <h2 className="text-2xl font-heading font-semibold dark:text-dark-text light:text-light-text">
               Recent Verifications
             </h2>
             <Link
               to="/registrar/verifications"
-              className="text-purple-400 hover:text-purple-300 text-sm font-medium flex items-center"
+              className="text-primary-400 hover:text-primary-300 text-sm font-medium flex items-center"
             >
               View All
               <MdArrowForward className="ml-1" />
             </Link>
           </div>
           {recentVerifications.length === 0 ? (
-            <div className="text-center py-8 text-white/70">
+            <div className="text-center py-8 dark:text-dark-muted light:text-light-muted">
               No verification requests yet
             </div>
           ) : (
@@ -153,18 +153,18 @@ const RegistrarDashboard = () => {
                 <Link
                   key={verification._id}
                   to={`/registrar/verifications`}
-                  className="block p-4 bg-gray-700/50 rounded-lg hover:bg-gray-700/70 transition-colors group border border-gray-600/30"
+                  className="block p-4 rounded-lg dark:bg-dark-surface light:bg-light-surface hover:dark:bg-dark-card hover:light:bg-gray-100 transition-colors group border dark:border-dark-border light:border-light-border"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <div className="text-white font-semibold">
+                    <div className="dark:text-dark-text light:text-light-text font-semibold">
                       {verification.graduate?.firstName} {verification.graduate?.lastName}
                     </div>
                     {getStatusBadge(verification.status)}
                   </div>
-                  <div className="text-sm text-white/70">
+                  <div className="text-sm dark:text-dark-muted light:text-light-muted">
                     Request #{verification.requestNumber}
                   </div>
-                  <div className="text-xs text-white/70 mt-1">
+                  <div className="text-xs dark:text-dark-muted light:text-light-muted mt-1">
                     {new Date(verification.createdAt).toLocaleDateString()}
                   </div>
                 </Link>
@@ -173,24 +173,24 @@ const RegistrarDashboard = () => {
           )}
         </div>
 
-        <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 shadow-lg animate-slide-up" style={{ animationDelay: '0.5s' }}>
-          <h2 className="text-2xl font-heading font-semibold text-white mb-4">
+        <div className="card shadow-lg animate-slide-up" style={{ animationDelay: '0.5s' }}>
+          <h2 className="text-2xl font-heading font-semibold dark:text-dark-text light:text-light-text mb-4">
             Quick Actions
           </h2>
           <div className="space-y-3">
             <Link
               to="/registrar/verifications"
-              className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg hover:bg-gray-700/70 transition-colors group"
+              className="flex items-center justify-between p-4 rounded-lg dark:bg-dark-surface light:bg-light-surface hover:dark:bg-dark-card hover:light:bg-gray-100 transition-colors group"
             >
               <div className="flex items-center space-x-3">
-                <MdVerifiedUser className="text-purple-400 text-xl" />
-                <span className="text-white">Review Pending</span>
+                <MdVerifiedUser className="text-primary-400 text-xl" />
+                <span className="dark:text-dark-text light:text-light-text">Review Pending</span>
               </div>
-              <MdArrowForward className="text-white/50 group-hover:text-purple-400 transition-colors" />
+              <MdArrowForward className="dark:text-dark-muted light:text-light-muted group-hover:text-primary-400 transition-colors" />
             </Link>
-            <div className="p-4 bg-gray-700/50 rounded-lg">
-              <div className="text-white/70 text-sm mb-1">Priority</div>
-              <div className="text-white font-semibold">
+            <div className="p-4 rounded-lg dark:bg-dark-surface light:bg-light-surface">
+              <div className="dark:text-dark-muted light:text-light-muted text-sm mb-1">Priority</div>
+              <div className="dark:text-dark-text light:text-light-text font-semibold">
                 {stats.pending} Pending Review
               </div>
             </div>

@@ -76,11 +76,11 @@ const Users = () => {
   }
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in dark:text-dark-text light:text-light-text">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
         <div>
-          <h1 className="text-4xl font-heading font-bold text-white mb-2">User Management</h1>
-          <p className="text-white/70">Manage system users and access</p>
+          <h1 className="text-4xl font-heading font-bold dark:text-dark-text light:text-light-text mb-2">User Management</h1>
+          <p className="dark:text-dark-muted light:text-light-muted">Manage system users and access</p>
         </div>
         <button
           onClick={() => {
@@ -106,37 +106,37 @@ const Users = () => {
         />
       )}
 
-      <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 shadow-lg overflow-x-auto">
+      <div className="card shadow-lg overflow-x-auto">
         {users.length === 0 ? (
-          <div className="text-center py-12 text-white/70">
-            <MdPeople className="text-5xl mx-auto mb-4 opacity-50" />
+          <div className="text-center py-12 dark:text-dark-muted light:text-light-muted">
+            <MdPeople className="text-5xl mx-auto mb-4 opacity-50 text-primary-400" />
             <p>No users found</p>
           </div>
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-700/50">
-                <th className="text-left p-4 text-white font-semibold">Name</th>
-                <th className="text-left p-4 text-white font-semibold">Email</th>
-                <th className="text-left p-4 text-white font-semibold">Role</th>
-                <th className="text-left p-4 text-white font-semibold">Organization</th>
-                <th className="text-left p-4 text-white font-semibold">Actions</th>
+              <tr className="border-b dark:border-dark-border light:border-light-border">
+                <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Name</th>
+                <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Email</th>
+                <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Role</th>
+                <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Organization</th>
+                <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Actions</th>
               </tr>
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr key={user._id} className="border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors">
-                  <td className="p-4 text-white">
+                <tr key={user._id} className="border-b dark:border-dark-border light:border-light-border hover:dark:bg-dark-surface hover:light:bg-gray-50 transition-colors">
+                  <td className="p-4">
                     {user.firstName} {user.lastName}
                   </td>
-                  <td className="p-4 text-white/70">{user.email}</td>
+                  <td className="p-4 dark:text-dark-muted light:text-light-muted">{user.email}</td>
                   <td className="p-4">{getRoleBadge(user.role)}</td>
-                  <td className="p-4 text-white/70">{user.organization || '-'}</td>
+                  <td className="p-4 dark:text-dark-muted light:text-light-muted">{user.organization || '-'}</td>
                   <td className="p-4">
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => handleEdit(user)}
-                        className="p-2 text-purple-400 hover:bg-purple-500/20 rounded transition-colors"
+                        className="p-2 text-primary-400 hover:bg-primary-500/10 rounded transition-colors"
                         title="Edit"
                       >
                         <MdEdit />

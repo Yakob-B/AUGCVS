@@ -105,7 +105,7 @@ const ResetPassword = () => {
                 <MdCheckCircle className="text-white text-4xl" />
               </div>
             </div>
-            <h2 className="text-4xl font-heading font-bold dark:text-white light:text-light-text">
+            <h2 className="text-4xl font-heading font-bold dark:text-dark-text light:text-light-text">
               Password Reset!
             </h2>
             <p className="mt-4 dark:text-dark-muted light:text-light-muted">
@@ -136,7 +136,7 @@ const ResetPassword = () => {
               <MdSchool className="text-white text-4xl" />
             </div>
           </div>
-          <h2 className="text-4xl font-heading font-bold dark:text-white light:text-light-text">
+          <h2 className="text-4xl font-heading font-bold dark:text-dark-text light:text-light-text">
             Reset Password
           </h2>
           <p className="mt-2 dark:text-dark-muted light:text-light-muted">

@@ -35,7 +35,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, total, limit }) => 
 
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
-      <div className="text-sm text-white/70">
+      <div className="text-sm dark:text-dark-muted light:text-light-muted">
         Showing {startItem} to {endItem} of {total} results
       </div>
       
@@ -43,7 +43,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, total, limit }) => 
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="p-2 rounded-lg border border-gray-600/50 bg-gray-700/50 text-white hover:bg-gray-700/70 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="p-2 rounded-lg border dark:border-dark-border light:border-light-border dark:bg-dark-card light:bg-light-card dark:text-dark-text light:text-light-text hover:dark:bg-dark-surface hover:light:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <MdChevronLeft size={20} />
         </button>
@@ -55,7 +55,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, total, limit }) => 
             className={`px-4 py-2 rounded-lg border transition-all duration-300 ${
               page === currentPage
                 ? 'bg-gradient-to-r from-purple-600 to-purple-700 border-purple-500 text-white shadow-lg shadow-purple-500/30'
-                : 'border-gray-600/50 bg-gray-700/50 text-white hover:bg-gray-700/70'
+                : 'dark:border-dark-border light:border-light-border dark:bg-dark-card light:bg-light-card dark:text-dark-text light:text-light-text hover:dark:bg-dark-surface hover:light:bg-gray-100'
             }`}
           >
             {page}
@@ -65,7 +65,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, total, limit }) => 
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="p-2 rounded-lg border border-gray-600/50 bg-gray-700/50 text-white hover:bg-gray-700/70 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="p-2 rounded-lg border dark:border-dark-border light:border-light-border dark:bg-dark-card light:bg-light-card dark:text-dark-text light:text-light-text hover:dark:bg-dark-surface hover:light:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <MdChevronRight size={20} />
         </button>

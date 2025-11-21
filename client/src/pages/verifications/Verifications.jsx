@@ -189,11 +189,11 @@ const Verifications = () => {
   }
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in dark:text-dark-text light:text-light-text">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
         <div>
-          <h1 className="text-4xl font-heading font-bold text-white mb-2">Verification Requests</h1>
-          <p className="text-white/70">Manage and review verification requests</p>
+          <h1 className="text-4xl font-heading font-bold dark:text-dark-text light:text-light-text mb-2">Verification Requests</h1>
+          <p className="dark:text-dark-muted light:text-light-muted">Manage and review verification requests</p>
         </div>
         {user.role === 'external' && (
           <button
@@ -232,7 +232,7 @@ const Verifications = () => {
       )}
 
       {/* Filters */}
-      <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 shadow-lg mb-6">
+      <div className="card mb-6">
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setFilter('all')}
@@ -262,10 +262,10 @@ const Verifications = () => {
       </div>
 
       {/* Verifications List */}
-      <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 shadow-lg">
+      <div className="card">
         {verifications.length === 0 ? (
-          <div className="text-center py-12 text-white/70">
-            <MdVerifiedUser className="text-5xl mx-auto mb-4 opacity-50" />
+          <div className="text-center py-12 dark:text-dark-muted light:text-light-muted">
+            <MdVerifiedUser className="text-5xl mx-auto mb-4 opacity-50 text-primary-400" />
             <p>No verification requests found</p>
           </div>
         ) : (
@@ -274,17 +274,17 @@ const Verifications = () => {
               {verifications.map((verification) => (
               <div
                 key={verification._id}
-                className="p-6 bg-gray-700/50 rounded-lg hover:bg-gray-700/70 transition-colors border border-gray-600/30"
+                className="p-6 rounded-lg border dark:border-dark-border light:border-light-border dark:bg-dark-surface light:bg-light-surface hover:dark:bg-dark-card hover:light:bg-gray-50 transition-colors"
               >
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-lg font-semibold text-white">
+                      <h3 className="text-lg font-semibold dark:text-dark-text light:text-light-text">
                         {verification.graduate?.firstName} {verification.graduate?.lastName}
                       </h3>
                       {getStatusBadge(verification.status)}
                     </div>
-                    <div className="text-sm text-white/70 space-y-1">
+                    <div className="text-sm dark:text-dark-muted light:text-light-muted space-y-1">
                       <p>Request #: {verification.requestNumber}</p>
                       <p>Certificate #: {verification.certificateNumber}</p>
                       {verification.requester?.organization && (
@@ -308,7 +308,7 @@ const Verifications = () => {
                           console.error('Error marking chat as read:', error)
                         }
                       }}
-                      className="relative px-4 py-2 rounded-lg font-medium bg-gray-700/50 border border-gray-600/50 text-white hover:bg-gray-700/70 transition-all duration-300 flex items-center space-x-2 hover:border-purple-500/50"
+                      className="relative px-4 py-2 rounded-lg font-medium dark:bg-dark-card light:bg-light-card dark:text-dark-text light:text-light-text border dark:border-dark-border light:border-light-border hover:dark:bg-dark-surface hover:light:bg-gray-100 transition-all duration-300 flex items-center space-x-2"
                       title="Open Chat"
                     >
                       <MdChat size={18} />
@@ -322,11 +322,11 @@ const Verifications = () => {
                     <button
                       onClick={() => setSelectedVerification(verification._id)}
                       className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
-                        user.role === 'admin' || user.role === 'registrar' 
-                          ? (verification.status === 'pending' 
-                              ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 shadow-lg shadow-purple-500/30' 
-                              : 'bg-gray-700/50 border border-gray-600/50 text-white hover:bg-gray-700/70')
-                          : 'bg-gray-700/50 border border-gray-600/50 text-white hover:bg-gray-700/70'
+                        user.role === 'admin' || user.role === 'registrar'
+                          ? verification.status === 'pending'
+                            ? 'btn-primary text-center'
+                            : 'dark:bg-dark-card light:bg-light-card dark:text-dark-text light:text-light-text border dark:border-dark-border light:border-light-border hover:dark:bg-dark-surface hover:light:bg-gray-100'
+                          : 'dark:bg-dark-card light:bg-light-card dark:text-dark-text light:text-light-text border dark:border-dark-border light:border-light-border hover:dark:bg-dark-surface hover:light:bg-gray-100'
                       }`}
                     >
                       {user.role === 'admin' || user.role === 'registrar'

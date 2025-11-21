@@ -33,7 +33,7 @@ function App() {
           <AuthProvider>
             <SocketProvider>
               <NotificationProvider>
-                <div className="min-h-screen bg-gradient-to-b from-purple-900 via-purple-950 to-black">
+                <div className="min-h-screen transition-colors duration-300 dark:bg-gradient-to-b dark:from-dark-bg dark:via-black dark:to-black light:bg-light-bg light:text-light-text dark:text-dark-text">
                   <Navbar />
                   <main className="container mx-auto px-4 py-8 min-h-[calc(100vh-200px)]">
                     <EmailVerificationBanner />

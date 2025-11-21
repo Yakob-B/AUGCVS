@@ -58,7 +58,7 @@ const VerifyEmail = () => {
                 <FaSpinner className="text-white text-4xl animate-spin" />
               </div>
             </div>
-            <h2 className="text-4xl font-heading font-bold dark:text-white light:text-light-text">
+            <h2 className="text-4xl font-heading font-bold dark:text-dark-text light:text-light-text">
               Verifying Email...
             </h2>
             <p className="mt-2 dark:text-dark-muted light:text-light-muted">
@@ -80,7 +80,7 @@ const VerifyEmail = () => {
                 <MdCheckCircle className="text-white text-4xl" />
               </div>
             </div>
-            <h2 className="text-4xl font-heading font-bold dark:text-white light:text-light-text">
+            <h2 className="text-4xl font-heading font-bold dark:text-dark-text light:text-light-text">
               Email Verified!
             </h2>
             <p className="mt-4 dark:text-dark-muted light:text-light-muted">
@@ -113,7 +113,7 @@ const VerifyEmail = () => {
                 <MdError className="text-white text-4xl" />
               </div>
             </div>
-            <h2 className="text-4xl font-heading font-bold dark:text-white light:text-light-text">
+            <h2 className="text-4xl font-heading font-bold dark:text-dark-text light:text-light-text">
               Verification Failed
             </h2>
             <p className="mt-4 dark:text-dark-muted light:text-light-muted">
