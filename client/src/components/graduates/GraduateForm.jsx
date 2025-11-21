@@ -1,16 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNotification } from '../../pages/contexts/NotificationContext'
 import * as graduateService from '../../services/graduates'
-import { 
-  MdClose,
-  MdSchool,
-  MdPerson,
-  MdCalendarToday,
-  MdDescription,
-  MdUpload,
-  MdNumbers,
-  MdStar
-} from 'react-icons/md'
+import { MdClose, MdCloudUpload, MdDelete } from 'react-icons/md'
 import { FaSpinner } from 'react-icons/fa'
 
 const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
@@ -64,7 +55,7 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
       setFetching(true)
       const response = await graduateService.getGraduate(graduateId)
       const graduate = response.data
-      
+
       // Format dates for input fields
       const formatDate = (date) => {
         if (!date) return ''
@@ -252,7 +243,7 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
       submitData.append('gpa', parseFloat(formData.gpa))
       submitData.append('certificateNumber', formData.certificateNumber.trim())
       submitData.append('status', formData.status)
-      
+
       if (formData.certificateFile) {
         submitData.append('certificateFile', formData.certificateFile)
       }
@@ -271,10 +262,10 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
       }
       onClose()
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 
-                          error.response?.data?.errors?.[0]?.msg || 
-                          error.message || 
-                          'Failed to save graduate'
+      const errorMessage = error.response?.data?.message ||
+        error.response?.data?.errors?.[0]?.msg ||
+        error.message ||
+        'Failed to save graduate'
       showNotification('error', 'Save Failed', errorMessage)
     } finally {
       setLoading(false)
@@ -296,80 +287,73 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
   if (fetching) {
     return (
       <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border rounded-2xl shadow-2xl p-8">
+        <div className="bg-white rounded-2xl shadow-2xl p-8">
           <div className="flex items-center space-x-4">
-            <FaSpinner className="animate-spin text-primary-500 text-2xl" />
-            <p className="dark:text-white light:text-light-text">Loading graduate details...</p>
+            <FaSpinner className="animate-spin text-blue-600 text-2xl" />
+            <p className="text-gray-700">Loading graduate details...</p>
           </div>
         </div>
       </div>
     )
   }
 
+  // Shared Input Styles
+  const inputLabelClass = "block text-sm font-semibold text-gray-600 mb-2"
+  const inputClass = "block w-full px-4 py-3 rounded-lg bg-gray-50 border-transparent focus:border-blue-500 focus:bg-white focus:ring-0 transition-colors text-gray-700 placeholder-gray-400"
+  const errorClass = "mt-1 text-xs text-red-500"
+
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in overflow-y-auto">
-      <div className="dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border rounded-2xl shadow-2xl w-full max-w-4xl my-8 animate-scale-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-500 animate-fade-in overflow-y-auto">
+      <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col animate-scale-in">
+
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b dark:border-dark-border light:border-light-border">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center">
-              <MdSchool className="dark:text-white light:text-light-text text-2xl" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-heading font-bold dark:text-white light:text-light-text">
-                {graduateId ? 'Edit Graduate' : 'Add New Graduate'}
-              </h2>
-              <p className="text-sm dark:text-dark-muted light:text-light-muted">
-                {graduateId ? 'Update graduate information' : 'Create a new graduate record'}
-              </p>
-            </div>
+        <div className="p-8 pb-0 flex justify-between items-start">
+          <div>
+            <h2 className="text-3xl font-heading font-bold text-gray-800">
+              {graduateId ? 'Edit Graduate' : 'Registration Form'}
+            </h2>
+            <p className="text-gray-500 mt-1">
+              {graduateId ? 'Update the graduate\'s information below.' : 'Enter the graduate\'s details to create a new record.'}
+            </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 dark:text-dark-muted light:text-light-muted hover:dark:text-white light:text-light-text hover:dark:bg-dark-surface light:bg-light-surface rounded-lg transition-colors"
+            className="text-gray-400 hover:text-gray-600 transition-colors p-2"
           >
             <MdClose size={24} />
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
-          {/* Personal Information */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold dark:text-white light:text-light-text flex items-center">
-              <MdPerson className="mr-2 text-primary-500" />
-              Personal Information
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Form Content */}
+        <form onSubmit={handleSubmit} className="p-8 space-y-8 overflow-y-auto custom-scrollbar">
+
+          {/* Section: Personal Details */}
+          <div className="space-y-6">
+            <h3 className="text-lg font-bold text-gray-800 border-b pb-2">Personal Details</h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Student ID */}
               <div>
-                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                  Student ID <span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                  <MdNumbers className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
-                  <input
-                    type="text"
-                    name="studentId"
-                    value={formData.studentId}
-                    onChange={handleChange}
-                    disabled={loading || !!graduateId}
-                    className={`input pl-10 ${errors.studentId ? 'border-red-500' : ''} ${graduateId ? 'dark:bg-dark-surface light:bg-light-surface' : ''}`}
-                  />
-                </div>
-                {errors.studentId && <p className="mt-1 text-sm text-red-400">{errors.studentId}</p>}
+                <label className={inputLabelClass}>Student ID</label>
+                <input
+                  type="text"
+                  name="studentId"
+                  value={formData.studentId}
+                  onChange={handleChange}
+                  placeholder="e.g. UGR/1234/12"
+                  className={`${inputClass} ${errors.studentId ? 'border-red-500 bg-red-50' : ''}`}
+                />
+                {errors.studentId && <p className={errorClass}>{errors.studentId}</p>}
               </div>
 
               {/* Status */}
               <div>
-                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">Status</label>
+                <label className={inputLabelClass}>Status</label>
                 <select
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
-                  disabled={loading}
-                  className="input"
+                  className={inputClass}
                 >
                   <option value="active">Active</option>
                   <option value="revoked">Revoked</option>
@@ -377,347 +361,302 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* First Name */}
               <div>
-                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                  First Name <span className="text-red-400">*</span>
-                </label>
+                <label className={inputLabelClass}>First Name</label>
                 <input
                   type="text"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
-                  disabled={loading}
-                  className={`input ${errors.firstName ? 'border-red-500' : ''}`}
+                  className={`${inputClass} ${errors.firstName ? 'border-red-500 bg-red-50' : ''}`}
                 />
-                {errors.firstName && <p className="mt-1 text-sm text-red-400">{errors.firstName}</p>}
-              </div>
-
-              {/* Middle Name */}
-              <div>
-                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">Middle Name</label>
-                <input
-                  type="text"
-                  name="middleName"
-                  value={formData.middleName}
-                  onChange={handleChange}
-                  disabled={loading}
-                  className="input"
-                />
+                {errors.firstName && <p className={errorClass}>{errors.firstName}</p>}
               </div>
 
               {/* Last Name */}
               <div>
-                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                  Last Name <span className="text-red-400">*</span>
-                </label>
+                <label className={inputLabelClass}>Last Name</label>
                 <input
                   type="text"
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
-                  disabled={loading}
-                  className={`input ${errors.lastName ? 'border-red-500' : ''}`}
+                  className={`${inputClass} ${errors.lastName ? 'border-red-500 bg-red-50' : ''}`}
                 />
-                {errors.lastName && <p className="mt-1 text-sm text-red-400">{errors.lastName}</p>}
+                {errors.lastName && <p className={errorClass}>{errors.lastName}</p>}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Date of Birth */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Middle Name */}
               <div>
-                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                  Date of Birth <span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                  <MdCalendarToday className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
-                  <input
-                    type="date"
-                    name="dateOfBirth"
-                    value={formData.dateOfBirth}
-                    onChange={handleChange}
-                    disabled={loading}
-                    max={new Date().toISOString().split('T')[0]}
-                    className={`input pl-10 ${errors.dateOfBirth ? 'border-red-500' : ''}`}
-                  />
-                </div>
-                {errors.dateOfBirth && <p className="mt-1 text-sm text-red-400">{errors.dateOfBirth}</p>}
+                <label className={inputLabelClass}>Middle Name</label>
+                <input
+                  type="text"
+                  name="middleName"
+                  value={formData.middleName}
+                  onChange={handleChange}
+                  className={inputClass}
+                />
               </div>
 
-              {/* Gender */}
+              {/* Date of Birth */}
               <div>
-                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                  Gender <span className="text-red-400">*</span>
-                </label>
-                <select
-                  name="gender"
-                  value={formData.gender}
+                <label className={inputLabelClass}>Birthday</label>
+                <input
+                  type="date"
+                  name="dateOfBirth"
+                  value={formData.dateOfBirth}
                   onChange={handleChange}
-                  disabled={loading}
-                  className="input"
-                >
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
+                  max={new Date().toISOString().split('T')[0]}
+                  className={`${inputClass} ${errors.dateOfBirth ? 'border-red-500 bg-red-50' : ''}`}
+                />
+                {errors.dateOfBirth && <p className={errorClass}>{errors.dateOfBirth}</p>}
+              </div>
+            </div>
+
+            {/* Gender - Radio Buttons */}
+            <div>
+              <label className={inputLabelClass}>Gender</label>
+              <div className="flex items-center space-x-6 mt-2">
+                <label className="flex items-center cursor-pointer group">
+                  <div className={`w-5 h-5 rounded-full border flex items-center justify-center mr-2 transition-colors ${formData.gender === 'male' ? 'border-blue-500' : 'border-gray-300 group-hover:border-blue-400'}`}>
+                    {formData.gender === 'male' && <div className="w-3 h-3 rounded-full bg-blue-500" />}
+                  </div>
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="male"
+                    checked={formData.gender === 'male'}
+                    onChange={handleChange}
+                    className="hidden"
+                  />
+                  <span className="text-gray-700">Male</span>
+                </label>
+
+                <label className="flex items-center cursor-pointer group">
+                  <div className={`w-5 h-5 rounded-full border flex items-center justify-center mr-2 transition-colors ${formData.gender === 'female' ? 'border-pink-500' : 'border-gray-300 group-hover:border-pink-400'}`}>
+                    {formData.gender === 'female' && <div className="w-3 h-3 rounded-full bg-pink-500" />}
+                  </div>
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="female"
+                    checked={formData.gender === 'female'}
+                    onChange={handleChange}
+                    className="hidden"
+                  />
+                  <span className="text-gray-700">Female</span>
+                </label>
               </div>
             </div>
           </div>
 
-          {/* Academic Information */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold dark:text-white light:text-light-text flex items-center">
-              <MdSchool className="mr-2 text-primary-500" />
-              Academic Information
-            </h3>
+          {/* Section: Academic Information */}
+          <div className="space-y-6">
+            <h3 className="text-lg font-bold text-gray-800 border-b pb-2">Academic Information</h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Program */}
               <div>
-                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                  Program <span className="text-red-400">*</span>
-                </label>
+                <label className={inputLabelClass}>Program</label>
                 <input
                   type="text"
                   name="program"
                   value={formData.program}
                   onChange={handleChange}
-                  disabled={loading}
-                  className={`input ${errors.program ? 'border-red-500' : ''}`}
+                  className={`${inputClass} ${errors.program ? 'border-red-500 bg-red-50' : ''}`}
                 />
-                {errors.program && <p className="mt-1 text-sm text-red-400">{errors.program}</p>}
+                {errors.program && <p className={errorClass}>{errors.program}</p>}
               </div>
 
               {/* Department */}
               <div>
-                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                  Department <span className="text-red-400">*</span>
-                </label>
+                <label className={inputLabelClass}>Department</label>
                 <input
                   type="text"
                   name="department"
                   value={formData.department}
                   onChange={handleChange}
-                  disabled={loading}
-                  className={`input ${errors.department ? 'border-red-500' : ''}`}
+                  className={`${inputClass} ${errors.department ? 'border-red-500 bg-red-50' : ''}`}
                 />
-                {errors.department && <p className="mt-1 text-sm text-red-400">{errors.department}</p>}
+                {errors.department && <p className={errorClass}>{errors.department}</p>}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* College */}
               <div>
-                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                  College <span className="text-red-400">*</span>
-                </label>
+                <label className={inputLabelClass}>College</label>
                 <input
                   type="text"
                   name="college"
                   value={formData.college}
                   onChange={handleChange}
-                  disabled={loading}
-                  className={`input ${errors.college ? 'border-red-500' : ''}`}
+                  className={`${inputClass} ${errors.college ? 'border-red-500 bg-red-50' : ''}`}
                 />
-                {errors.college && <p className="mt-1 text-sm text-red-400">{errors.college}</p>}
+                {errors.college && <p className={errorClass}>{errors.college}</p>}
               </div>
 
               {/* Degree Type */}
               <div>
-                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                  Degree Type <span className="text-red-400">*</span>
-                </label>
+                <label className={inputLabelClass}>Degree Type</label>
                 <select
                   name="degreeType"
                   value={formData.degreeType}
                   onChange={handleChange}
-                  disabled={loading}
-                  className={`input ${errors.degreeType ? 'border-red-500' : ''}`}
+                  className={`${inputClass} ${errors.degreeType ? 'border-red-500 bg-red-50' : ''}`}
                 >
-                  <option value="">Select Degree Type</option>
+                  <option value="">Select Option</option>
                   {degreeTypes.map((type) => (
                     <option key={type} value={type}>{type}</option>
                   ))}
                 </select>
-                {errors.degreeType && <p className="mt-1 text-sm text-red-400">{errors.degreeType}</p>}
+                {errors.degreeType && <p className={errorClass}>{errors.degreeType}</p>}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Graduation Year */}
               <div>
-                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                  Graduation Year <span className="text-red-400">*</span>
-                </label>
+                <label className={inputLabelClass}>Graduation Year</label>
                 <select
                   name="graduationYear"
                   value={formData.graduationYear}
                   onChange={handleChange}
-                  disabled={loading}
-                  className={`input ${errors.graduationYear ? 'border-red-500' : ''}`}
+                  className={`${inputClass} ${errors.graduationYear ? 'border-red-500 bg-red-50' : ''}`}
                 >
                   {years.map((year) => (
                     <option key={year} value={year}>{year}</option>
                   ))}
                 </select>
-                {errors.graduationYear && <p className="mt-1 text-sm text-red-400">{errors.graduationYear}</p>}
               </div>
 
               {/* Graduation Date */}
               <div>
-                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                  Graduation Date <span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                  <MdCalendarToday className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
-                  <input
-                    type="date"
-                    name="graduationDate"
-                    value={formData.graduationDate}
-                    onChange={handleChange}
-                    disabled={loading}
-                    className={`input pl-10 ${errors.graduationDate ? 'border-red-500' : ''}`}
-                  />
-                </div>
-                {errors.graduationDate && <p className="mt-1 text-sm text-red-400">{errors.graduationDate}</p>}
+                <label className={inputLabelClass}>Graduation Date</label>
+                <input
+                  type="date"
+                  name="graduationDate"
+                  value={formData.graduationDate}
+                  onChange={handleChange}
+                  className={`${inputClass} ${errors.graduationDate ? 'border-red-500 bg-red-50' : ''}`}
+                />
+                {errors.graduationDate && <p className={errorClass}>{errors.graduationDate}</p>}
               </div>
 
               {/* GPA */}
               <div>
-                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                  GPA <span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                  <MdStar className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    max="4.0"
-                    name="gpa"
-                    value={formData.gpa}
-                    onChange={handleChange}
-                    disabled={loading}
-                    placeholder="0.00 - 4.00"
-                    className={`input pl-10 ${errors.gpa ? 'border-red-500' : ''}`}
-                  />
-                </div>
-                {errors.gpa && <p className="mt-1 text-sm text-red-400">{errors.gpa}</p>}
+                <label className={inputLabelClass}>GPA</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="4.0"
+                  name="gpa"
+                  value={formData.gpa}
+                  onChange={handleChange}
+                  placeholder="0.00"
+                  className={`${inputClass} ${errors.gpa ? 'border-red-500 bg-red-50' : ''}`}
+                />
+                {errors.gpa && <p className={errorClass}>{errors.gpa}</p>}
               </div>
             </div>
           </div>
 
-          {/* Certificate Information */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold dark:text-white light:text-light-text flex items-center">
-              <MdDescription className="mr-2 text-primary-500" />
-              Certificate Information
-            </h3>
+          {/* Section: Certificate */}
+          <div className="space-y-6">
+            <h3 className="text-lg font-bold text-gray-800 border-b pb-2">Certificate Details</h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Certificate Number */}
               <div>
-                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                  Certificate Number <span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                  <MdNumbers className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
-                  <input
-                    type="text"
-                    name="certificateNumber"
-                    value={formData.certificateNumber}
-                    onChange={handleChange}
-                    disabled={loading}
-                    className={`input pl-10 ${errors.certificateNumber ? 'border-red-500' : ''}`}
-                  />
-                </div>
-                {errors.certificateNumber && <p className="mt-1 text-sm text-red-400">{errors.certificateNumber}</p>}
+                <label className={inputLabelClass}>Certificate Number</label>
+                <input
+                  type="text"
+                  name="certificateNumber"
+                  value={formData.certificateNumber}
+                  onChange={handleChange}
+                  className={`${inputClass} ${errors.certificateNumber ? 'border-red-500 bg-red-50' : ''}`}
+                />
+                {errors.certificateNumber && <p className={errorClass}>{errors.certificateNumber}</p>}
               </div>
 
-              {/* Certificate File */}
+              {/* File Upload */}
               <div>
-                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                  Certificate File {!graduateId && <span className="text-red-400">*</span>}
-                </label>
+                <label className={inputLabelClass}>Certificate File</label>
                 {!formData.certificateFile ? (
-                  <div className="border-2 border-dashed dark:border-dark-border light:border-light-border rounded-lg p-4 text-center hover:border-primary-500/50 transition-colors">
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 hover:bg-blue-50 transition-all cursor-pointer">
                     <input
                       type="file"
                       id="certificateFile"
                       accept=".pdf,.jpg,.jpeg,.png"
                       onChange={handleFileChange}
-                      disabled={loading}
                       className="hidden"
                     />
-                    <label
-                      htmlFor="certificateFile"
-                      className="cursor-pointer flex flex-col items-center"
-                    >
-                      <MdUpload className="text-primary-500 text-3xl mb-2" />
-                      <p className="dark:text-dark-text light:text-light-text text-sm">Click to upload</p>
-                      <p className="text-xs dark:text-dark-muted light:text-light-muted">PDF, JPG, JPEG, PNG (Max 5MB)</p>
+                    <label htmlFor="certificateFile" className="cursor-pointer">
+                      <MdCloudUpload className="mx-auto text-4xl text-gray-400 mb-2" />
+                      <p className="text-sm text-gray-600 font-medium">Click to upload certificate</p>
+                      <p className="text-xs text-gray-400 mt-1">PDF, JPG, PNG (Max 5MB)</p>
                     </label>
                   </div>
                 ) : (
-                  <div className="border dark:border-dark-border light:border-light-border rounded-lg p-4 dark:bg-dark-surface light:bg-light-surface">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3 flex-1">
-                        {filePreview ? (
-                          <img src={filePreview} alt="Preview" className="w-12 h-12 object-cover rounded" />
-                        ) : (
-                          <MdDescription className="text-primary-500 text-2xl" />
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <p className="dark:text-dark-text light:text-light-text text-sm truncate">{formData.certificateFile.name}</p>
-                          <p className="text-xs dark:text-dark-muted light:text-light-muted">
-                            {(formData.certificateFile.size / 1024 / 1024).toFixed(2)} MB
-                          </p>
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="flex items-center space-x-3 overflow-hidden">
+                      {filePreview ? (
+                        <img src={filePreview} alt="Preview" className="w-10 h-10 object-cover rounded" />
+                      ) : (
+                        <div className="w-10 h-10 bg-blue-100 rounded flex items-center justify-center text-blue-600 font-bold">
+                          PDF
                         </div>
+                      )}
+                      <div className="truncate">
+                        <p className="text-sm font-medium text-gray-700 truncate">{formData.certificateFile.name}</p>
+                        <p className="text-xs text-gray-500">{(formData.certificateFile.size / 1024 / 1024).toFixed(2)} MB</p>
                       </div>
-                      <button
-                        type="button"
-                        onClick={removeFile}
-                        className="p-2 dark:text-dark-muted light:text-light-muted hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
-                      >
-                        <MdClose size={20} />
-                      </button>
                     </div>
+                    <button
+                      type="button"
+                      onClick={removeFile}
+                      className="text-red-400 hover:text-red-600 p-2"
+                    >
+                      <MdDelete size={20} />
+                    </button>
                   </div>
                 )}
-                {errors.certificateFile && <p className="mt-1 text-sm text-red-400">{errors.certificateFile}</p>}
-                {graduateId && (
-                  <p className="mt-1 text-xs dark:text-dark-muted light:text-light-muted">Leave empty to keep existing certificate</p>
-                )}
+                {errors.certificateFile && <p className={errorClass}>{errors.certificateFile}</p>}
               </div>
             </div>
           </div>
 
-          {/* Submit Buttons */}
-          <div className="flex gap-3 pt-4 border-t dark:border-dark-border light:border-light-border">
+          {/* Submit Button */}
+          <div className="pt-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-lg transform transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center text-lg"
+            >
+              {loading ? (
+                <>
+                  <FaSpinner className="animate-spin mr-2" />
+                  Processing...
+                </>
+              ) : (
+                'Submit'
+              )}
+            </button>
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="btn-secondary flex-1"
+              className="w-full mt-3 py-2 text-gray-500 hover:text-gray-700 font-medium text-sm transition-colors"
             >
               Cancel
             </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <span className="flex items-center justify-center">
-                  <FaSpinner className="animate-spin mr-2" />
-                  {graduateId ? 'Updating...' : 'Creating...'}
-                </span>
-              ) : (
-                graduateId ? 'Update Graduate' : 'Create Graduate'
-              )}
-            </button>
           </div>
+
         </form>
       </div>
     </div>
