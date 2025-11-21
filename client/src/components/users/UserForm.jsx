@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNotification } from '../../pages/contexts/NotificationContext'
 import * as userService from '../../services/users'
-import { 
-  MdClose,
-  MdPerson,
-  MdEmail,
-  MdLock,
-  MdBusiness,
-  MdAdminPanelSettings
-} from 'react-icons/md'
+import { MdClose } from 'react-icons/md'
 import { FaSpinner } from 'react-icons/fa'
 
 const UserForm = ({ userId, onClose, onSuccess }) => {
@@ -159,10 +152,10 @@ const UserForm = ({ userId, onClose, onSuccess }) => {
       }
       onClose()
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 
-                          error.response?.data?.errors?.[0]?.msg || 
-                          error.message || 
-                          'Failed to save user'
+      const errorMessage = error.response?.data?.message ||
+        error.response?.data?.errors?.[0]?.msg ||
+        error.message ||
+        'Failed to save user'
       showNotification('error', 'Save Failed', errorMessage)
     } finally {
       setLoading(false)
@@ -172,232 +165,213 @@ const UserForm = ({ userId, onClose, onSuccess }) => {
   if (fetching) {
     return (
       <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border rounded-2xl shadow-2xl p-8">
+        <div className="bg-white rounded-2xl shadow-2xl p-8">
           <div className="flex items-center space-x-4">
-            <FaSpinner className="animate-spin text-primary-500 text-2xl" />
-            <p className="dark:text-white light:text-light-text">Loading user details...</p>
+            <FaSpinner className="animate-spin text-blue-600 text-2xl" />
+            <p className="text-gray-700">Loading user details...</p>
           </div>
         </div>
       </div>
     )
   }
 
+  // Shared Input Styles
+  const inputLabelClass = "block text-sm font-semibold text-gray-600 mb-2"
+  const inputClass = "block w-full px-4 py-3 rounded-lg bg-gray-50 border-transparent focus:border-blue-500 focus:bg-white focus:ring-0 transition-colors text-gray-700 placeholder-gray-400"
+  const errorClass = "mt-1 text-xs text-red-500"
+
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in overflow-y-auto">
-      <div className="dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border rounded-2xl shadow-2xl w-full max-w-2xl my-8 animate-scale-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-500 animate-fade-in overflow-y-auto">
+      <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col animate-scale-in">
+
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b dark:border-dark-border light:border-light-border">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center">
-              <MdPerson className="dark:text-white light:text-light-text text-2xl" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-heading font-bold dark:text-white light:text-light-text">
-                {userId ? 'Edit User' : 'Add New User'}
-              </h2>
-              <p className="text-sm dark:text-dark-muted light:text-light-muted">
-                {userId ? 'Update user information' : 'Create a new user account'}
-              </p>
-            </div>
+        <div className="p-8 pb-0 flex justify-between items-start">
+          <div>
+            <h2 className="text-3xl font-heading font-bold text-gray-800">
+              {userId ? 'Edit User' : 'User Registration'}
+            </h2>
+            <p className="text-gray-500 mt-1">
+              {userId ? 'Update user account details.' : 'Create a new user account.'}
+            </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 dark:text-dark-muted light:text-light-muted hover:dark:text-white light:text-light-text hover:dark:bg-dark-surface light:bg-light-surface rounded-lg transition-colors"
+            className="text-gray-400 hover:text-gray-600 transition-colors p-2"
           >
             <MdClose size={24} />
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+        {/* Form Content */}
+        <form onSubmit={handleSubmit} className="p-8 space-y-8 overflow-y-auto custom-scrollbar">
+
           {/* Personal Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* First Name */}
-            <div>
-              <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                First Name <span className="text-red-400">*</span>
-              </label>
-              <div className="relative">
-                <MdPerson className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
+          <div className="space-y-6">
+            <h3 className="text-lg font-bold text-gray-800 border-b pb-2">Personal Details</h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* First Name */}
+              <div>
+                <label className={inputLabelClass}>First Name</label>
                 <input
                   type="text"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
-                  disabled={loading}
-                  className={`input pl-10 ${errors.firstName ? 'border-red-500' : ''}`}
+                  className={`${inputClass} ${errors.firstName ? 'border-red-500 bg-red-50' : ''}`}
                 />
+                {errors.firstName && <p className={errorClass}>{errors.firstName}</p>}
               </div>
-              {errors.firstName && <p className="mt-1 text-sm text-red-400">{errors.firstName}</p>}
-            </div>
 
-            {/* Last Name */}
-            <div>
-              <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                Last Name <span className="text-red-400">*</span>
-              </label>
-              <div className="relative">
-                <MdPerson className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
+              {/* Last Name */}
+              <div>
+                <label className={inputLabelClass}>Last Name</label>
                 <input
                   type="text"
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
-                  disabled={loading}
-                  className={`input pl-10 ${errors.lastName ? 'border-red-500' : ''}`}
+                  className={`${inputClass} ${errors.lastName ? 'border-red-500 bg-red-50' : ''}`}
                 />
+                {errors.lastName && <p className={errorClass}>{errors.lastName}</p>}
               </div>
-              {errors.lastName && <p className="mt-1 text-sm text-red-400">{errors.lastName}</p>}
             </div>
-          </div>
 
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-              Email <span className="text-red-400">*</span>
-            </label>
-            <div className="relative">
-              <MdEmail className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
+            {/* Email */}
+            <div>
+              <label className={inputLabelClass}>Email Address</label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                disabled={loading}
-                className={`input pl-10 ${errors.email ? 'border-red-500' : ''}`}
+                className={`${inputClass} ${errors.email ? 'border-red-500 bg-red-50' : ''}`}
               />
-            </div>
-            {errors.email && <p className="mt-1 text-sm text-red-400">{errors.email}</p>}
-          </div>
-
-          {/* Password Fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Password */}
-            <div>
-              <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                Password {!userId && <span className="text-red-400">*</span>}
-                {userId && <span className="dark:text-dark-muted light:text-light-muted text-xs">(Leave empty to keep current)</span>}
-              </label>
-              <div className="relative">
-                <MdLock className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  disabled={loading}
-                  placeholder={userId ? 'Enter new password' : 'Enter password'}
-                  className={`input pl-10 pr-10 ${errors.password ? 'border-red-500' : ''}`}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted hover:dark:text-dark-text light:text-light-text"
-                >
-                  {showPassword ? 'Hide' : 'Show'}
-                </button>
-              </div>
-              {errors.password && <p className="mt-1 text-sm text-red-400">{errors.password}</p>}
-            </div>
-
-            {/* Confirm Password */}
-            <div>
-              <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                Confirm Password {!userId && <span className="text-red-400">*</span>}
-              </label>
-              <div className="relative">
-                <MdLock className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
-                <input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  disabled={loading}
-                  placeholder="Confirm password"
-                  className={`input pl-10 pr-10 ${errors.confirmPassword ? 'border-red-500' : ''}`}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted hover:dark:text-dark-text light:text-light-text"
-                >
-                  {showConfirmPassword ? 'Hide' : 'Show'}
-                </button>
-              </div>
-              {errors.confirmPassword && <p className="mt-1 text-sm text-red-400">{errors.confirmPassword}</p>}
+              {errors.email && <p className={errorClass}>{errors.email}</p>}
             </div>
           </div>
 
-          {/* Role and Organization */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Role */}
-            <div>
-              <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                Role <span className="text-red-400">*</span>
-              </label>
-              <div className="relative">
-                <MdAdminPanelSettings className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
+          {/* Security */}
+          <div className="space-y-6">
+            <h3 className="text-lg font-bold text-gray-800 border-b pb-2">Security</h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Password */}
+              <div>
+                <label className={inputLabelClass}>
+                  Password {!userId && <span className="text-red-500">*</span>}
+                  {userId && <span className="text-gray-400 font-normal ml-1">(Optional)</span>}
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder={userId ? 'New password' : 'Enter password'}
+                    className={`${inputClass} pr-16 ${errors.password ? 'border-red-500 bg-red-50' : ''}`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs font-bold text-blue-600 hover:text-blue-800 uppercase tracking-wider"
+                  >
+                    {showPassword ? 'Hide' : 'Show'}
+                  </button>
+                </div>
+                {errors.password && <p className={errorClass}>{errors.password}</p>}
+              </div>
+
+              {/* Confirm Password */}
+              <div>
+                <label className={inputLabelClass}>
+                  Confirm Password {!userId && <span className="text-red-500">*</span>}
+                </label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="Confirm password"
+                    className={`${inputClass} pr-16 ${errors.confirmPassword ? 'border-red-500 bg-red-50' : ''}`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs font-bold text-blue-600 hover:text-blue-800 uppercase tracking-wider"
+                  >
+                    {showConfirmPassword ? 'Hide' : 'Show'}
+                  </button>
+                </div>
+                {errors.confirmPassword && <p className={errorClass}>{errors.confirmPassword}</p>}
+              </div>
+            </div>
+          </div>
+
+          {/* Role & Organization */}
+          <div className="space-y-6">
+            <h3 className="text-lg font-bold text-gray-800 border-b pb-2">Role & Permissions</h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Role */}
+              <div>
+                <label className={inputLabelClass}>User Role</label>
                 <select
                   name="role"
                   value={formData.role}
                   onChange={handleChange}
-                  disabled={loading}
-                  className="input pl-10"
+                  className={inputClass}
                 >
                   <option value="admin">Admin</option>
                   <option value="registrar">Registrar</option>
                   <option value="external">External User</option>
                 </select>
               </div>
-            </div>
 
-            {/* Organization (only for external) */}
-            {formData.role === 'external' && (
-              <div>
-                <label className="block text-sm font-medium dark:text-dark-text light:text-light-text mb-2">
-                  Organization <span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                  <MdBusiness className="absolute left-3 top-1/2 transform -translate-y-1/2 dark:text-dark-muted light:text-light-muted" size={20} />
+              {/* Organization (Conditional) */}
+              {formData.role === 'external' && (
+                <div>
+                  <label className={inputLabelClass}>Organization</label>
                   <input
                     type="text"
                     name="organization"
                     value={formData.organization}
                     onChange={handleChange}
-                    disabled={loading}
-                    className={`input pl-10 ${errors.organization ? 'border-red-500' : ''}`}
+                    className={`${inputClass} ${errors.organization ? 'border-red-500 bg-red-50' : ''}`}
                   />
+                  {errors.organization && <p className={errorClass}>{errors.organization}</p>}
                 </div>
-                {errors.organization && <p className="mt-1 text-sm text-red-400">{errors.organization}</p>}
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
-          {/* Submit Buttons */}
-          <div className="flex gap-3 pt-4 border-t dark:border-dark-border light:border-light-border">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={loading}
-              className="btn-secondary flex-1"
-            >
-              Cancel
-            </button>
+          {/* Submit Button */}
+          <div className="pt-4">
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-lg transform transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center text-lg"
             >
               {loading ? (
-                <span className="flex items-center justify-center">
+                <>
                   <FaSpinner className="animate-spin mr-2" />
-                  {userId ? 'Updating...' : 'Creating...'}
-                </span>
+                  Processing...
+                </>
               ) : (
                 userId ? 'Update User' : 'Create User'
               )}
             </button>
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={loading}
+              className="w-full mt-3 py-2 text-gray-500 hover:text-gray-700 font-medium text-sm transition-colors"
+            >
+              Cancel
+            </button>
           </div>
+
         </form>
       </div>
     </div>
