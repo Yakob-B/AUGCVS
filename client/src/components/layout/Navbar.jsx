@@ -207,7 +207,8 @@ const Navbar = () => {
               className={`block px-4 py-2 rounded-lg ${isActive('/about') ? 'bg-purple-600 text-white' : 'text-white hover:bg-purple-600/20'
                 }`}
             >
-              Schools
+              <MdInfo className="inline mr-2" />
+              About
             </Link>
 
             {isAuthenticated ? (
