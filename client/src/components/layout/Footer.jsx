@@ -41,9 +41,9 @@ const Footer = () => {
 
   const resources = [
     { name: 'Documentation', path: '/about' },
-    { name: 'Support', path: '/about' },
-    { name: 'Privacy Policy', path: '/about' },
-    { name: 'Terms of Service', path: '/about' }
+    { name: 'Support', path: '/support' },
+    { name: 'Privacy Policy', path: '/privacy-policy' },
+    { name: 'Terms of Service', path: '/terms-of-service' }
   ]
 
   return (

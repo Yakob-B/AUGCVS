@@ -25,6 +25,9 @@ import Verifications from './pages/verifications/Verifications'
 import NotificationToast from './components/common/NotificationToast'
 import EmailVerificationBanner from './components/common/EmailVerificationBanner'
 import CreateUser from './pages/superadmin/CreateUser'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import TermsOfService from './pages/TermsOfService'
+import Support from './pages/Support'
 
 function App() {
   return (
@@ -46,6 +49,9 @@ function App() {
                       <Route path="/forgot-password" element={<ForgotPassword />} />
                       <Route path="/reset-password/:token" element={<ResetPassword />} />
                       <Route path="/verify-email/:token" element={<VerifyEmail />} />
+                      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                      <Route path="/terms-of-service" element={<TermsOfService />} />
+                      <Route path="/support" element={<Support />} />
 
                       {/* Protected Routes */}
                       <Route
