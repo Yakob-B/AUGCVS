@@ -56,10 +56,18 @@ const Login = () => {
 
     setLoading(true)
     try {
-      await login(formData.email, formData.password)
+      const user = await login(formData.email, formData.password)
       showNotification('success', 'Login successful!', 'Welcome back!')
-      const user = JSON.parse(localStorage.getItem('user') || '{}')
-      const dashboardPath = user.role === 'admin' ? '/admin' : user.role === 'registrar' ? '/registrar' : '/external'
+
+      let dashboardPath = '/external'
+      if (user.role === 'superadmin') {
+        dashboardPath = '/dashboard/superadmin/create-user'
+      } else if (user.role === 'admin') {
+        dashboardPath = '/admin'
+      } else if (user.role === 'registrar') {
+        dashboardPath = '/registrar'
+      }
+
       navigate(dashboardPath)
     } catch (err) {
       showNotification(

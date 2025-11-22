@@ -7,9 +7,10 @@ const {
     getMe,
     forgotPassword,
     resetPassword,
-    resendVerification
+    resendVerification,
+    createInternalUser
 } = require('../controllers/auth.controller');
-const { protect } = require('../middleware/auth.middleware');
+const { protect, requireSuperAdmin } = require('../middleware/auth.middleware');
 
 const router = express.Router();
 
@@ -61,4 +62,19 @@ router.post('/resend-verification', protect, resendVerification);
 // Get current user route
 router.get('/me', protect, getMe);
 
-module.exports = router; 
+// Superadmin: Create internal user
+router.post(
+    '/superadmin/create-user',
+    [
+        protect,
+        requireSuperAdmin,
+        check('firstName', 'First name is required').not().isEmpty(),
+        check('lastName', 'Last name is required').not().isEmpty(),
+        check('email', 'Please include a valid email').isEmail(),
+        check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 }),
+        check('role', 'Role is required').isIn(['admin', 'registrar'])
+    ],
+    createInternalUser
+);
+
+module.exports = router;

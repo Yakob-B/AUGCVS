@@ -203,40 +203,22 @@ const Register = () => {
             )}
           </div>
 
-          {/* Role */}
+          {/* Organization */}
           <div>
-            <select
-              id="role"
-              name="role"
-              value={formData.role}
+            <input
+              id="organization"
+              name="organization"
+              type="text"
+              placeholder="Organization"
+              value={formData.organization}
               onChange={handleChange}
               disabled={loading}
-              className="w-full px-6 py-3 rounded-full bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-all"
-            >
-              <option value="admin">Admin</option>
-              <option value="registrar">Registrar</option>
-              <option value="external">External User</option>
-            </select>
+              className={`w-full px-6 py-3 rounded-full bg-white text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-all ${errors.organization ? 'ring-2 ring-red-400' : ''}`}
+            />
+            {errors.organization && (
+              <p className="text-xs text-red-200 mt-1 ml-3">{errors.organization}</p>
+            )}
           </div>
-
-          {/* Organization (conditional) */}
-          {formData.role === 'external' && (
-            <div>
-              <input
-                id="organization"
-                name="organization"
-                type="text"
-                placeholder="Organization"
-                value={formData.organization}
-                onChange={handleChange}
-                disabled={loading}
-                className={`w-full px-6 py-3 rounded-full bg-white text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-all ${errors.organization ? 'ring-2 ring-red-400' : ''}`}
-              />
-              {errors.organization && (
-                <p className="text-xs text-red-200 mt-1 ml-3">{errors.organization}</p>
-              )}
-            </div>
-          )}
 
           {/* Terms of Use */}
           <div className="flex items-center justify-center gap-2 pt-2">

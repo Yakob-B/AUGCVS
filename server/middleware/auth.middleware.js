@@ -50,4 +50,15 @@ exports.authorize = (...roles) => {
         }
         next();
     };
-}; 
+};
+
+// Check if user is superadmin
+exports.requireSuperAdmin = (req, res, next) => {
+    if (req.user.role !== 'superadmin') {
+        return res.status(403).json({
+            success: false,
+            message: 'Not authorized to access this route. Superadmin privileges required.'
+        });
+    }
+    next();
+};

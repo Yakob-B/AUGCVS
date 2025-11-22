@@ -24,6 +24,7 @@ import Users from './pages/users/Users'
 import Verifications from './pages/verifications/Verifications'
 import NotificationToast from './components/common/NotificationToast'
 import EmailVerificationBanner from './components/common/EmailVerificationBanner'
+import CreateUser from './pages/superadmin/CreateUser'
 
 function App() {
   return (
@@ -45,7 +46,7 @@ function App() {
                       <Route path="/forgot-password" element={<ForgotPassword />} />
                       <Route path="/reset-password/:token" element={<ResetPassword />} />
                       <Route path="/verify-email/:token" element={<VerifyEmail />} />
-                      
+
                       {/* Protected Routes */}
                       <Route
                         path="/admin/*"
@@ -82,7 +83,16 @@ function App() {
                           </PrivateRoute>
                         }
                       />
-                      
+
+                      <Route
+                        path="/dashboard/superadmin/create-user"
+                        element={
+                          <PrivateRoute role="superadmin">
+                            <CreateUser />
+                          </PrivateRoute>
+                        }
+                      />
+
                       <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                   </main>

@@ -41,7 +41,7 @@ exports.register = async (req, res) => {
             lastName,
             email,
             password,
-            role,
+            role: 'external', // Force role to external for public registration
             organization,
             verificationToken
         });
@@ -55,7 +55,7 @@ exports.register = async (req, res) => {
 
         const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
         const verificationUrl = `${clientUrl}/verify-email/${verificationToken}`;
-        
+
         const htmlMessage = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                 <h2 style="color: #333;">Verify Your Email Address</h2>
@@ -305,7 +305,7 @@ exports.forgotPassword = async (req, res) => {
             });
         } catch (error) {
             console.error('Email sending failed:', error);
-            
+
             user.resetPasswordToken = undefined;
             user.resetPasswordExpire = undefined;
             await user.save({ validateBeforeSave: false });
@@ -487,4 +487,71 @@ const sendTokenResponse = (user, statusCode, res) => {
             organization: user.organization
         }
     });
+};
+
+// @desc    Create internal user (admin/registrar)
+// @route   POST /api/auth/superadmin/create-user
+// @access  Private (Superadmin only)
+exports.createInternalUser = async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const { firstName, lastName, email, password, role } = req.body;
+
+        // Ensure only admin or registrar roles can be created
+        if (!['admin', 'registrar'].includes(role)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid role. Allowed roles: admin, registrar'
+            });
+        }
+
+        let user = await User.findOne({ email });
+        if (user) {
+            return res.status(400).json({
+                success: false,
+                message: 'User already exists'
+            });
+        }
+
+        // Create user with verified email since created by superadmin
+        user = await User.create({
+            firstName,
+            lastName,
+            email,
+            password,
+            role,
+            isEmailVerified: true
+        });
+
+        await logAudit({
+            user: req.user.id,
+            action: 'internal_user_created',
+            details: {
+                createdUserEmail: email,
+                createdUserRole: role
+            },
+            ip: req.ip
+        });
+
+        res.status(201).json({
+            success: true,
+            data: {
+                id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                role: user.role
+            }
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: 'Server error'
+        });
+    }
 };
