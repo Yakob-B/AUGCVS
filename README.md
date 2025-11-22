@@ -5,7 +5,7 @@
 **Capstone Project • Ambo University 2025**  
 A full-stack MERN platform that digitizes and secures graduate credential verification for real institutional use.
 
-[![Live Demo](https://img.shields.io/badge/Live-augcvs.yakobdev.xyz-000?style=for-the-badge&logo=vercel&logoColor=white)]([https://augcvs.yakobdev.xyz](https://augcvs.vercel.app/))
+[![Live Demo](https://img.shields.io/badge/Live-augcvs.yakobdev.xyz-000?style=for-the-badge&logo=vercel&logoColor=white)]([[https://augcvs.yakobdev.xyz](https://augcvs.vercel.app/)](https://augcvs.vercel.app/))
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
 [![Node.js](https://img.shields.io/badge/Node.js-20-339933?style=for-the-badge&logo=node.js)](https://nodejs.org)
 
@@ -30,7 +30,7 @@ A full-stack MERN platform that digitizes and secures graduate credential verifi
 `JWT + bcrypt` `Multer` `Nodemailer` `Vercel` `MongoDB Atlas`
 
 **Live Demo** → [https://augcvs.yakobdev.xyz](https://augcvs.vercel.app/)  
-**Backend** → (Deployed on Railway – contact for access)  
+**Backend** → (Deployed on Render – contact for access)  
 **University Capstone** – Solving real credential verification challenges at Ambo University
 
 > Built to streamline academic processes – from creation to Pentecost-level security! 🚀
