@@ -2,10 +2,10 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { MdSchool } from 'react-icons/md'
 
-const Logo = ({ 
-  size = 'medium', 
-  showText = true, 
-  animated = true, 
+const Logo = ({
+  size = 'medium',
+  showText = true,
+  animated = true,
   className = '',
   onClick,
   linkTo = '/'
@@ -37,21 +37,20 @@ const Logo = ({
           <>
             {/* Glow Effect Container */}
             <div className="absolute inset-0 bg-purple-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse-slow" />
-            
+
             {/* Main Logo Image */}
-            <img 
-              src="/images/logo.png" 
-              alt="Ambo University Logo" 
-              className={`${sizeClasses[size]} w-auto object-contain transition-all duration-500 ${
-                animated ? 'animate-float' : ''
-              } ${imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'} group-hover:scale-110 group-hover:rotate-3 transform-gpu filter drop-shadow-lg hover:drop-shadow-2xl`}
+            <img
+              src="/images/logo.png"
+              alt="Ambo University Logo"
+              className={`${sizeClasses[size]} w-auto object-contain transition-all duration-500 ${animated ? 'animate-float' : ''
+                } ${imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'} group-hover:scale-110 group-hover:rotate-3 transform-gpu filter drop-shadow-lg hover:drop-shadow-2xl`}
               onError={() => setLogoError(true)}
               onLoad={() => setImageLoaded(true)}
               style={{
                 filter: 'drop-shadow(0 0 10px rgba(168, 85, 247, 0.3))',
               }}
             />
-            
+
             {/* Animated Border Glow */}
             <div className={`absolute inset-0 ${sizeClasses[size]} rounded-full border-2 border-purple-500/0 group-hover:border-purple-500/50 transition-all duration-500 blur-sm group-hover:blur-none`} />
           </>
@@ -65,7 +64,7 @@ const Logo = ({
       {/* Logo Text */}
       {showText && (
         <span className={`${textSizeClasses[size]} font-heading font-bold text-purple-300 group-hover:text-purple-200 transition-colors duration-300 ${logoError ? '' : 'hidden md:block'}`}>
-          Ambo Portal
+          AUGCVS
         </span>
       )}
     </div>
