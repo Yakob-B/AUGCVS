@@ -5,14 +5,14 @@
 **Capstone Project • Ambo University 2025**  
 Full-stack MERN platform digitizing secure graduate credential verification.
 
-[![Live Demo](https://img.shields.io/badge/Live-augcvs.yakobdev.xyz-000?style=for-the-badge&logo=vercel&logoColor=white)]([https://augcvs.yakobdev.xyz](https://augcvs.vercel.app/))  
+[![Live Demo](https://img.shields.io/badge/Live-augcvs.yakobdev.xyz-000?style=for-the-badge&logo=vercel&logoColor=white)]https://augcvs.vercel.app/ 
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react)](https://react.dev)  
 [![Node.js](https://img.shields.io/badge/Node.js-20-339933?style=for-the-badge&logo=node.js)](https://nodejs.org)
 
 <br/>
 
 <img src="https://raw.githubusercontent.com/Yakob-B/AUGCVS/main/login.png" alt="Login Page" width="100%"/>
-<img src="https://raw.githubusercontent.com/Yakob-B/AUGCVS/main/preview/dashboard.png" alt="Admin Dashboard" width="100%"/>
+<img src="https://raw.githubusercontent.com/Yakob-B/AUGCVS/main/dashboard.png" alt="Admin Dashboard" width="100%"/>
 <img src="https://raw.githubusercontent.com/Yakob-B/AUGCVS/main/preview/verification.png" alt="Verification Workflow" width="100%"/>
 
 </div>
