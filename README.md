@@ -12,7 +12,7 @@ Full-stack MERN platform digitizing secure graduate credential verification.
 <br/>
 
 <img src="https://raw.githubusercontent.com/Yakob-B/AUGCVS/main/logins.png" alt="Login Page" width="100%"/>
-<img src="https://raw.githubusercontent.com/Yakob-B/AUGCVS/main/dashboard-Copy.png" alt="Admin Dashboard" width="100%"/>
+<img src="https://raw.githubusercontent.com/Yakob-B/AUGCVS/main/dashboard - Copy.png" alt="Admin Dashboard" width="100%"/>
 <img src="https://raw.githubusercontent.com/Yakob-B/AUGCVS/main/verification.png" alt="Verification Workflow" width="100%"/>
 
 </div>
