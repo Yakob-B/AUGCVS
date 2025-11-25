@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import api from '../../services/api'
 import { useAuth } from '../../contexts/AuthContext'
 
 const CreateUser = () => {
@@ -29,22 +29,15 @@ const CreateUser = () => {
         setLoading(true)
 
         try {
-            const config = {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
-                }
-            }
-
-            const body = JSON.stringify({
+            const body = {
                 firstName,
                 lastName,
                 email,
                 password,
                 role
-            })
+            }
 
-            await axios.post('http://localhost:5000/api/auth/superadmin/create-user', body, config)
+            await api.post('/auth/superadmin/create-user', body)
 
             setSuccess(`User ${firstName} ${lastName} created successfully as ${role}`)
             setFormData({

@@ -262,6 +262,9 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
       }
       onClose()
     } catch (error) {
+      console.error('Graduate submission error:', error)
+      console.error('Error response:', error.response?.data)
+
       const errorMessage = error.response?.data?.message ||
         error.response?.data?.errors?.[0]?.msg ||
         error.message ||
