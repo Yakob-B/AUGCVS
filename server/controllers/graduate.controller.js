@@ -8,16 +8,22 @@ exports.createGraduate = async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
+            console.error('Graduate validation failed:', errors.array());
             await logAudit({
                 user: req.user.id,
                 action: 'create_graduate_failed',
                 details: { errors: errors.array() },
                 ip: req.ip
             });
-            return res.status(400).json({ errors: errors.array() });
+            return res.status(400).json({
+                success: false,
+                message: 'Validation failed',
+                errors: errors.array()
+            });
         }
 
         if (!req.file) {
+            console.error('Graduate creation failed: No certificate file uploaded');
             await logAudit({
                 user: req.user.id,
                 action: 'create_graduate_failed',
