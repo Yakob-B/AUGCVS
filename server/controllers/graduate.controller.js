@@ -37,7 +37,7 @@ exports.createGraduate = async (req, res) => {
         }
 
         req.body.addedBy = req.user.id;
-        req.body.certificateFile = `/uploads/${req.file.filename}`;
+        req.body.certificateFile = req.file.path; // Cloudinary URL
 
         const graduate = await Graduate.create(req.body);
         await logAudit({
@@ -142,7 +142,7 @@ exports.updateGraduate = async (req, res) => {
         }
 
         if (req.file) {
-            req.body.certificateFile = `/uploads/${req.file.filename}`;
+            req.body.certificateFile = req.file.path; // Cloudinary URL
         }
 
         graduate = await Graduate.findByIdAndUpdate(id, req.body, {
