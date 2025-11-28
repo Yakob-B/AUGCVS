@@ -6,16 +6,16 @@ const logAudit = require('../utils/auditLog');
 
 // Helper function to emit socket events
 const emitVerificationUpdate = (req, event, data) => {
-  const io = req.app.get('io');
-  if (io) {
-    // Emit to the specific user who made the request
-    io.to(`user-${data.requester}`).emit(event, data);
-    
-    // Emit to registrar room for new requests
-    if (event === 'verification-created') {
-      io.to('registrar-room').emit('new-verification-request', data);
+    const io = req.app.get('io');
+    if (io) {
+        // Emit to the specific user who made the request
+        io.to(`user-${data.requester}`).emit(event, data);
+
+        // Emit to registrar room for new requests
+        if (event === 'verification-created') {
+            io.to('registrar-room').emit('new-verification-request', data);
+        }
     }
-  }
 };
 
 // @desc    Create verification request
@@ -90,15 +90,15 @@ exports.createVerification = async (req, res) => {
 
         const verification = new Verification(verificationData);
         await verification.save();
-        
+
         // Emit real-time notification
         emitVerificationUpdate(req, 'verification-created', {
-          id: verification._id,
-          requestNumber: verification.requestNumber,
-          status: verification.status,
-          requester: verification.requester
+            id: verification._id,
+            requestNumber: verification.requestNumber,
+            status: verification.status,
+            requester: verification.requester
         });
-        
+
         await logAudit({
             user: req.user.id,
             action: 'create_verification_success',
@@ -187,7 +187,7 @@ exports.getVerification = async (req, res) => {
         }
 
         // Check if user is authorized to view this request
-        if (req.user.role === 'external' && verification.requester.toString() !== req.user.id) {
+        if (req.user.role === 'external' && verification.requester._id.toString() !== req.user.id) {
             return res.status(403).json({
                 success: false,
                 message: 'Not authorized to access this verification request'
@@ -247,23 +247,23 @@ exports.processVerification = async (req, res) => {
         // Send email notification
         const message = `Your verification request (${verification.requestNumber}) has been processed.\n\nStatus: ${status}\nResult: ${verificationResult}\nComments: ${comments}`;
         try {
-          await sendEmail({
-            email: verification.requester.email,
-            subject: 'Verification Request Processed',
-            message
-          });
+            await sendEmail({
+                email: verification.requester.email,
+                subject: 'Verification Request Processed',
+                message
+            });
         } catch (e) {
-          console.error('Email send failed:', e.message);
+            console.error('Email send failed:', e.message);
         }
 
         // Emit real-time notification to user
         emitVerificationUpdate(req, 'verification-processed', {
-          id: verification._id,
-          requestNumber: verification.requestNumber,
-          status: verification.status,
-          verificationResult: verification.verificationResult,
-          comments: verification.comments,
-          processedAt: verification.processedAt
+            id: verification._id,
+            requestNumber: verification.requestNumber,
+            status: verification.status,
+            verificationResult: verification.verificationResult,
+            comments: verification.comments,
+            processedAt: verification.processedAt
         });
 
         res.status(200).json({
@@ -318,4 +318,4 @@ exports.getMyVerifications = async (req, res) => {
             message: 'Server error'
         });
     }
-}; 
+};
