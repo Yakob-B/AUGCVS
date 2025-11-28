@@ -1,31 +1,31 @@
 const multer = require('multer');
 const path = require('path');
+const cloudinary = require('../config/cloudinary.config');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
-// Set storage engine
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/');
-    },
-    filename: function (req, file, cb) {
-        // Get file extension
-        const ext = path.extname(file.originalname).toLowerCase();
-
-        // Generate filename based on context
-        let filename;
-        if (req.baseUrl.includes('graduates')) {
-            // For graduate records (admin upload)
-            // Sanitize studentId by replacing slashes with underscores
-            const sanitizedStudentId = req.body.studentId ? req.body.studentId.replace(/\//g, '_') : 'unknown';
-            filename = `certificate_${sanitizedStudentId}_${Date.now()}${ext}`;
-        } else if (req.baseUrl.includes('verifications')) {
-            // For verification requests (external user upload)
-            filename = `verification_${req.user.id}_${Date.now()}${ext}`;
-        } else {
-            // Fallback
-            filename = `${Date.now()}-${file.originalname}`;
+// Set up Cloudinary storage
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'augcvs/certificates',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'pdf'],
+        resource_type: 'auto',
+        public_id: (req, file) => {
+            // Generate filename based on context
+            let filename;
+            if (req.baseUrl.includes('graduates')) {
+                // For graduate records (admin upload)
+                const sanitizedStudentId = req.body.studentId ? req.body.studentId.replace(/\//g, '_') : 'unknown';
+                filename = `certificate_${sanitizedStudentId}_${Date.now()}`;
+            } else if (req.baseUrl.includes('verifications')) {
+                // For verification requests (external user upload)
+                filename = `verification_${req.user.id}_${Date.now()}`;
+            } else {
+                // Fallback
+                filename = `upload_${Date.now()}`;
+            }
+            return filename;
         }
-
-        cb(null, filename);
     }
 });
 

@@ -85,7 +85,7 @@ exports.createVerification = async (req, res) => {
             requester: req.user.id,
             graduate: graduate._id,
             certificateNumber: graduate.certificateNumber,
-            certificateFile: `/uploads/${req.file.filename}`
+            certificateFile: req.file.path // Cloudinary URL
         };
 
         const verification = new Verification(verificationData);
