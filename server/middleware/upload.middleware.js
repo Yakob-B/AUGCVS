@@ -1,48 +1,13 @@
-const multer = require('multer');
-const path = require('path');
-const cloudinary = require('../config/cloudinary.config');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
+// Check extension
+const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+// Check mime type
+const mimetype = filetypes.test(file.mimetype);
 
-// Set up Cloudinary storage
-const storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-        folder: 'augcvs/certificates',
-        allowed_formats: ['jpg', 'jpeg', 'png', 'pdf'],
-        resource_type: 'auto',
-        public_id: (req, file) => {
-            // Generate filename based on context
-            let filename;
-            if (req.baseUrl.includes('graduates')) {
-                // For graduate records (admin upload)
-                const sanitizedStudentId = req.body.studentId ? req.body.studentId.replace(/\//g, '_') : 'unknown';
-                filename = `certificate_${sanitizedStudentId}_${Date.now()}`;
-            } else if (req.baseUrl.includes('verifications')) {
-                // For verification requests (external user upload)
-                filename = `verification_${req.user.id}_${Date.now()}`;
-            } else {
-                // Fallback
-                filename = `upload_${Date.now()}`;
-            }
-            return filename;
-        }
-    }
-});
-
-// Check file type
-const fileFilter = (req, file, cb) => {
-    // Allowed file types
-    const filetypes = /jpeg|jpg|png|pdf/;
-    // Check extension
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    // Check mime type
-    const mimetype = filetypes.test(file.mimetype);
-
-    if (mimetype && extname) {
-        return cb(null, true);
-    } else {
-        cb(new Error('Only PDF and image files (PDF, JPG, JPEG, PNG) are allowed!'));
-    }
+if (mimetype && extname) {
+    return cb(null, true);
+} else {
+    cb(new Error('Only PDF and image files (PDF, JPG, JPEG, PNG) are allowed!'));
+}
 };
 
 // Initialize upload
