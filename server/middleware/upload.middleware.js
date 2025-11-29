@@ -7,7 +7,7 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: async (req, file) => {
-        // Generate filename based on context - fixed path handling
+        // Generate filename based on context
         let filename;
         if (req.baseUrl.includes('graduates')) {
             // For graduate records (admin upload)
