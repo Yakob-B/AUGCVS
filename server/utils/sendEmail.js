@@ -12,6 +12,8 @@ const sendEmail = async (options) => {
         }
     });
 
+    console.log(`Attempting to send email using host: ${process.env.SMTP_HOST}, port: ${process.env.SMTP_PORT}, secure: ${process.env.SMTP_PORT == 465}`);
+
     // Define email options
     const message = {
         from: `${process.env.FROM_NAME} <${process.env.FROM_EMAIL}>`,
@@ -32,4 +34,4 @@ const sendEmail = async (options) => {
     }
 };
 
-module.exports = sendEmail; 
+module.exports = sendEmail;
