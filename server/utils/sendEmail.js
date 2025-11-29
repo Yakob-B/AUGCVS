@@ -8,22 +8,39 @@ const sendEmail = async (options) => {
         secure: process.env.SMTP_PORT == 465, // true for 465, false for other ports
         auth: {
             user: process.env.SMTP_USER,
-            from: `${process.env.FROM_NAME} <${process.env.FROM_EMAIL}>`,
-            to: options.email,
-            subject: options.subject,
-            text: options.message,
-            html: options.html || options.message // Support HTML emails
-        };
+            pass: process.env.SMTP_PASS
+        },
+        tls: {
+            // do not fail on invalid certs
+            rejectUnauthorized: false
+        },
+        // Force IPv4 to avoid IPv6 issues on some cloud providers
+        family: 4,
+        connectionTimeout: 30000, // 30 seconds
+        greetingTimeout: 30000,   // 30 seconds
+        socketTimeout: 30000      // 30 seconds
+    });
 
-        // Send email
-        try {
-            const info = await transporter.sendMail(message);
-            console.log('Message sent: %s', info.messageId);
-            return info;
-        } catch(error) {
-            console.error('Email sending failed:', error);
-            throw error;
-        }
+    console.log(`Attempting to send email using host: ${process.env.SMTP_HOST}, port: ${process.env.SMTP_PORT}, secure: ${process.env.SMTP_PORT == 465}`);
+
+    // Define email options
+    const message = {
+        from: `${process.env.FROM_NAME} <${process.env.FROM_EMAIL}>`,
+        to: options.email,
+        subject: options.subject,
+        text: options.message,
+        html: options.html || options.message // Support HTML emails
     };
 
-    module.exports = sendEmail;
+    // Send email
+    try {
+        const info = await transporter.sendMail(message);
+        console.log('Message sent: %s', info.messageId);
+        return info;
+    } catch (error) {
+        console.error('Email sending failed:', error);
+        throw error;
+    }
+};
+
+module.exports = sendEmail;
