@@ -5,14 +5,16 @@ import { useNotification } from '../contexts/NotificationContext'
 import * as graduateService from '../../services/graduates'
 import * as userService from '../../services/users'
 import * as verificationService from '../../services/verifications'
-import { 
-  MdSchool, 
-  MdPeople, 
-  MdVerifiedUser, 
+import {
+  MdSchool,
+  MdPeople,
+  MdVerifiedUser,
   MdTrendingUp,
   MdArrowForward,
-  MdAdd
+  MdAdd,
+  MdFileUpload
 } from 'react-icons/md'
+import BulkUploadModal from '../../components/graduates/BulkUploadModal'
 
 const AdminDashboard = () => {
   const { user } = useAuth()
@@ -24,6 +26,7 @@ const AdminDashboard = () => {
     pendingVerifications: 0,
   })
   const [loading, setLoading] = useState(true)
+  const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false)
 
   useEffect(() => {
     loadStats()
@@ -191,6 +194,12 @@ const AdminDashboard = () => {
           </div>
         </div>
       </div>
+
+      <BulkUploadModal
+        isOpen={isBulkUploadOpen}
+        onClose={() => setIsBulkUploadOpen(false)}
+        onUploadSuccess={loadStats}
+      />
     </div>
   )
 }

@@ -78,4 +78,40 @@ const handleUploadError = (err, req, res, next) => {
     next();
 };
 
-module.exports = { upload, handleUploadError };
+// Set up Local storage for bulk uploads (temporary)
+const localDiskStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, `bulk_${Date.now()}_${file.originalname}`);
+    }
+});
+
+const dataFileFilter = (req, file, cb) => {
+    // Allowed file types
+    const filetypes = /csv|xlsx|xls/;
+    // Check extension
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    // Check mime type
+    const mimetypes = [
+        'text/csv',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    ];
+    const mimetype = mimetypes.includes(file.mimetype);
+
+    if (extname && mimetype) {
+        return cb(null, true);
+    } else {
+        cb(new Error('Only CSV and Excel files are allowed!'));
+    }
+};
+
+const dataUpload = multer({
+    storage: localDiskStorage,
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max file size
+    fileFilter: dataFileFilter
+});
+
+module.exports = { upload, dataUpload, handleUploadError };

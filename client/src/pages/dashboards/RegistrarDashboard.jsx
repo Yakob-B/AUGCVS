@@ -3,13 +3,15 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { useNotification } from '../contexts/NotificationContext'
 import * as verificationService from '../../services/verifications'
-import { 
-  MdVerifiedUser, 
+import {
+  MdVerifiedUser,
   MdPendingActions,
   MdCheckCircle,
   MdCancel,
-  MdArrowForward
+  MdArrowForward,
+  MdFileUpload
 } from 'react-icons/md'
+import BulkUploadModal from '../../components/graduates/BulkUploadModal'
 
 const RegistrarDashboard = () => {
   const { user } = useAuth()
@@ -22,6 +24,7 @@ const RegistrarDashboard = () => {
   })
   const [recentVerifications, setRecentVerifications] = useState([])
   const [loading, setLoading] = useState(true)
+  const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false)
 
   useEffect(() => {
     loadData()
@@ -194,9 +197,26 @@ const RegistrarDashboard = () => {
                 {stats.pending} Pending Review
               </div>
             </div>
+
+            <button
+              onClick={() => setIsBulkUploadOpen(true)}
+              className="w-full flex items-center justify-between p-4 rounded-lg border border-primary-500/30 dark:bg-primary-500/5 hover:dark:bg-primary-500/10 transition-colors group"
+            >
+              <div className="flex items-center space-x-3">
+                <MdFileUpload className="text-primary-400 text-xl" />
+                <span className="dark:text-dark-text light:text-light-text">Bulk Upload</span>
+              </div>
+              <MdArrowForward className="dark:text-dark-muted light:text-light-muted group-hover:text-primary-400 transition-colors" />
+            </button>
           </div>
         </div>
       </div>
+
+      <BulkUploadModal
+        isOpen={isBulkUploadOpen}
+        onClose={() => setIsBulkUploadOpen(false)}
+        onUploadSuccess={loadData}
+      />
     </div>
   )
 }

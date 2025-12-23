@@ -7,10 +7,11 @@ const {
     updateGraduate,
     deleteGraduate,
     searchGraduates,
-    getFilters
+    getFilters,
+    bulkUploadGraduates
 } = require('../controllers/graduate.controller');
 const { protect, authorize } = require('../middleware/auth.middleware');
-const { upload, handleUploadError } = require('../middleware/upload.middleware');
+const { upload, dataUpload, handleUploadError } = require('../middleware/upload.middleware');
 
 const router = express.Router();
 
@@ -38,6 +39,15 @@ const graduateValidation = [
 router.get('/filters', authorize('admin', 'registrar'), getFilters);
 router.get('/search', authorize('admin', 'registrar'), searchGraduates);
 router.get('/', authorize('admin', 'registrar'), getGraduates);
+
+// Bulk upload
+router.post(
+    '/bulk-upload',
+    authorize('admin', 'registrar'),
+    dataUpload.single('file'),
+    handleUploadError,
+    bulkUploadGraduates
+);
 
 // ✅ CRUD routes
 router.post(

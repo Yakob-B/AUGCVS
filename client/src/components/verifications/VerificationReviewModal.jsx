@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNotification } from '../../pages/contexts/NotificationContext'
 import { useAuth } from '../../contexts/AuthContext'
 import * as verificationService from '../../services/verifications'
-import { 
+import {
   MdClose,
   MdVerifiedUser,
   MdPerson,
@@ -130,8 +130,9 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
       return verification.certificateFile
     }
     // Otherwise construct the API URL
-    const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'
-    return `${baseUrl}${verification.certificateFile}`
+    const baseUrl = (import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000').replace(/\/$/, '')
+    const filePath = verification.certificateFile.startsWith('/') ? verification.certificateFile : `/${verification.certificateFile}`
+    return `${baseUrl}${filePath}`
   }
 
   if (fetching) {
@@ -301,36 +302,30 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
                   <button
                     type="button"
                     onClick={() => setFormData(prev => ({ ...prev, status: 'approved' }))}
-                    className={`p-4 rounded-lg border-2 transition-all ${
-                      formData.status === 'approved'
+                    className={`p-4 rounded-lg border-2 transition-all ${formData.status === 'approved'
                         ? 'border-green-500 bg-green-500/10'
                         : 'dark:border-dark-border light:border-light-border dark:bg-dark-surface light:bg-light-surface hover:border-primary-500/50'
-                    }`}
+                      }`}
                   >
-                    <MdCheckCircle className={`text-2xl mx-auto mb-2 ${
-                      formData.status === 'approved' ? 'text-green-500' : 'dark:text-dark-muted light:text-light-muted'
-                    }`} />
-                    <p className={`font-medium ${
-                      formData.status === 'approved' ? 'text-green-400' : 'dark:text-dark-text light:text-light-text'
-                    }`}>
+                    <MdCheckCircle className={`text-2xl mx-auto mb-2 ${formData.status === 'approved' ? 'text-green-500' : 'dark:text-dark-muted light:text-light-muted'
+                      }`} />
+                    <p className={`font-medium ${formData.status === 'approved' ? 'text-green-400' : 'dark:text-dark-text light:text-light-text'
+                      }`}>
                       Approve
                     </p>
                   </button>
                   <button
                     type="button"
                     onClick={() => setFormData(prev => ({ ...prev, status: 'rejected' }))}
-                    className={`p-4 rounded-lg border-2 transition-all ${
-                      formData.status === 'rejected'
+                    className={`p-4 rounded-lg border-2 transition-all ${formData.status === 'rejected'
                         ? 'border-red-500 bg-red-500/10'
                         : 'dark:border-dark-border light:border-light-border dark:bg-dark-surface light:bg-light-surface hover:border-primary-500/50'
-                    }`}
+                      }`}
                   >
-                    <MdCancel className={`text-2xl mx-auto mb-2 ${
-                      formData.status === 'rejected' ? 'text-red-500' : 'dark:text-dark-muted light:text-light-muted'
-                    }`} />
-                    <p className={`font-medium ${
-                      formData.status === 'rejected' ? 'text-red-400' : 'dark:text-dark-text light:text-light-text'
-                    }`}>
+                    <MdCancel className={`text-2xl mx-auto mb-2 ${formData.status === 'rejected' ? 'text-red-500' : 'dark:text-dark-muted light:text-light-muted'
+                      }`} />
+                    <p className={`font-medium ${formData.status === 'rejected' ? 'text-red-400' : 'dark:text-dark-text light:text-light-text'
+                      }`}>
                       Reject
                     </p>
                   </button>
@@ -398,9 +393,8 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed ${
-                    formData.status === 'approved' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'
-                  }`}
+                  className={`btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed ${formData.status === 'approved' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'
+                    }`}
                 >
                   {loading ? (
                     <span className="flex items-center justify-center">
@@ -422,9 +416,8 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
               <div className="space-y-3">
                 <div>
                   <p className="text-sm dark:text-dark-muted light:text-light-muted">Status</p>
-                  <p className={`font-semibold ${
-                    verification.status === 'approved' ? 'text-green-400' : 'text-red-400'
-                  }`}>
+                  <p className={`font-semibold ${verification.status === 'approved' ? 'text-green-400' : 'text-red-400'
+                    }`}>
                     {verification.status.charAt(0).toUpperCase() + verification.status.slice(1)}
                   </p>
                 </div>

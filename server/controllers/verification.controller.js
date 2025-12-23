@@ -214,7 +214,8 @@ exports.processVerification = async (req, res) => {
     try {
         const { status, verificationResult, comments } = req.body;
 
-        let verification = await Verification.findById(req.params.id);
+        let verification = await Verification.findById(req.params.id)
+            .populate('requester', 'firstName lastName email organization');
 
         if (!verification) {
             await logAudit({

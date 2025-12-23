@@ -1,6 +1,7 @@
 // Load environment variables
 require('dotenv').config();
 
+/* AUGCVS Server - Main Entry Point */
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -31,6 +32,9 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Static folder for uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Database connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/augcvs', {
@@ -103,6 +107,7 @@ app.use('/api/users', require('./routes/user.routes'));
 app.use('/api/graduates', require('./routes/graduate.routes'));
 app.use('/api/verifications', require('./routes/verification.routes'));
 app.use('/api/chat', require('./routes/chat.routes'));
+app.use('/api/ai', require('./routes/ai.routes'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

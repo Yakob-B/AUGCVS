@@ -9,6 +9,7 @@ import PrivateRoute from './components/routing/PrivateRoute'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import ChatList from './components/chat/ChatList'
+import Chatbot from './components/chat/Chatbot'
 import Home from './pages/Home'
 import About from './pages/About'
 import Login from './components/auth/Login'
@@ -104,6 +105,7 @@ function App() {
                   </main>
                   <Footer />
                   <ChatList />
+                  <Chatbot />
                   <NotificationToast />
                 </div>
               </NotificationProvider>

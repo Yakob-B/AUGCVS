@@ -2,6 +2,10 @@ const Graduate = require('../models/graduate.model');
 const { validationResult } = require('express-validator');
 const logAudit = require('../utils/auditLog');
 const mongoose = require('mongoose');
+const fs = require('fs');
+const path = require('path');
+const csv = require('csv-parser');
+const xlsx = require('xlsx');
 
 // @desc    Create new graduate
 exports.createGraduate = async (req, res) => {
@@ -238,6 +242,120 @@ exports.searchGraduates = async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
+// @desc    Bulk upload graduates
+exports.bulkUploadGraduates = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'Please upload a file' });
+        }
+
+        const filePath = req.file.path;
+        const graduates = [];
+        const errors = [];
+        const fileExt = path.extname(req.file.originalname).toLowerCase();
+
+        if (fileExt === '.csv') {
+            await new Promise((resolve, reject) => {
+                fs.createReadStream(filePath)
+                    .pipe(csv())
+                    .on('data', (data) => graduates.push(data))
+                    .on('error', (err) => reject(err))
+                    .on('end', () => resolve());
+            });
+        } else if (fileExt === '.xlsx' || fileExt === '.xls') {
+            const workbook = xlsx.readFile(filePath);
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const jsonData = xlsx.utils.sheet_to_json(worksheet);
+            graduates.push(...jsonData);
+        }
+
+        // Processing results
+        let successCount = 0;
+        let failCount = 0;
+        const results = [];
+
+        for (let i = 0; i < graduates.length; i++) {
+            const gradData = graduates[i];
+
+            // Map fields and validate
+            try {
+                // Ensure field names are consistent (handle potential variations in header names)
+                const mappedData = {
+                    studentId: gradData['Student ID'] || gradData['studentId'] || gradData['student_id'],
+                    firstName: gradData['First Name'] || gradData['firstName'] || gradData['first_name'],
+                    lastName: gradData['Last Name'] || gradData['lastName'] || gradData['last_name'],
+                    middleName: gradData['Middle Name'] || gradData['middleName'] || gradData['middle_name'],
+                    dateOfBirth: gradData['Date of Birth'] || gradData['dateOfBirth'] || gradData['dob'],
+                    gender: (gradData['Gender'] || gradData['gender'] || '').toLowerCase(),
+                    program: gradData['Program'] || gradData['program'],
+                    department: gradData['Department'] || gradData['department'],
+                    college: gradData['College'] || gradData['college'],
+                    graduationYear: gradData['Graduation Year'] || gradData['graduationYear'] || gradData['year'],
+                    graduationDate: gradData['Graduation Date'] || gradData['graduationDate'],
+                    degreeType: gradData['Degree Type'] || gradData['degreeType'],
+                    gpa: gradData['GPA'] || gradData['gpa'],
+                    certificateNumber: gradData['Certificate Number'] || gradData['certificateNumber'],
+                    addedBy: req.user.id
+                };
+
+                // Basic validation for required fields
+                const requiredFields = ['studentId', 'firstName', 'lastName', 'dateOfBirth', 'gender', 'program', 'department', 'college', 'graduationYear', 'graduationDate', 'degreeType', 'gpa', 'certificateNumber'];
+                const missingFields = requiredFields.filter(f => !mappedData[f]);
+
+                if (missingFields.length > 0) {
+                    throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+                }
+
+                // Check for existing studentId or certificateNumber
+                const existing = await Graduate.findOne({
+                    $or: [
+                        { studentId: mappedData.studentId },
+                        { certificateNumber: mappedData.certificateNumber }
+                    ]
+                });
+
+                if (existing) {
+                    throw new Error(`Student ID ${mappedData.studentId} or Certificate ${mappedData.certificateNumber} already exists`);
+                }
+
+                await Graduate.create(mappedData);
+                successCount++;
+                results.push({ row: i + 1, status: 'success', studentId: mappedData.studentId });
+            } catch (err) {
+                failCount++;
+                results.push({ row: i + 1, status: 'failed', error: err.message });
+            }
+        }
+
+        // Clean up temporary file
+        fs.unlinkSync(filePath);
+
+        await logAudit({
+            user: req.user.id,
+            action: 'bulk_upload_graduates',
+            details: { successCount, failCount, total: graduates.length },
+            ip: req.ip
+        });
+
+        res.status(200).json({
+            success: true,
+            summary: {
+                total: graduates.length,
+                success: successCount,
+                failed: failCount
+            },
+            results
+        });
+    } catch (err) {
+        console.error(err);
+        if (req.file && fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
+        }
+        res.status(500).json({ success: false, message: 'Server error', error: err.message });
     }
 };
 

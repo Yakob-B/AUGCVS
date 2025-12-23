@@ -19,7 +19,7 @@ exports.getOrCreateChat = async (req, res) => {
 
     // Check access: External users can only chat about their own verifications
     // Admin/Registrar can chat about any verification
-    if (req.user.role === 'external' && verification.requester.toString() !== userId) {
+    if (req.user.role === 'external' && verification.requester._id.toString() !== userId) {
       return res.status(403).json({ success: false, message: 'Access denied' });
     }
 
@@ -31,7 +31,7 @@ exports.getOrCreateChat = async (req, res) => {
     if (!chat) {
       // Create new chat
       const participants = [verification.requester];
-      
+
       // Add registrar/admin if verification is pending
       if (verification.status === 'pending') {
         // Find registrar users
@@ -62,7 +62,7 @@ exports.getOrCreateChat = async (req, res) => {
     // Reset unread count for current user
     const unreadField = req.user.role === 'external' ? 'external' : 'registrar';
     chat.unreadCount[unreadField] = 0;
-    
+
     await chat.save();
 
     // Get updated chat
@@ -129,7 +129,7 @@ exports.sendMessage = async (req, res) => {
 
     // Emit to Socket.IO
     const io = req.app.get('io');
-    
+
     // Emit to chat room
     io.to(`chat-${verificationId}`).emit('new-message', {
       chatId: chat._id,
@@ -168,7 +168,7 @@ exports.getMyChats = async (req, res) => {
     const { role } = req.user;
 
     let query = {};
-    
+
     if (role === 'external') {
       // External users only see chats for their own verifications
       const verifications = await Verification.find({ requester: userId }).select('_id');
@@ -215,7 +215,7 @@ exports.markAsRead = async (req, res) => {
     // Reset unread count
     const unreadField = req.user.role === 'external' ? 'external' : 'registrar';
     chat.unreadCount[unreadField] = 0;
-    
+
     await chat.save();
 
     res.json({ success: true, message: 'Messages marked as read' });
