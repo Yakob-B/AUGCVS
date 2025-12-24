@@ -3,26 +3,32 @@ const logger = require('./logger');
 
 const sendEmail = async (options) => {
     // Create transporter
-    const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: process.env.SMTP_PORT,
-        secure: process.env.SMTP_PORT == 465, // true for 465, false for other ports
+    let transporterConfig = {
         auth: {
             user: process.env.SMTP_USER,
             pass: process.env.SMTP_PASS
         },
-        tls: {
-            // do not fail on invalid certs
-            rejectUnauthorized: false
-        },
-        // Force IPv4 to avoid IPv6 issues on some cloud providers
-        family: 4,
-        connectionTimeout: 30000,
-        greetingTimeout: 30000,
-        socketTimeout: 30000
-    });
+        family: 4, // Force IPv4
+        connectionTimeout: 60000, // 60 seconds
+        greetingTimeout: 60000,
+        socketTimeout: 60000,
+        debug: true, // Show debug output
+        logger: true // Log information into console
+    };
 
-    logger.info(`Attempting to send email using host: ${process.env.SMTP_HOST}, port: ${process.env.SMTP_PORT}, secure: ${process.env.SMTP_PORT == 465}`);
+    // Use 'service: gmail' if the host is gmail, otherwise use manual host/port
+    if (process.env.SMTP_HOST && process.env.SMTP_HOST.includes('gmail')) {
+        transporterConfig.service = 'gmail';
+    } else {
+        transporterConfig.host = process.env.SMTP_HOST;
+        transporterConfig.port = process.env.SMTP_PORT;
+        transporterConfig.secure = process.env.SMTP_PORT == 465;
+        transporterConfig.tls = { rejectUnauthorized: false };
+    }
+
+    const transporter = nodemailer.createTransport(transporterConfig);
+
+    logger.info(`Attempting to send email via ${transporterConfig.service || process.env.SMTP_HOST}...`);
 
     // Define email options
     const message = {
