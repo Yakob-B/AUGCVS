@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const logger = require('./logger');
 
 const sendEmail = async (options) => {
     // Create transporter
@@ -16,12 +17,12 @@ const sendEmail = async (options) => {
         },
         // Force IPv4 to avoid IPv6 issues on some cloud providers
         family: 4,
-        connectionTimeout: 30000, // 30 seconds
-        greetingTimeout: 30000,   // 30 seconds
-        socketTimeout: 30000      // 30 seconds
+        connectionTimeout: 30000,
+        greetingTimeout: 30000,
+        socketTimeout: 30000
     });
 
-    console.log(`Attempting to send email using host: ${process.env.SMTP_HOST}, port: ${process.env.SMTP_PORT}, secure: ${process.env.SMTP_PORT == 465}`);
+    logger.info(`Attempting to send email using host: ${process.env.SMTP_HOST}, port: ${process.env.SMTP_PORT}, secure: ${process.env.SMTP_PORT == 465}`);
 
     // Define email options
     const message = {
@@ -35,10 +36,10 @@ const sendEmail = async (options) => {
     // Send email
     try {
         const info = await transporter.sendMail(message);
-        console.log('Message sent: %s', info.messageId);
+        logger.info(`Message sent: ${info.messageId}`);
         return info;
     } catch (error) {
-        console.error('Email sending failed:', error);
+        logger.error(`Email sending failed: ${error.message} - ${JSON.stringify(error)}`);
         throw error;
     }
 };
