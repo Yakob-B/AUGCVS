@@ -100,12 +100,17 @@ exports.updateUser = async (req, res) => {
       });
       return res.status(404).json({ success: false, message: 'User not found' });
     }
-    const { firstName, lastName, email, role, organization } = req.body;
+    const { firstName, lastName, email, role, organization, password } = req.body;
     user.firstName = firstName || user.firstName;
     user.lastName = lastName || user.lastName;
     user.email = email || user.email;
     user.role = role || user.role;
     user.organization = organization || user.organization;
+
+    if (password) {
+      user.password = password;
+    }
+
     await user.save();
     await logAudit({
       user: req.user.id,
