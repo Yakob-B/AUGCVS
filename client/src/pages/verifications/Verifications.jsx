@@ -8,7 +8,7 @@ import VerificationReviewModal from '../../components/verifications/Verification
 import ChatModal from '../../components/chat/ChatModal'
 import Pagination from '../../components/common/Pagination'
 import * as chatService from '../../services/chat'
-import { MdVerifiedUser, MdPendingActions, MdCheckCircle, MdCancel, MdAddCircle, MdChat } from 'react-icons/md'
+import { MdVerifiedUser, MdPendingActions, MdCheckCircle, MdCancel, MdAddCircle, MdChat, MdVisibility, MdRateReview } from 'react-icons/md'
 
 const Verifications = () => {
   const { user } = useAuth()
@@ -76,7 +76,7 @@ const Verifications = () => {
             'New Chat Message',
             `${data.sender.firstName} ${data.sender.lastName}: ${data.message}`
           )
-          
+
           // Update unread count
           setChatUnreadCounts(prev => ({
             ...prev,
@@ -108,12 +108,12 @@ const Verifications = () => {
   const loadVerifications = async (page = 1) => {
     try {
       setLoading(true)
-      const params = { 
-        page, 
+      const params = {
+        page,
         limit: 10,
         ...(filter !== 'all' && { status: filter })
       }
-      const response = user.role === 'external' 
+      const response = user.role === 'external'
         ? await verificationService.getMyVerifications(params)
         : await verificationService.getVerifications(params)
       setVerifications(response.data || [])
@@ -137,15 +137,15 @@ const Verifications = () => {
     try {
       const chatsResponse = await chatService.getMyChats()
       const chats = chatsResponse.data || []
-      
+
       const unreadMap = {}
       chats.forEach(chat => {
-        const unread = user.role === 'external' 
-          ? chat.unreadCount?.external || 0 
+        const unread = user.role === 'external'
+          ? chat.unreadCount?.external || 0
           : chat.unreadCount?.registrar || 0
         unreadMap[chat.verification._id] = unread
       })
-      
+
       setChatUnreadCounts(unreadMap)
     } catch (error) {
       // Silently fail - not critical
@@ -160,11 +160,26 @@ const Verifications = () => {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'pending':
-        return <span className="badge-warning">Pending</span>
+        return (
+          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-500 border border-amber-500/30">
+            <MdPendingActions className="text-sm" />
+            Pending
+          </span>
+        )
       case 'approved':
-        return <span className="badge-success">Approved</span>
+        return (
+          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-emerald-500/20 to-green-500/20 text-emerald-500 border border-emerald-500/30">
+            <MdCheckCircle className="text-sm" />
+            Approved
+          </span>
+        )
       case 'rejected':
-        return <span className="badge-danger">Rejected</span>
+        return (
+          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-red-500/20 to-rose-500/20 text-red-500 border border-red-500/30">
+            <MdCancel className="text-sm" />
+            Rejected
+          </span>
+        )
       default:
         return <span className="badge-pending">{status}</span>
     }
@@ -236,25 +251,33 @@ const Verifications = () => {
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setFilter('all')}
-            className={`badge ${filter === 'all' ? 'badge-info' : 'badge-pending'}`}
+            className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 ${filter === 'all'
+              ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/30'
+              : 'dark:bg-dark-surface light:bg-gray-100 dark:text-dark-text light:text-light-text hover:dark:bg-dark-card hover:light:bg-gray-200'}`}
           >
             All
           </button>
           <button
             onClick={() => setFilter('pending')}
-            className={`badge ${filter === 'pending' ? 'badge-warning' : 'badge-pending'}`}
+            className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 ${filter === 'pending'
+              ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/30'
+              : 'dark:bg-dark-surface light:bg-gray-100 dark:text-dark-text light:text-light-text hover:dark:bg-dark-card hover:light:bg-gray-200'}`}
           >
             Pending
           </button>
           <button
             onClick={() => setFilter('approved')}
-            className={`badge ${filter === 'approved' ? 'badge-success' : 'badge-pending'}`}
+            className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 ${filter === 'approved'
+              ? 'bg-gradient-to-r from-emerald-500 to-green-500 text-white shadow-lg shadow-emerald-500/30'
+              : 'dark:bg-dark-surface light:bg-gray-100 dark:text-dark-text light:text-light-text hover:dark:bg-dark-card hover:light:bg-gray-200'}`}
           >
             Approved
           </button>
           <button
             onClick={() => setFilter('rejected')}
-            className={`badge ${filter === 'rejected' ? 'badge-danger' : 'badge-pending'}`}
+            className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 ${filter === 'rejected'
+              ? 'bg-gradient-to-r from-red-500 to-rose-500 text-white shadow-lg shadow-red-500/30'
+              : 'dark:bg-dark-surface light:bg-gray-100 dark:text-dark-text light:text-light-text hover:dark:bg-dark-card hover:light:bg-gray-200'}`}
           >
             Rejected
           </button>
@@ -262,7 +285,7 @@ const Verifications = () => {
       </div>
 
       {/* Verifications List */}
-      <div className="card">
+      <div className="card shadow-lg">
         {verifications.length === 0 ? (
           <div className="text-center py-12 dark:text-dark-muted light:text-light-muted">
             <MdVerifiedUser className="text-5xl mx-auto mb-4 opacity-50 text-primary-400" />
@@ -272,32 +295,55 @@ const Verifications = () => {
           <>
             <div className="space-y-4">
               {verifications.map((verification) => (
-              <div
-                key={verification._id}
-                className="p-6 rounded-lg border dark:border-dark-border light:border-light-border dark:bg-dark-surface light:bg-light-surface hover:dark:bg-dark-card hover:light:bg-gray-50 transition-colors"
-              >
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-lg font-semibold dark:text-dark-text light:text-light-text">
+                <div
+                  key={verification._id}
+                  className="p-5 rounded-xl border-2 dark:border-dark-border light:border-light-border dark:bg-dark-surface/50 light:bg-gray-50/50 hover:dark:bg-dark-card hover:light:bg-white transition-all duration-300 hover:shadow-lg"
+                >
+                  {/* Header with Name and Status */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-bold dark:text-dark-text light:text-light-text truncate">
                         {verification.graduate?.firstName} {verification.graduate?.lastName}
                       </h3>
+                      <p className="text-sm dark:text-dark-muted light:text-light-muted mt-1">
+                        Request #{verification.requestNumber}
+                      </p>
+                    </div>
+                    <div className="ml-3 flex-shrink-0">
                       {getStatusBadge(verification.status)}
                     </div>
-                    <div className="text-sm dark:text-dark-muted light:text-light-muted space-y-1">
-                      <p>Request #: {verification.requestNumber}</p>
-                      <p>Certificate #: {verification.certificateNumber}</p>
-                      {verification.requester?.organization && (
-                        <p>Organization: {verification.requester.organization}</p>
-                      )}
-                      <p>Date: {new Date(verification.createdAt).toLocaleDateString()}</p>
+                  </div>
+
+                  {/* Details Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4 text-sm">
+                    <div className="flex justify-between sm:block">
+                      <span className="dark:text-dark-muted light:text-light-muted">Certificate #:</span>
+                      <span className="dark:text-dark-text light:text-light-text font-medium ml-2 sm:ml-0 sm:block">
+                        {verification.certificateNumber}
+                      </span>
+                    </div>
+                    {verification.requester?.organization && (
+                      <div className="flex justify-between sm:block">
+                        <span className="dark:text-dark-muted light:text-light-muted">Organization:</span>
+                        <span className="dark:text-dark-text light:text-light-text font-medium ml-2 sm:ml-0 sm:block">
+                          {verification.requester.organization}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex justify-between sm:block">
+                      <span className="dark:text-dark-muted light:text-light-muted">Date:</span>
+                      <span className="dark:text-dark-text light:text-light-text font-medium ml-2 sm:ml-0 sm:block">
+                        {new Date(verification.createdAt).toLocaleDateString()}
+                      </span>
                     </div>
                   </div>
-                  <div className="mt-4 md:mt-0 md:ml-4 flex items-center space-x-2">
+
+                  {/* Action Buttons - Ultra Creative Design */}
+                  <div className="flex items-center gap-3 pt-4 border-t dark:border-dark-border light:border-light-border">
+                    {/* Chat Button - Animated Message Icon */}
                     <button
                       onClick={async () => {
                         setChatVerificationId(verification._id)
-                        // Mark as read when opening
                         try {
                           await chatService.markAsRead(verification._id)
                           setChatUnreadCounts(prev => ({
@@ -308,34 +354,58 @@ const Verifications = () => {
                           console.error('Error marking chat as read:', error)
                         }
                       }}
-                      className="relative px-4 py-2 rounded-lg font-medium dark:bg-dark-card light:bg-light-card dark:text-dark-text light:text-light-text border dark:border-dark-border light:border-light-border hover:dark:bg-dark-surface hover:light:bg-gray-100 transition-all duration-300 flex items-center space-x-2"
+                      className="group relative flex-1 flex items-center justify-center gap-2.5 py-3.5 px-4 overflow-hidden rounded-2xl font-bold transition-all duration-500 transform hover:scale-[1.03] active:scale-[0.97]
+                        bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600 text-white
+                        shadow-lg shadow-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/50
+                        ring-2 ring-transparent hover:ring-blue-300/50
+                        before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/0 before:via-white/30 before:to-white/0 
+                        before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-1000
+                        after:absolute after:inset-0 after:bg-gradient-to-t after:from-black/20 after:to-transparent after:opacity-0 hover:after:opacity-100 after:transition-opacity"
                       title="Open Chat"
                     >
-                      <MdChat size={18} />
-                      <span>Chat</span>
+                      <MdChat className="text-xl transition-all duration-300 group-hover:rotate-12 group-hover:scale-110" />
+                      <span className="relative z-10">Chat</span>
                       {chatUnreadCounts[verification._id] > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                        <span className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-bounce shadow-lg shadow-red-500/50 ring-2 ring-white">
                           {chatUnreadCounts[verification._id] > 9 ? '9+' : chatUnreadCounts[verification._id]}
                         </span>
                       )}
                     </button>
+
+                    {/* Review/View Button - Dynamic styles based on status */}
                     <button
                       onClick={() => setSelectedVerification(verification._id)}
-                      className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
-                        user.role === 'admin' || user.role === 'registrar'
-                          ? verification.status === 'pending'
-                            ? 'btn-primary text-center'
-                            : 'dark:bg-dark-card light:bg-light-card dark:text-dark-text light:text-light-text border dark:border-dark-border light:border-light-border hover:dark:bg-dark-surface hover:light:bg-gray-100'
-                          : 'dark:bg-dark-card light:bg-light-card dark:text-dark-text light:text-light-text border dark:border-dark-border light:border-light-border hover:dark:bg-dark-surface hover:light:bg-gray-100'
-                      }`}
+                      className={`group relative flex-1 flex items-center justify-center gap-2.5 py-3.5 px-4 overflow-hidden rounded-2xl font-bold transition-all duration-500 transform hover:scale-[1.03] active:scale-[0.97] ring-2 ring-transparent ${(user.role === 'admin' || user.role === 'registrar') && verification.status === 'pending'
+                          ? `bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 text-white
+                             shadow-lg shadow-purple-500/30 hover:shadow-2xl hover:shadow-purple-500/50
+                             hover:ring-purple-300/50
+                             before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/0 before:via-white/30 before:to-white/0 
+                             before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-1000
+                             after:absolute after:inset-0 after:bg-gradient-to-t after:from-black/20 after:to-transparent after:opacity-0 hover:after:opacity-100 after:transition-opacity
+                             animate-pulse-slow`
+                          : `bg-gradient-to-r from-slate-600 via-gray-600 to-zinc-700 text-white
+                             shadow-lg shadow-gray-500/20 hover:shadow-xl hover:shadow-gray-500/40
+                             hover:ring-gray-400/50
+                             before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/0 before:via-white/20 before:to-white/0 
+                             before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-1000`
+                        }`}
                     >
-                      {user.role === 'admin' || user.role === 'registrar'
-                        ? (verification.status === 'pending' ? 'Review' : 'View Details')
-                        : 'View Details'}
+                      {(user.role === 'admin' || user.role === 'registrar') && verification.status === 'pending' ? (
+                        <>
+                          <MdRateReview className="text-xl transition-all duration-300 group-hover:scale-125 group-hover:-rotate-6" />
+                          <span className="relative z-10">Review</span>
+                          {/* Pulsing ring for pending items */}
+                          <span className="absolute inset-0 rounded-2xl border-2 border-purple-400/50 animate-ping opacity-30"></span>
+                        </>
+                      ) : (
+                        <>
+                          <MdVisibility className="text-xl transition-all duration-300 group-hover:scale-110" />
+                          <span className="relative z-10">View</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>
-              </div>
               ))}
             </div>
             {pagination.pages > 1 && (
