@@ -155,61 +155,145 @@ const Graduates = () => {
         </div>
       </div>
 
-      {/* Graduates Table */}
-      <div className="card shadow-lg overflow-x-auto">
+      {/* Graduates List */}
+      <div className="card shadow-lg">
         {graduates.length === 0 ? (
           <div className="text-center py-12 dark:text-dark-muted light:text-light-muted">
             <MdSchool className="text-5xl mx-auto mb-4 opacity-50 text-primary-400" />
             <p>No graduates found</p>
           </div>
         ) : (
-          <table className="w-full">
-            <thead>
-              <tr className="border-b dark:border-dark-border light:border-light-border">
-                <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Student ID</th>
-                <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Name</th>
-                <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Program</th>
-                <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Graduation Year</th>
-                <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Certificate #</th>
-                <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
+          <>
+            {/* Mobile Card Layout */}
+            <div className="block md:hidden space-y-4">
               {graduates.map((graduate) => (
-                <tr key={graduate._id} className="border-b dark:border-dark-border light:border-light-border hover:dark:bg-dark-surface hover:light:bg-gray-50 transition-colors">
-                  <td className="p-4">{graduate.studentId}</td>
-                  <td className="p-4">
-                    {graduate.firstName} {graduate.lastName}
-                  </td>
-                  <td className="p-4 dark:text-dark-muted light:text-light-muted">{graduate.program}</td>
-                  <td className="p-4 dark:text-dark-muted light:text-light-muted">{graduate.graduationYear}</td>
-                  <td className="p-4 dark:text-dark-muted light:text-light-muted">{graduate.certificateNumber}</td>
-                  <td className="p-4">
-                    <div className="flex items-center space-x-2">
-                      {(user.role === 'admin' || user.role === 'registrar') && (
-                        <button
-                          onClick={() => handleEdit(graduate)}
-                          className="p-2 text-primary-400 hover:bg-primary-500/10 rounded transition-colors"
-                          title="Edit"
-                        >
-                          <MdEdit />
-                        </button>
-                      )}
+                <div
+                  key={graduate._id}
+                  className="p-4 rounded-xl dark:bg-dark-surface light:bg-light-surface border dark:border-dark-border light:border-light-border"
+                >
+                  {/* Graduate Header */}
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold dark:text-dark-text light:text-light-text text-lg truncate">
+                        {graduate.firstName} {graduate.lastName}
+                      </h3>
+                      <p className="text-sm dark:text-dark-muted light:text-light-muted mt-1">
+                        ID: {graduate.studentId}
+                      </p>
+                    </div>
+                    <div className="ml-3 flex-shrink-0">
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                        {graduate.graduationYear}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Graduate Details */}
+                  <div className="space-y-2 mb-4 text-sm">
+                    <div className="flex justify-between">
+                      <span className="dark:text-dark-muted light:text-light-muted">Program</span>
+                      <span className="dark:text-dark-text light:text-light-text font-medium truncate ml-4 max-w-[60%] text-right">
+                        {graduate.program}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="dark:text-dark-muted light:text-light-muted">Certificate #</span>
+                      <span className="dark:text-dark-text light:text-light-text font-medium">
+                        {graduate.certificateNumber}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons - Beautifully Styled */}
+                  {(user.role === 'admin' || user.role === 'registrar') && (
+                    <div className="flex items-center gap-3 pt-4 border-t dark:border-dark-border light:border-light-border">
+                      <button
+                        onClick={() => handleEdit(graduate)}
+                        className="group flex-1 relative flex items-center justify-center gap-2 py-3.5 px-4 overflow-hidden rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-95
+                          bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white
+                          shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/40
+                          before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/0 before:via-white/25 before:to-white/0 
+                          before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-700"
+                      >
+                        <MdEdit className="text-lg transition-transform group-hover:rotate-12" />
+                        <span>Edit</span>
+                      </button>
                       {user.role === 'admin' && (
                         <button
                           onClick={() => handleDelete(graduate)}
-                          className="p-2 text-red-400 hover:bg-red-500/20 rounded transition-colors"
-                          title="Delete"
+                          className="group flex-1 relative flex items-center justify-center gap-2 py-3.5 px-4 overflow-hidden rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-95
+                            bg-gradient-to-r from-rose-600 via-red-600 to-pink-600 text-white
+                            shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/40
+                            before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/0 before:via-white/25 before:to-white/0 
+                            before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-700"
                         >
-                          <MdDelete />
+                          <MdDelete className="text-lg transition-transform group-hover:scale-110" />
+                          <span>Delete</span>
                         </button>
                       )}
                     </div>
-                  </td>
-                </tr>
+                  )}
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+
+            {/* Desktop Table Layout */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b dark:border-dark-border light:border-light-border">
+                    <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Student ID</th>
+                    <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Name</th>
+                    <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Program</th>
+                    <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Graduation Year</th>
+                    <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Certificate #</th>
+                    <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {graduates.map((graduate) => (
+                    <tr key={graduate._id} className="border-b dark:border-dark-border light:border-light-border hover:dark:bg-dark-surface hover:light:bg-gray-50 transition-colors">
+                      <td className="p-4">{graduate.studentId}</td>
+                      <td className="p-4">
+                        {graduate.firstName} {graduate.lastName}
+                      </td>
+                      <td className="p-4 dark:text-dark-muted light:text-light-muted">{graduate.program}</td>
+                      <td className="p-4 dark:text-dark-muted light:text-light-muted">{graduate.graduationYear}</td>
+                      <td className="p-4 dark:text-dark-muted light:text-light-muted">{graduate.certificateNumber}</td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-2">
+                          {(user.role === 'admin' || user.role === 'registrar') && (
+                            <button
+                              onClick={() => handleEdit(graduate)}
+                              className="group relative p-2.5 rounded-xl overflow-hidden transition-all duration-300 transform hover:scale-110 active:scale-95
+                                bg-gradient-to-br from-violet-600 to-indigo-600 text-white
+                                shadow-md shadow-purple-500/20 hover:shadow-lg hover:shadow-purple-500/40
+                                before:absolute before:inset-0 before:bg-white/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity"
+                              title="Edit Graduate"
+                            >
+                              <MdEdit className="text-lg relative z-10 transition-transform group-hover:rotate-12" />
+                            </button>
+                          )}
+                          {user.role === 'admin' && (
+                            <button
+                              onClick={() => handleDelete(graduate)}
+                              className="group relative p-2.5 rounded-xl overflow-hidden transition-all duration-300 transform hover:scale-110 active:scale-95
+                                bg-gradient-to-br from-rose-600 to-pink-600 text-white
+                                shadow-md shadow-red-500/20 hover:shadow-lg hover:shadow-red-500/40
+                                before:absolute before:inset-0 before:bg-white/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity"
+                              title="Delete Graduate"
+                            >
+                              <MdDelete className="text-lg relative z-10 transition-transform group-hover:scale-110" />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
         {pagination.pages > 1 && !searchQuery && (
           <Pagination

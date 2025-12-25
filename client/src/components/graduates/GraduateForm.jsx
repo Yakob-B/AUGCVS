@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useNotification } from '../../pages/contexts/NotificationContext'
 import * as graduateService from '../../services/graduates'
-import { MdClose, MdCloudUpload, MdDelete } from 'react-icons/md'
-import { FaSpinner } from 'react-icons/fa'
+import { MdClose, MdCloudUpload, MdDelete, MdPerson, MdSchool, MdVerified, MdBadge } from 'react-icons/md'
+import { FaSpinner, FaGraduationCap } from 'react-icons/fa'
 
 const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
   const { showNotification } = useNotification()
@@ -300,39 +300,60 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
     )
   }
 
-  // Shared Input Styles
-  const inputLabelClass = "block text-sm font-semibold text-gray-600 mb-2"
-  const inputClass = "block w-full px-4 py-3 rounded-lg bg-gray-50 border-transparent focus:border-blue-500 focus:bg-white focus:ring-0 transition-colors text-gray-700 placeholder-gray-400"
-  const errorClass = "mt-1 text-xs text-red-500"
+  // Beautiful Input Styles with Gradients
+  const inputLabelClass = "block text-sm font-semibold text-gray-600 mb-2 flex items-center gap-2"
+  const inputClass = "block w-full px-4 py-3.5 rounded-xl bg-gray-50/80 border-2 border-gray-200/50 focus:border-purple-500 focus:bg-white focus:ring-4 focus:ring-purple-500/10 transition-all duration-300 text-gray-700 placeholder-gray-400 hover:border-gray-300"
+  const errorClass = "mt-2 text-xs text-red-500 flex items-center gap-1"
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-500 animate-fade-in overflow-y-auto">
-      <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col animate-scale-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 md:p-4 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 animate-fade-in overflow-y-auto">
+      {/* Floating Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-400/5 rounded-full blur-3xl"></div>
+      </div>
 
-        {/* Header */}
-        <div className="p-8 pb-0 flex justify-between items-start">
-          <div>
-            <h2 className="text-3xl font-heading font-bold text-gray-800">
-              {graduateId ? 'Edit Graduate' : 'Registration Form'}
-            </h2>
-            <p className="text-gray-500 mt-1">
+      <div className="relative bg-white/95 backdrop-blur-xl w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden max-h-[95vh] flex flex-col animate-scale-in border border-white/20">
+
+        {/* Header with Gradient */}
+        <div className="relative p-5 md:p-8 pb-4 flex justify-between items-start bg-gradient-to-r from-purple-50 via-white to-indigo-50">
+          {/* Decorative Elements */}
+          <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-purple-200/50 to-transparent rounded-bl-full"></div>
+
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2.5 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl shadow-lg shadow-purple-500/30">
+                <FaGraduationCap className="text-white text-xl" />
+              </div>
+              <h2 className="text-2xl md:text-3xl font-heading font-bold bg-gradient-to-r from-purple-700 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                {graduateId ? 'Edit Graduate' : 'Graduate Registration'}
+              </h2>
+            </div>
+            <p className="text-gray-500 text-sm md:text-base ml-14">
               {graduateId ? 'Update the graduate\'s information below.' : 'Enter the graduate\'s details to create a new record.'}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors p-2"
+            className="relative z-10 text-gray-400 hover:text-gray-600 transition-all duration-300 p-2.5 hover:bg-gray-100 rounded-xl active:scale-95"
+            aria-label="Close"
           >
             <MdClose size={24} />
           </button>
         </div>
 
         {/* Form Content */}
-        <form onSubmit={handleSubmit} className="p-8 space-y-8 overflow-y-auto custom-scrollbar">
+        <form onSubmit={handleSubmit} className="p-5 md:p-8 pt-4 space-y-8 overflow-y-auto custom-scrollbar">
 
           {/* Section: Personal Details */}
           <div className="space-y-6">
-            <h3 className="text-lg font-bold text-gray-800 border-b pb-2">Personal Details</h3>
+            <div className="flex items-center gap-3 pb-3 border-b-2 border-gradient-to-r from-blue-200 to-cyan-200">
+              <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg shadow-md shadow-blue-500/20">
+                <MdPerson className="text-white text-lg" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-800">Personal Details</h3>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Student ID */}
@@ -459,7 +480,12 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
 
           {/* Section: Academic Information */}
           <div className="space-y-6">
-            <h3 className="text-lg font-bold text-gray-800 border-b pb-2">Academic Information</h3>
+            <div className="flex items-center gap-3 pb-3 border-b-2 border-gradient-to-r from-emerald-200 to-teal-200">
+              <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg shadow-md shadow-emerald-500/20">
+                <MdSchool className="text-white text-lg" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-800">Academic Information</h3>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Program */}
@@ -571,7 +597,12 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
 
           {/* Section: Certificate */}
           <div className="space-y-6">
-            <h3 className="text-lg font-bold text-gray-800 border-b pb-2">Certificate Details</h3>
+            <div className="flex items-center gap-3 pb-3 border-b-2 border-gradient-to-r from-amber-200 to-orange-200">
+              <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg shadow-md shadow-amber-500/20">
+                <MdVerified className="text-white text-lg" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-800">Certificate Details</h3>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Certificate Number */}
@@ -591,7 +622,8 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
               <div>
                 <label className={inputLabelClass}>Certificate File</label>
                 {!formData.certificateFile ? (
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 hover:bg-blue-50 transition-all cursor-pointer">
+                  <div className="group border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-purple-500 hover:bg-purple-50/50 transition-all duration-300 cursor-pointer relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/5 to-purple-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
                     <input
                       type="file"
                       id="certificateFile"
@@ -599,31 +631,33 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
                       onChange={handleFileChange}
                       className="hidden"
                     />
-                    <label htmlFor="certificateFile" className="cursor-pointer">
-                      <MdCloudUpload className="mx-auto text-4xl text-gray-400 mb-2" />
-                      <p className="text-sm text-gray-600 font-medium">Click to upload certificate</p>
-                      <p className="text-xs text-gray-400 mt-1">PDF, JPG, PNG (Max 5MB)</p>
+                    <label htmlFor="certificateFile" className="cursor-pointer relative z-10">
+                      <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-purple-100 to-indigo-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <MdCloudUpload className="text-3xl text-purple-500 group-hover:text-purple-600 transition-colors" />
+                      </div>
+                      <p className="text-sm text-gray-700 font-semibold mb-1">Click to upload certificate</p>
+                      <p className="text-xs text-gray-400">PDF, JPG, PNG (Max 5MB)</p>
                     </label>
                   </div>
                 ) : (
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <div className="flex items-center space-x-3 overflow-hidden">
+                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-xl border-2 border-gray-200/50">
+                    <div className="flex items-center space-x-4 overflow-hidden">
                       {filePreview ? (
-                        <img src={filePreview} alt="Preview" className="w-10 h-10 object-cover rounded" />
+                        <img src={filePreview} alt="Preview" className="w-14 h-14 object-cover rounded-xl shadow-md" />
                       ) : (
-                        <div className="w-10 h-10 bg-blue-100 rounded flex items-center justify-center text-blue-600 font-bold">
+                        <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-blue-500/30">
                           PDF
                         </div>
                       )}
                       <div className="truncate">
-                        <p className="text-sm font-medium text-gray-700 truncate">{formData.certificateFile.name}</p>
+                        <p className="text-sm font-semibold text-gray-700 truncate">{formData.certificateFile.name}</p>
                         <p className="text-xs text-gray-500">{(formData.certificateFile.size / 1024 / 1024).toFixed(2)} MB</p>
                       </div>
                     </div>
                     <button
                       type="button"
                       onClick={removeFile}
-                      className="text-red-400 hover:text-red-600 p-2"
+                      className="p-2.5 text-red-400 hover:text-white hover:bg-red-500 rounded-xl transition-all duration-300 active:scale-95"
                     >
                       <MdDelete size={20} />
                     </button>
@@ -635,26 +669,33 @@ const GraduateForm = ({ graduateId, onClose, onSuccess }) => {
           </div>
 
           {/* Submit Button */}
-          <div className="pt-4">
+          <div className="pt-6">
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-lg transform transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center text-lg"
+              className="group relative w-full py-4 overflow-hidden rounded-xl font-bold text-lg shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center
+                bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white
+                shadow-purple-500/30 hover:shadow-2xl hover:shadow-purple-500/40
+                before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/0 before:via-white/25 before:to-white/0 
+                before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-700"
             >
               {loading ? (
                 <>
-                  <FaSpinner className="animate-spin mr-2" />
+                  <FaSpinner className="animate-spin mr-3" />
                   Processing...
                 </>
               ) : (
-                'Submit'
+                <>
+                  <FaGraduationCap className="mr-2 text-xl group-hover:rotate-12 transition-transform" />
+                  {graduateId ? 'Update Graduate' : 'Register Graduate'}
+                </>
               )}
             </button>
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="w-full mt-3 py-2 text-gray-500 hover:text-gray-700 font-medium text-sm transition-colors"
+              className="w-full mt-4 py-3 text-gray-500 hover:text-gray-700 font-medium transition-colors rounded-xl hover:bg-gray-100 active:scale-[0.98]"
             >
               Cancel
             </button>
