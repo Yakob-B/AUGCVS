@@ -106,56 +106,128 @@ const Users = () => {
         />
       )}
 
-      <div className="card shadow-lg overflow-x-auto">
+      <div className="card shadow-lg">
         {users.length === 0 ? (
           <div className="text-center py-12 dark:text-dark-muted light:text-light-muted">
             <MdPeople className="text-5xl mx-auto mb-4 opacity-50 text-primary-400" />
             <p>No users found</p>
           </div>
         ) : (
-          <table className="w-full">
-            <thead>
-              <tr className="border-b dark:border-dark-border light:border-light-border">
-                <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Name</th>
-                <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Email</th>
-                <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Role</th>
-                <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Organization</th>
-                <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
+          <>
+            {/* Mobile Card Layout */}
+            <div className="block md:hidden space-y-4">
               {users.map((user) => (
-                <tr key={user._id} className="border-b dark:border-dark-border light:border-light-border hover:dark:bg-dark-surface hover:light:bg-gray-50 transition-colors">
-                  <td className="p-4">
-                    {user.firstName} {user.lastName}
-                  </td>
-                  <td className="p-4 dark:text-dark-muted light:text-light-muted">{user.email}</td>
-                  <td className="p-4">{getRoleBadge(user.role)}</td>
-                  <td className="p-4 dark:text-dark-muted light:text-light-muted">{user.organization || '-'}</td>
-                  <td className="p-4">
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => handleEdit(user)}
-                        className="p-2 text-primary-400 hover:bg-primary-500/10 rounded transition-colors"
-                        title="Edit"
-                      >
-                        <MdEdit />
-                      </button>
-                      {currentUser?._id !== user._id && (
-                        <button
-                          onClick={() => handleDelete(user)}
-                          className="p-2 text-red-400 hover:bg-red-500/20 rounded transition-colors"
-                          title="Delete"
-                        >
-                          <MdDelete />
-                        </button>
-                      )}
+                <div
+                  key={user._id}
+                  className="p-4 rounded-xl dark:bg-dark-surface light:bg-light-surface border dark:border-dark-border light:border-light-border"
+                >
+                  {/* User Header */}
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold dark:text-dark-text light:text-light-text text-lg truncate">
+                        {user.firstName} {user.lastName}
+                      </h3>
+                      <p className="text-sm dark:text-dark-muted light:text-light-muted truncate mt-1">
+                        {user.email}
+                      </p>
                     </div>
-                  </td>
-                </tr>
+                    <div className="ml-3 flex-shrink-0">
+                      {getRoleBadge(user.role)}
+                    </div>
+                  </div>
+
+                  {/* Organization */}
+                  {user.organization && (
+                    <div className="mb-4 text-sm">
+                      <span className="dark:text-dark-muted light:text-light-muted">Organization: </span>
+                      <span className="dark:text-dark-text light:text-light-text">{user.organization}</span>
+                    </div>
+                  )}
+
+                  {/* Action Buttons - Beautifully Styled */}
+                  <div className="flex items-center gap-3 pt-4 border-t dark:border-dark-border light:border-light-border">
+                    <button
+                      onClick={() => handleEdit(user)}
+                      className="group flex-1 relative flex items-center justify-center gap-2 py-3.5 px-4 overflow-hidden rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-95
+                        bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white
+                        shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/40
+                        before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/0 before:via-white/25 before:to-white/0 
+                        before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-700"
+                    >
+                      <MdEdit className="text-lg transition-transform group-hover:rotate-12" />
+                      <span>Edit</span>
+                    </button>
+                    {currentUser?._id !== user._id && (
+                      <button
+                        onClick={() => handleDelete(user)}
+                        className="group flex-1 relative flex items-center justify-center gap-2 py-3.5 px-4 overflow-hidden rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-95
+                          bg-gradient-to-r from-rose-600 via-red-600 to-pink-600 text-white
+                          shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/40
+                          before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/0 before:via-white/25 before:to-white/0 
+                          before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-700"
+                      >
+                        <MdDelete className="text-lg transition-transform group-hover:scale-110" />
+                        <span>Delete</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+
+            {/* Desktop Table Layout */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b dark:border-dark-border light:border-light-border">
+                    <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Name</th>
+                    <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Email</th>
+                    <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Role</th>
+                    <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Organization</th>
+                    <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((user) => (
+                    <tr key={user._id} className="border-b dark:border-dark-border light:border-light-border hover:dark:bg-dark-surface hover:light:bg-gray-50 transition-colors">
+                      <td className="p-4">
+                        {user.firstName} {user.lastName}
+                      </td>
+                      <td className="p-4 dark:text-dark-muted light:text-light-muted">{user.email}</td>
+                      <td className="p-4">{getRoleBadge(user.role)}</td>
+                      <td className="p-4 dark:text-dark-muted light:text-light-muted">{user.organization || '-'}</td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleEdit(user)}
+                            className="group relative p-2.5 rounded-xl overflow-hidden transition-all duration-300 transform hover:scale-110 active:scale-95
+                              bg-gradient-to-br from-violet-600 to-indigo-600 text-white
+                              shadow-md shadow-purple-500/20 hover:shadow-lg hover:shadow-purple-500/40
+                              before:absolute before:inset-0 before:bg-white/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity"
+                            title="Edit User"
+                          >
+                            <MdEdit className="text-lg relative z-10 transition-transform group-hover:rotate-12" />
+                          </button>
+                          {currentUser?._id !== user._id && (
+                            <button
+                              onClick={() => handleDelete(user)}
+                              className="group relative p-2.5 rounded-xl overflow-hidden transition-all duration-300 transform hover:scale-110 active:scale-95
+                                bg-gradient-to-br from-rose-600 to-pink-600 text-white
+                                shadow-md shadow-red-500/20 hover:shadow-lg hover:shadow-red-500/40
+                                before:absolute before:inset-0 before:bg-white/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity"
+                              title="Delete User"
+                            >
+                              <MdDelete className="text-lg relative z-10 transition-transform group-hover:scale-110" />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
     </div>

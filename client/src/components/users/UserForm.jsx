@@ -185,25 +185,26 @@ const UserForm = ({ userId, onClose, onSuccess }) => {
       <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col animate-scale-in">
 
         {/* Header */}
-        <div className="p-8 pb-0 flex justify-between items-start">
+        <div className="p-5 md:p-8 pb-0 flex justify-between items-start">
           <div>
-            <h2 className="text-3xl font-heading font-bold text-gray-800">
+            <h2 className="text-2xl md:text-3xl font-heading font-bold text-gray-800">
               {userId ? 'Edit User' : 'User Registration'}
             </h2>
-            <p className="text-gray-500 mt-1">
+            <p className="text-gray-500 mt-1 text-sm md:text-base">
               {userId ? 'Update user account details.' : 'Create a new user account.'}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors p-2"
+            className="text-gray-400 hover:text-gray-600 transition-colors p-2 -mr-2 rounded-lg hover:bg-gray-100 active:scale-95"
+            aria-label="Close"
           >
             <MdClose size={24} />
           </button>
         </div>
 
         {/* Form Content */}
-        <form onSubmit={handleSubmit} className="p-8 space-y-8 overflow-y-auto custom-scrollbar">
+        <form onSubmit={handleSubmit} className="p-5 md:p-8 space-y-6 md:space-y-8 overflow-y-auto custom-scrollbar">
 
           {/* Personal Information */}
           <div className="space-y-6">
