@@ -257,7 +257,7 @@ const Home = () => {
       </section>
 
       {/* Inline styles for scroll animations */}
-      <style jsx>{`
+      <style>{`
         .scroll-animate {
           opacity: 0;
           transform: translateY(30px);
