@@ -33,4 +33,4 @@ Full-stack MERN platform digitizing secure graduate credential verification.
 
 > Built to solve credential verification challenges securely and efficiently.
 
-Made with ❤️ by [Yakob Bekuma](https://github.com/Yakob-B)
+(https://github.com/Yakob-B)
