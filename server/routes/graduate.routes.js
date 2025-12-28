@@ -36,14 +36,14 @@ const graduateValidation = [
 ];
 
 // ✅ Static and search/filter routes go first
-router.get('/filters', authorize('admin', 'registrar'), getFilters);
-router.get('/search', authorize('admin', 'registrar'), searchGraduates);
-router.get('/', authorize('admin', 'registrar'), getGraduates);
+router.get('/filters', authorize('registrar'), getFilters);
+router.get('/search', authorize('registrar'), searchGraduates);
+router.get('/', authorize('registrar'), getGraduates);
 
 // Bulk upload
 router.post(
     '/bulk-upload',
-    authorize('admin', 'registrar'),
+    authorize('registrar'),
     dataUpload.single('file'),
     handleUploadError,
     bulkUploadGraduates
@@ -52,7 +52,7 @@ router.post(
 // ✅ CRUD routes
 router.post(
     '/',
-    authorize('admin', 'registrar'),
+    authorize('registrar'),
     upload.single('certificateFile'),
     handleUploadError,
     graduateValidation,
@@ -61,14 +61,14 @@ router.post(
 
 router.put(
     '/:id',
-    authorize('admin', 'registrar'),
+    authorize('registrar'),
     upload.single('certificateFile'),
     handleUploadError,
     graduateValidation,
     updateGraduate
 );
 
-router.get('/:id', authorize('admin', 'registrar'), getGraduate);
-router.delete('/:id', authorize('admin'), deleteGraduate);
+router.get('/:id', authorize('registrar'), getGraduate);
+router.delete('/:id', authorize('registrar'), deleteGraduate);
 
 module.exports = router;

@@ -40,7 +40,7 @@ router.post(
     createVerification
 );
 
-router.get('/', authorize('admin', 'registrar'), getVerifications);
+router.get('/', authorize('registrar'), getVerifications);
 router.get('/my-requests', authorize('external'), getMyVerifications);
 router.get('/:id', getVerification);
 router.put('/:id/process', authorize('registrar'), processValidation, processVerification);
