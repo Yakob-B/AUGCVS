@@ -61,9 +61,7 @@ function App() {
                           <PrivateRoute role="admin">
                             <Routes>
                               <Route index element={<AdminDashboard />} />
-                              <Route path="graduates" element={<Graduates />} />
                               <Route path="users" element={<Users />} />
-                              <Route path="verifications" element={<Verifications />} />
                             </Routes>
                           </PrivateRoute>
                         }
@@ -71,9 +69,10 @@ function App() {
                       <Route
                         path="/registrar/*"
                         element={
-                          <PrivateRoute role={['registrar', 'admin']}>
+                          <PrivateRoute role="registrar">
                             <Routes>
                               <Route index element={<RegistrarDashboard />} />
+                              <Route path="graduates" element={<Graduates />} />
                               <Route path="verifications" element={<Verifications />} />
                             </Routes>
                           </PrivateRoute>
