@@ -2,12 +2,51 @@ const User = require('../models/user.model');
 const { validationResult } = require('express-validator');
 const logAudit = require('../utils/auditLog');
 
-// List all users
+// List all users with search
 exports.getUsers = async (req, res) => {
   try {
-    const users = await User.find().select('-password');
-    res.status(200).json({ success: true, data: users });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const search = req.query.search || '';
+
+    let query = {};
+    if (search) {
+      query = {
+        $or: [
+          { firstName: { $regex: search, $options: 'i' } },
+          { lastName: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } },
+          { role: { $regex: search, $options: 'i' } },
+          { organization: { $regex: search, $options: 'i' } }
+        ]
+      };
+      console.log(`Searching users with query: [${search}]`);
+    }
+
+    const users = await User.find(query).select('-password')
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    const total = await User.countDocuments(query);
+
+    res.status(200).json({
+      success: true,
+      count: users.length,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+      pagination: {
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+        totalResults: total
+      },
+      data: users
+    });
   } catch (err) {
+    console.error(`Error in getUsers: ${err.message}`);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
@@ -90,17 +129,27 @@ exports.deleteUser = async (req, res) => {
 // Update a user
 exports.updateUser = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const userId = req.params.id ? req.params.id.trim() : null;
+    console.log(`Updating user ID: [${userId}] (length: ${userId ? userId.length : 0})`);
+
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'User ID is required' });
+    }
+
+    const user = await User.findById(userId);
     if (!user) {
+      console.log(`User not found in DB for update: [${userId}]`);
       await logAudit({
         user: req.user.id,
         action: 'update_user_failed',
-        details: { userId: req.params.id, reason: 'Not found' },
+        details: { userId: userId, reason: 'Not found' },
         ip: req.ip
       });
       return res.status(404).json({ success: false, message: 'User not found' });
     }
     const { firstName, lastName, email, role, organization, password } = req.body;
+    console.log(`Update data:`, { firstName, lastName, email, role, organization });
+
     user.firstName = firstName || user.firstName;
     user.lastName = lastName || user.lastName;
     user.email = email || user.email;
@@ -112,6 +161,7 @@ exports.updateUser = async (req, res) => {
     }
 
     await user.save();
+    console.log(`User updated successfully: ${user._id}`);
     await logAudit({
       user: req.user.id,
       action: 'update_user_success',
@@ -120,6 +170,7 @@ exports.updateUser = async (req, res) => {
     });
     res.status(200).json({ success: true, data: user });
   } catch (err) {
+    console.error(`Error updating user: ${err.message}`);
     await logAudit({
       user: req.user.id,
       action: 'update_user_failed',
@@ -128,4 +179,27 @@ exports.updateUser = async (req, res) => {
     });
     res.status(500).json({ success: false, message: 'Server error' });
   }
-}; 
+};
+
+// Get single user
+exports.getUser = async (req, res) => {
+  try {
+    const userId = req.params.id ? req.params.id.trim() : null;
+    console.log(`Fetching single user ID: [${userId}] (length: ${userId ? userId.length : 0})`);
+
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'User ID is required' });
+    }
+
+    const user = await User.findById(userId).select('-password');
+    if (!user) {
+      console.log(`User not found in DB: [${userId}]`);
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    console.log(`User fetched successfully: ${user.email}`);
+    res.status(200).json({ success: true, data: user });
+  } catch (err) {
+    console.error(`Error fetching user [${req.params.id}]: ${err.message}`);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
