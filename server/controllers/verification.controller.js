@@ -56,27 +56,82 @@ exports.createVerification = async (req, res) => {
         }
 
         // Lookup graduate by studentId, fullName, graduationYear, degreeType
+        // Lookup graduate by studentId first (most reliable identifier)
         const { studentId, fullName, graduationYear, degreeType } = req.body;
-        let graduateQuery = { studentId, graduationYear, degreeType };
-        if (fullName) {
-            // Try to split fullName into firstName and lastName
-            const [firstName, ...rest] = fullName.trim().split(' ');
-            if (firstName && rest.length > 0) {
-                graduateQuery.firstName = firstName;
-                graduateQuery.lastName = rest.join(' ');
-            }
-        }
-        const graduate = await Graduate.findOne(graduateQuery);
+
+        // Find graduate by student ID (case-insensitive)
+        const graduate = await Graduate.findOne({
+            studentId: { $regex: new RegExp(`^${studentId}$`, 'i') }
+        });
+
         if (!graduate) {
             await logAudit({
                 user: req.user.id,
                 action: 'create_verification_failed',
-                details: { reason: 'Graduate not found', query: graduateQuery },
+                details: { reason: 'Graduate not found', studentId },
                 ip: req.ip
             });
             return res.status(404).json({
                 success: false,
-                errors: [{ msg: 'Graduate not found with provided details', param: 'graduate' }]
+                errors: [{ msg: 'Graduate not found with provided Student ID', param: 'studentId' }]
+            });
+        }
+
+        // Validate other details
+        const mismatchErrors = [];
+
+        console.log('--- VERIFICATION DEBUG ---');
+        console.log('DB Graduate:', JSON.stringify(graduate, null, 2));
+        console.log('Input Body:', JSON.stringify(req.body, null, 2));
+
+        // Validate Graduation Year
+        if (graduate.graduationYear != graduationYear) {
+            console.log(`❌ YEAR MISMATCH: DB=${graduate.graduationYear} Input=${graduationYear}`);
+            mismatchErrors.push({ msg: `Graduation year mismatch. Expected: ${graduate.graduationYear}`, param: 'graduationYear' });
+        }
+
+        // Validate Degree Type (case-insensitive partial match)
+        if (!graduate.degreeType.toLowerCase().includes(degreeType.toLowerCase()) &&
+            !degreeType.toLowerCase().includes(graduate.degreeType.toLowerCase())) {
+            mismatchErrors.push({ msg: `Degree type mismatch. Expected: ${graduate.degreeType}`, param: 'degreeType' });
+        }
+
+        // Validate Name (Loose matching)
+        if (fullName) {
+            const normalizedInputName = fullName.toLowerCase().replace(/\s+/g, ' ').trim();
+            const dbFullName = `${graduate.firstName} ${graduate.middleName ? graduate.middleName + ' ' : ''}${graduate.lastName}`.toLowerCase().replace(/\s+/g, ' ').trim();
+
+            // Check if input name matches DB name loosely
+            // 1. Exact match of full string
+            // 2. Input contains First + Last
+            // 3. DB contains Input
+
+            const nameParts = normalizedInputName.split(' ');
+            const inputFirst = nameParts[0];
+            const inputLast = nameParts[nameParts.length - 1];
+
+            const dbFirst = graduate.firstName.toLowerCase();
+            const dbLast = graduate.lastName.toLowerCase();
+
+            // Basic check: First and Last names must be present in the respective strings
+            if (!dbFullName.includes(inputFirst) || !dbFullName.includes(inputLast)) {
+                // Fallback: Check strictly if first and last match exactly
+                if (inputFirst !== dbFirst || !dbFullName.includes(inputLast)) {
+                    mismatchErrors.push({ msg: `Name mismatch. found: ${graduate.firstName} ${graduate.lastName}`, param: 'fullName' });
+                }
+            }
+        }
+
+        if (mismatchErrors.length > 0) {
+            await logAudit({
+                user: req.user.id,
+                action: 'create_verification_failed',
+                details: { reason: 'Details mismatch', errors: mismatchErrors },
+                ip: req.ip
+            });
+            return res.status(400).json({
+                success: false,
+                errors: mismatchErrors
             });
         }
 
