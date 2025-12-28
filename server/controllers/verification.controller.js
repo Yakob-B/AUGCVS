@@ -65,16 +65,6 @@ exports.createVerification = async (req, res) => {
         });
 
         if (!graduate) {
-            console.log(`❌ Graduate NOT FOUND for Student ID: ${studentId}`);
-
-            // DEBUG: Print all student IDs to see what's in there
-            try {
-                const allGrads = await Graduate.find({}, 'studentId');
-                console.log('DEBUG: Existing Student IDs in DB:', allGrads.map(g => g.studentId));
-            } catch (e) {
-                console.error('Debug query failed', e);
-            }
-
             await logAudit({
                 user: req.user.id,
                 action: 'create_verification_failed',
@@ -90,13 +80,8 @@ exports.createVerification = async (req, res) => {
         // Validate other details
         const mismatchErrors = [];
 
-        console.log('--- VERIFICATION DEBUG ---');
-        console.log('DB Graduate:', JSON.stringify(graduate, null, 2));
-        console.log('Input Body:', JSON.stringify(req.body, null, 2));
-
         // Validate Graduation Year
         if (graduate.graduationYear != graduationYear) {
-            console.log(`❌ YEAR MISMATCH: DB=${graduate.graduationYear} Input=${graduationYear}`);
             mismatchErrors.push({ msg: `Graduation year mismatch. Expected: ${graduate.graduationYear}`, param: 'graduationYear' });
         }
 
@@ -118,10 +103,7 @@ exports.createVerification = async (req, res) => {
             const allPartsMatch = inputParts.every(part => dbParts.includes(part));
 
             if (!allPartsMatch) {
-                console.log(`❌ NAME MISMATCH: Input="${normalizedInputName}" DB="${dbFullName}"`);
                 mismatchErrors.push({ msg: `Name mismatch. found: ${graduate.firstName} ${graduate.lastName}`, param: 'fullName' });
-            } else {
-                console.log('✅ Name Matched (Bag of Words)');
             }
         }
 
