@@ -65,6 +65,16 @@ exports.createVerification = async (req, res) => {
         });
 
         if (!graduate) {
+            console.log(`❌ Graduate NOT FOUND for Student ID: ${studentId}`);
+
+            // DEBUG: Print all student IDs to see what's in there
+            try {
+                const allGrads = await Graduate.find({}, 'studentId');
+                console.log('DEBUG: Existing Student IDs in DB:', allGrads.map(g => g.studentId));
+            } catch (e) {
+                console.error('Debug query failed', e);
+            }
+
             await logAudit({
                 user: req.user.id,
                 action: 'create_verification_failed',
