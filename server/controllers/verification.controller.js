@@ -131,23 +131,29 @@ exports.createVerification = async (req, res) => {
         const verification = new Verification(verificationData);
         await verification.save();
 
+        // Populate graduate and requester details for the response
+        const populatedVerification = await Verification.findById(verification._id)
+            .populate('graduate')
+            .populate('requester', 'firstName lastName email role');
+
         // Emit real-time notification
         emitVerificationUpdate(req, 'verification-created', {
-            id: verification._id,
-            requestNumber: verification.requestNumber,
-            status: verification.status,
-            requester: verification.requester
+            id: populatedVerification._id,
+            requestNumber: populatedVerification.requestNumber,
+            status: populatedVerification.status,
+            requester: populatedVerification.requester._id // Use _id for socket room
         });
 
         await logAudit({
             user: req.user.id,
-            action: 'create_verification_success',
-            details: { verificationId: verification._id, graduate: verification.graduate },
+            action: 'create_verification',
+            details: { verificationId: verification._id, studentId: graduate.studentId },
             ip: req.ip
         });
+
         res.status(201).json({
             success: true,
-            data: verification
+            data: populatedVerification
         });
     } catch (err) {
         console.error(err);
