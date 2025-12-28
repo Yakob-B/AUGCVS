@@ -8,8 +8,10 @@ const logAudit = require('../utils/auditLog');
 const emitVerificationUpdate = (req, event, data) => {
     const io = req.app.get('io');
     if (io) {
+        // Handle requester as Object or String
+        const requesterId = (data.requester && data.requester._id) || data.requester;
         // Emit to the specific user who made the request
-        io.to(`user-${data.requester}`).emit(event, data);
+        io.to(`user-${requesterId}`).emit(event, data);
 
         // Emit to registrar room for new requests
         if (event === 'verification-created') {
@@ -141,7 +143,7 @@ exports.createVerification = async (req, res) => {
             id: populatedVerification._id,
             requestNumber: populatedVerification.requestNumber,
             status: populatedVerification.status,
-            requester: populatedVerification.requester._id // Use _id for socket room
+            requester: populatedVerification.requester // Object for Android, ID extracted by helper
         });
 
         await logAudit({
@@ -310,7 +312,8 @@ exports.processVerification = async (req, res) => {
             status: verification.status,
             verificationResult: verification.verificationResult,
             comments: verification.comments,
-            processedAt: verification.processedAt
+            processedAt: verification.processedAt,
+            requester: verification.requester // Object for Android, ID extracted by helper
         });
 
         // Re-fetch populated verification for response to avoid client-side parsing errors
