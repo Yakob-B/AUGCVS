@@ -106,29 +106,22 @@ exports.createVerification = async (req, res) => {
             mismatchErrors.push({ msg: `Degree type mismatch. Expected: ${graduate.degreeType}`, param: 'degreeType' });
         }
 
-        // Validate Name (Loose matching)
+        // Validate Name (Loose matching - Bag of Words)
         if (fullName) {
             const normalizedInputName = fullName.toLowerCase().replace(/\s+/g, ' ').trim();
-            const dbFullName = `${graduate.firstName} ${graduate.middleName ? graduate.middleName + ' ' : ''}${graduate.lastName}`.toLowerCase().replace(/\s+/g, ' ').trim();
+            const dbFullName = `${graduate.firstName} ${graduate.middleName || ''} ${graduate.lastName}`.toLowerCase().replace(/\s+/g, ' ').trim();
 
-            // Check if input name matches DB name loosely
-            // 1. Exact match of full string
-            // 2. Input contains First + Last
-            // 3. DB contains Input
+            const inputParts = normalizedInputName.split(' ');
+            const dbParts = dbFullName.split(' ');
 
-            const nameParts = normalizedInputName.split(' ');
-            const inputFirst = nameParts[0];
-            const inputLast = nameParts[nameParts.length - 1];
+            // Check if every part of the input name exists in the DB name
+            const allPartsMatch = inputParts.every(part => dbParts.includes(part));
 
-            const dbFirst = graduate.firstName.toLowerCase();
-            const dbLast = graduate.lastName.toLowerCase();
-
-            // Basic check: First and Last names must be present in the respective strings
-            if (!dbFullName.includes(inputFirst) || !dbFullName.includes(inputLast)) {
-                // Fallback: Check strictly if first and last match exactly
-                if (inputFirst !== dbFirst || !dbFullName.includes(inputLast)) {
-                    mismatchErrors.push({ msg: `Name mismatch. found: ${graduate.firstName} ${graduate.lastName}`, param: 'fullName' });
-                }
+            if (!allPartsMatch) {
+                console.log(`❌ NAME MISMATCH: Input="${normalizedInputName}" DB="${dbFullName}"`);
+                mismatchErrors.push({ msg: `Name mismatch. found: ${graduate.firstName} ${graduate.lastName}`, param: 'fullName' });
+            } else {
+                console.log('✅ Name Matched (Bag of Words)');
             }
         }
 
