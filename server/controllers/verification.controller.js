@@ -192,7 +192,7 @@ exports.getVerifications = async (req, res) => {
 
         const verifications = await Verification.find(query)
             .populate('requester', 'firstName lastName email organization')
-            .populate('graduate', 'firstName lastName studentId certificateNumber')
+            .populate('graduate', 'firstName middleName lastName studentId certificateNumber')
             .populate('processedBy', 'firstName lastName email')
             .skip(skip)
             .limit(limit)
@@ -203,9 +203,12 @@ exports.getVerifications = async (req, res) => {
         res.status(200).json({
             success: true,
             count: verifications.length,
-            total,
-            page,
-            pages: Math.ceil(total / limit),
+            pagination: {
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+                totalResults: total
+            },
             data: verifications
         });
     } catch (err) {
@@ -224,7 +227,7 @@ exports.getVerification = async (req, res) => {
     try {
         const verification = await Verification.findById(req.params.id)
             .populate('requester', 'firstName lastName email organization')
-            .populate('graduate', 'firstName lastName studentId certificateNumber')
+            .populate('graduate', 'firstName middleName lastName studentId certificateNumber')
             .populate('processedBy', 'firstName lastName email');
 
         if (!verification) {
@@ -319,7 +322,7 @@ exports.processVerification = async (req, res) => {
         // Re-fetch populated verification for response to avoid client-side parsing errors
         const populatedVerification = await Verification.findById(verification._id)
             .populate('requester', 'firstName lastName email organization')
-            .populate('graduate', 'firstName lastName studentId certificateNumber')
+            .populate('graduate', 'firstName middleName lastName studentId certificateNumber')
             .populate('processedBy', 'firstName lastName email');
 
         res.status(200).json({
@@ -351,7 +354,8 @@ exports.getMyVerifications = async (req, res) => {
         const skip = (page - 1) * limit;
 
         const verifications = await Verification.find({ requester: req.user.id })
-            .populate('graduate', 'firstName lastName studentId certificateNumber')
+            .populate('graduate', 'firstName middleName lastName studentId certificateNumber')
+            .populate('requester', 'firstName lastName email organization')
             .populate('processedBy', 'firstName lastName email')
             .skip(skip)
             .limit(limit)
@@ -362,9 +366,12 @@ exports.getMyVerifications = async (req, res) => {
         res.status(200).json({
             success: true,
             count: verifications.length,
-            total,
-            page,
-            pages: Math.ceil(total / limit),
+            pagination: {
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+                totalResults: total
+            },
             data: verifications
         });
     } catch (err) {
