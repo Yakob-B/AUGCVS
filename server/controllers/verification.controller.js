@@ -291,17 +291,17 @@ exports.processVerification = async (req, res) => {
             ip: req.ip
         });
 
-        // Send email notification
-        const message = `Your verification request (${verification.requestNumber}) has been processed.\n\nStatus: ${status}\nResult: ${verificationResult}\nComments: ${comments}`;
-        try {
-            await sendEmail({
-                email: verification.requester.email,
-                subject: 'Verification Request Processed',
-                message
-            });
-        } catch (e) {
-            console.error('Email send failed:', e.message);
-        }
+        // Send email notification - DISABLED to prevent timeouts on Render
+        // const message = `Your verification request (${verification.requestNumber}) has been processed.\n\nStatus: ${status}\nResult: ${verificationResult}\nComments: ${comments}`;
+        // try {
+        //     await sendEmail({
+        //         email: verification.requester.email,
+        //         subject: 'Verification Request Processed',
+        //         message
+        //     });
+        // } catch (e) {
+        //     console.error('Email send failed:', e.message);
+        // }
 
         // Emit real-time notification to user
         emitVerificationUpdate(req, 'verification-processed', {
@@ -313,9 +313,15 @@ exports.processVerification = async (req, res) => {
             processedAt: verification.processedAt
         });
 
+        // Re-fetch populated verification for response to avoid client-side parsing errors
+        const populatedVerification = await Verification.findById(verification._id)
+            .populate('requester', 'firstName lastName email organization')
+            .populate('graduate', 'firstName lastName studentId certificateNumber')
+            .populate('processedBy', 'firstName lastName email');
+
         res.status(200).json({
             success: true,
-            data: verification
+            data: populatedVerification
         });
     } catch (err) {
         console.error(err);
