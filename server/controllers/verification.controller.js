@@ -103,7 +103,7 @@ exports.createVerification = async (req, res) => {
             const allPartsMatch = inputParts.every(part => dbParts.includes(part));
 
             if (!allPartsMatch) {
-                mismatchErrors.push({ msg: `Name mismatch. found: ${graduate.firstName} ${graduate.lastName}`, param: 'fullName' });
+                mismatchErrors.push({ msg: `Name mismatch. found: ${graduate.firstName} ${graduate.middleName || ''} ${graduate.lastName}`, param: 'fullName' });
             }
         }
 
