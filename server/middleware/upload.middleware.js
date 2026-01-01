@@ -25,8 +25,9 @@ const storage = new CloudinaryStorage({
             folder: 'augcvs/certificates',
             allowed_formats: ['jpg', 'jpeg', 'png', 'pdf'],
             resource_type: 'auto',
-            access_mode: 'public',
-            public_id: filename
+            type: 'upload', // Use 'upload' type for public access
+            public_id: filename,
+            invalidate: true // Clear CDN cache on upload
         };
     }
 });
