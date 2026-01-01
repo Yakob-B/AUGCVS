@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useNotification } from '../../pages/contexts/NotificationContext'
 import { useAuth } from '../../contexts/AuthContext'
 import * as verificationService from '../../services/verifications'
+import * as aiService from '../../services/ai.service'
+import { FaSpinner, FaRobot, FaBrain, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa'
 import {
   MdClose,
   MdVerifiedUser,
@@ -11,9 +13,9 @@ import {
   MdCheckCircle,
   MdCancel,
   MdVisibility,
-  MdDownload
+  MdDownload,
+  MdAutoFixHigh
 } from 'react-icons/md'
-import { FaSpinner } from 'react-icons/fa'
 
 const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
   const { user } = useAuth()
@@ -28,6 +30,8 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
   })
   const [errors, setErrors] = useState({})
   const [showCertificate, setShowCertificate] = useState(false)
+  const [aiAnalyzing, setAiAnalyzing] = useState(false)
+  const [aiAnalysis, setAiAnalysis] = useState(null)
 
   useEffect(() => {
     loadVerification()
@@ -89,6 +93,37 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
 
     setErrors(newErrors)
     return formIsValid
+  }
+
+  const handleAiAnalyze = async () => {
+    setAiAnalyzing(true)
+    setAiAnalysis(null)
+    try {
+      const response = await aiService.analyzeVerification(verificationId)
+      if (response.success && response.analysis) {
+        setAiAnalysis(response.analysis)
+        showNotification('success', 'AI Analysis Complete', 'Review the findings below')
+      } else {
+        throw new Error('Invalid response format from AI')
+      }
+    } catch (error) {
+      const msg = error.response?.data?.message || error.message || 'AI Analysis failed'
+      showNotification('error', 'AI Error', msg)
+    } finally {
+      setAiAnalyzing(false)
+    }
+  }
+
+  const applyAiRecommendation = () => {
+    if (!aiAnalysis) return
+
+    setFormData({
+      status: aiAnalysis.recommendation === 'authentic' ? 'approved' : 'rejected',
+      verificationResult: aiAnalysis.recommendation || 'authentic',
+      comments: aiAnalysis.explanation || '',
+    })
+
+    showNotification('info', 'AI Recommendation Applied', 'Form fields have been updated based on AI findings.')
   }
 
   const handleSubmit = async (e) => {
@@ -285,6 +320,104 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
             </div>
           )}
 
+          {/* AI Assistance Section */}
+          <div className="card border-2 border-primary-500/30 overflow-hidden">
+            <div className="bg-gradient-to-r from-primary-500/10 to-transparent p-4 flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <FaRobot className="text-primary-500 text-xl" />
+                <h3 className="text-lg font-bold dark:text-white light:text-light-text">AI Verification Assistant</h3>
+              </div>
+              <button
+                type="button"
+                onClick={handleAiAnalyze}
+                disabled={aiAnalyzing || isProcessed}
+                className={`btn-primary text-sm flex items-center space-x-2 ${aiAnalyzing ? 'animate-pulse' : ''}`}
+              >
+                {aiAnalyzing ? (
+                  <>
+                    <FaSpinner className="animate-spin" />
+                    <span>Analyzing...</span>
+                  </>
+                ) : (
+                  <>
+                    <MdAutoFixHigh />
+                    <span>Run AI Analysis</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            <div className="p-5">
+              {!aiAnalysis && !aiAnalyzing && (
+                <p className="text-sm dark:text-dark-muted light:text-light-muted text-center italic">
+                  Run AI Analysis to automatically extract text and check for discrepancies.
+                </p>
+              )}
+
+              {aiAnalysis && (
+                <div className="space-y-4 animate-fade-in">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium">Match Confidence:</span>
+                      <div className="w-48 h-2 bg-gray-200 dark:bg-dark-surface rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full ${aiAnalysis.matchPercentage > 80 ? 'bg-green-500' : aiAnalysis.matchPercentage > 50 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                          style={{ width: `${aiAnalysis.matchPercentage}%` }}
+                        ></div>
+                      </div>
+                      <span className="font-bold">{aiAnalysis.matchPercentage}%</span>
+                    </div>
+                    <button
+                      onClick={applyAiRecommendation}
+                      className="text-xs btn-secondary py-1"
+                    >
+                      Apply Results to Form
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-bold uppercase text-primary-500">Extracted Data</h4>
+                      <ul className="text-sm space-y-1">
+                        {Object.entries(aiAnalysis.extractedData || {}).map(([key, val]) => (
+                          <li key={key} className="flex justify-between">
+                            <span className="capitalize dark:text-dark-muted">{key.replace(/([A-Z])/g, ' $1')}:</span>
+                            <span className="font-medium">{val || 'N/A'}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-bold uppercase text-red-500">Insights</h4>
+                      {aiAnalysis.discrepancies?.length > 0 ? (
+                        <ul className="text-sm space-y-1">
+                          {aiAnalysis.discrepancies.map((d, i) => (
+                            <li key={i} className="flex items-start text-red-400">
+                              <FaExclamationTriangle className="mt-1 mr-2 flex-shrink-0" />
+                              <span>{d}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-sm text-green-400 flex items-center">
+                          <FaCheckCircle className="mr-2" /> No discrepancies found.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-primary-500/5 rounded-lg border border-primary-500/20">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <FaBrain className="text-primary-500" />
+                      <span className="text-xs font-bold uppercase">AI Explanation</span>
+                    </div>
+                    <p className="text-sm dark:text-gray-300 italic">{aiAnalysis.explanation}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Processing Form (only if pending and user is registrar/admin) */}
           {!isProcessed && (user.role === 'registrar' || user.role === 'admin') && (
             <form onSubmit={handleSubmit} className="card space-y-6">
@@ -303,8 +436,8 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
                     type="button"
                     onClick={() => setFormData(prev => ({ ...prev, status: 'approved' }))}
                     className={`p-4 rounded-lg border-2 transition-all ${formData.status === 'approved'
-                        ? 'border-green-500 bg-green-500/10'
-                        : 'dark:border-dark-border light:border-light-border dark:bg-dark-surface light:bg-light-surface hover:border-primary-500/50'
+                      ? 'border-green-500 bg-green-500/10'
+                      : 'dark:border-dark-border light:border-light-border dark:bg-dark-surface light:bg-light-surface hover:border-primary-500/50'
                       }`}
                   >
                     <MdCheckCircle className={`text-2xl mx-auto mb-2 ${formData.status === 'approved' ? 'text-green-500' : 'dark:text-dark-muted light:text-light-muted'
@@ -318,8 +451,8 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
                     type="button"
                     onClick={() => setFormData(prev => ({ ...prev, status: 'rejected' }))}
                     className={`p-4 rounded-lg border-2 transition-all ${formData.status === 'rejected'
-                        ? 'border-red-500 bg-red-500/10'
-                        : 'dark:border-dark-border light:border-light-border dark:bg-dark-surface light:bg-light-surface hover:border-primary-500/50'
+                      ? 'border-red-500 bg-red-500/10'
+                      : 'dark:border-dark-border light:border-light-border dark:bg-dark-surface light:bg-light-surface hover:border-primary-500/50'
                       }`}
                   >
                     <MdCancel className={`text-2xl mx-auto mb-2 ${formData.status === 'rejected' ? 'text-red-500' : 'dark:text-dark-muted light:text-light-muted'

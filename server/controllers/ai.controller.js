@@ -2,6 +2,8 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const logAudit = require('../utils/auditLog');
+const Verification = require('../models/verification.model');
+const Graduate = require('../models/graduate.model');
 
 // List of free models to try in order of preference
 const FREE_MODELS = [
@@ -159,6 +161,174 @@ exports.chatWithAI = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Internal Server Error in AI Controller'
+        });
+    }
+};
+
+// @desc    Analyze certificate using AI
+// @route   POST /api/ai/analyze/:id
+// @access  Private (Registrar)
+exports.analyzeVerification = async (req, res) => {
+    try {
+        const { id } = req.params;
+        console.log(`[AI Analysis] Starting analysis for verification ID: ${id}`);
+
+        // 1. Fetch verification and associated graduate data
+        const verification = await Verification.findById(id).populate('graduate');
+        if (!verification) {
+            console.error(`[AI Analysis] Verification ${id} not found`);
+            return res.status(404).json({ success: false, message: 'Verification request not found' });
+        }
+
+        const graduate = verification.graduate;
+        if (!graduate) {
+            console.error(`[AI Analysis] Graduate record missing for verification ${id}`);
+            return res.status(404).json({ success: false, message: 'Associated graduate record not found' });
+        }
+
+        let certificateUrl = verification.certificateFile;
+        console.log(`[AI Analysis] Original document URL: ${certificateUrl}`);
+
+        // 3. Handle PDF to Image conversion (Cloudinary specialized)
+        if (certificateUrl.toLowerCase().endsWith('.pdf')) {
+            console.log(`[AI Analysis] PDF detected. Converting to image via Cloudinary transformation...`);
+            certificateUrl = certificateUrl.replace(/\.pdf$/i, '.jpg');
+
+            if (certificateUrl.includes('/upload/')) {
+                certificateUrl = certificateUrl.replace('/upload/', '/upload/pg_1,f_auto,q_auto/');
+            }
+            console.log(`[AI Analysis] Transformed image URL: ${certificateUrl}`);
+        }
+
+        // 4. Prepare the prompt with database information
+        const dbData = {
+            studentId: graduate.studentId,
+            fullName: `${graduate.firstName} ${graduate.middleName || ''} ${graduate.lastName}`.trim(),
+            graduationYear: graduate.graduationYear,
+            degreeType: graduate.degreeType,
+            certificateNumber: graduate.certificateNumber,
+            gpa: graduate.gpa,
+            program: graduate.program
+        };
+
+        const systemPrompt = `You are an expert academic document auditor for Ambo University. 
+        Compare the text in the provided certificate image against the official database records.
+        
+        DATABASE RECORDS:
+        ${JSON.stringify(dbData, null, 2)}
+
+        INSTRUCTIONS:
+        1. Extract the name, student ID, certificate number, and graduation details from the image.
+        2. Compare each field with the DATABASE RECORDS above.
+        3. Identify any discrepancies or suspicious elements.
+        4. Return your analysis in the following JSON format ONLY:
+        {
+          "matchPercentage": 0-100,
+          "extractedData": { "fullName": "", "studentId": "", "certificateNumber": "", "graduationYear": "" },
+          "discrepancies": ["list of specific differences"],
+          "suspiciousElements": ["list of anything looking forged"],
+          "recommendation": "authentic" | "forged" | "invalid",
+          "explanation": "concise reasoning"
+        }`;
+
+        const messages = [
+            { role: 'system', content: 'You are a helpful assistant that responds only in strictly valid JSON.' },
+            {
+                role: 'user',
+                content: [
+                    { type: 'text', text: systemPrompt },
+                    {
+                        type: 'image_url',
+                        image_url: {
+                            url: certificateUrl
+                        }
+                    }
+                ]
+            }
+        ];
+
+        // Use vision-capable free models (Verified OpenRouter IDs)
+        const VISION_MODELS = [
+            'qwen/qwen-2-vl-7b-instruct:free',
+            'google/gemini-2.0-flash-exp:free',
+            'meta-llama/llama-3.2-11b-vision-instruct:free',
+            'google/gemini-pro-1.5-exp:free'
+        ];
+
+        let lastError = null;
+
+        for (const model of VISION_MODELS) {
+            try {
+                console.log(`[AI Analysis] Attempting model: ${model}`);
+                const response = await axios.post(
+                    'https://openrouter.ai/api/v1/chat/completions',
+                    {
+                        model: model,
+                        messages: messages,
+                        temperature: 0.1,
+                        max_tokens: 1000
+                    },
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+                            'HTTP-Referer': process.env.CLIENT_URL || 'http://localhost:3000',
+                            'X-Title': 'AUGCVS',
+                            'Content-Type': 'application/json'
+                        },
+                        timeout: 60000
+                    }
+                );
+
+                const content = response.data?.choices?.[0]?.message?.content;
+                if (content) {
+                    console.log(`[AI Analysis] Received response from ${model}`);
+                    let analysisContent;
+
+                    try {
+                        const cleaned = content.trim()
+                            .replace(/^[^\{]*/, '')
+                            .replace(/[^\}]*$/, '')
+                            .replace(/```json\s?|\s?```/g, '');
+                        analysisContent = JSON.parse(cleaned);
+                    } catch (e) {
+                        const match = content.match(/\{[\s\S]*\}/);
+                        if (match) {
+                            analysisContent = JSON.parse(match[0]);
+                        } else {
+                            throw new Error('No valid JSON in AI response');
+                        }
+                    }
+
+                    await logAudit({
+                        user: req.user.id,
+                        action: 'ai_analysis_performed',
+                        details: { verificationId: id, model_used: model },
+                        ip: req.ip
+                    });
+
+                    return res.status(200).json({
+                        success: true,
+                        analysis: analysisContent,
+                        model_used: model
+                    });
+                }
+            } catch (error) {
+                const apiError = error.response?.data?.error?.message || error.message;
+                console.warn(`[AI Analysis] ${model} failed:`, apiError);
+                lastError = error;
+                logErrorToFile(new Error(`Vision Model Error (${model}): ${apiError}`));
+            }
+        }
+
+        throw new Error(`AI analysis failed: ${lastError?.response?.data?.error?.message || lastError?.message}`);
+
+    } catch (error) {
+        console.error('[AI Analysis Critical Error]:', error.message);
+        logErrorToFile(error);
+        res.status(500).json({
+            success: false,
+            message: 'AI Analysis Failed',
+            error: error.message
         });
     }
 };
