@@ -225,14 +225,54 @@ exports.searchGraduates = async (req, res) => {
     try {
         const { query } = req.query;
 
-        const graduates = await Graduate.find({
+        if (!query) {
+            return res.status(200).json({ success: true, count: 0, data: [] });
+        }
+
+        let graduates = [];
+
+        // Strategy 1: Text Search (Best for relevance and full words)
+        // Uses the text index we just created
+        const textSearchResults = await Graduate.find({
+            $text: { $search: query }
+        }, {
+            score: { $meta: "textScore" }
+        })
+            .sort({ score: { $meta: "textScore" } })
+            .populate('addedBy', 'firstName lastName email')
+            .limit(20);
+
+        // Strategy 2: Split Regex Search (Better for partial strings/typos)
+        // Splits "Yakob Worku" into ["Yakob", "Worku"] and looks for both
+        const terms = query.trim().split(/\s+/);
+        const regexConditions = terms.map(term => ({
             $or: [
-                { firstName: { $regex: query, $options: 'i' } },
-                { lastName: { $regex: query, $options: 'i' } },
-                { studentId: { $regex: query, $options: 'i' } },
-                { certificateNumber: { $regex: query, $options: 'i' } }
+                { firstName: { $regex: term, $options: 'i' } },
+                { lastName: { $regex: term, $options: 'i' } },
+                { middleName: { $regex: term, $options: 'i' } },
+                { studentId: { $regex: term, $options: 'i' } },
+                { certificateNumber: { $regex: term, $options: 'i' } }
             ]
-        }).populate('addedBy', 'firstName lastName email');
+        }));
+
+        const regexSearchResults = await Graduate.find({
+            $and: regexConditions
+        })
+            .populate('addedBy', 'firstName lastName email')
+            .limit(20);
+
+        // Merge results, removing duplicates (prefer text search results first)
+        const seenIds = new Set();
+        graduates = [...textSearchResults];
+
+        textSearchResults.forEach(g => seenIds.add(g._id.toString()));
+
+        regexSearchResults.forEach(g => {
+            if (!seenIds.has(g._id.toString())) {
+                graduates.push(g);
+                seenIds.add(g._id.toString());
+            }
+        });
 
         res.status(200).json({
             success: true,

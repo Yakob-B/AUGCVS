@@ -1,8 +1,9 @@
 const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
 const logAudit = require('../utils/auditLog');
 
 // List of free models to try in order of preference
-// Using high-availability free models from OpenRouter
 const FREE_MODELS = [
     'google/gemini-2.0-flash-exp:free',
     'google/gemma-2-9b-it:free',
@@ -12,107 +13,152 @@ const FREE_MODELS = [
     'openchat/openchat-7b:free'
 ];
 
+// Helper to log errors to file
+const logErrorToFile = (error) => {
+    try {
+        const logDir = path.join(__dirname, '../logs');
+        if (!fs.existsSync(logDir)) {
+            fs.mkdirSync(logDir, { recursive: true });
+        }
+        const logFile = path.join(logDir, 'ai-errors.log');
+        const timestamp = new Date().toISOString();
+        const errorMessage = `[${timestamp}] ${error.message}\nStack: ${error.stack}\n\n`;
+        fs.appendFileSync(logFile, errorMessage);
+    } catch (err) {
+        console.error('Failed to write to log file:', err);
+    }
+};
+
 // @desc    Chat with AI
 // @route   POST /api/ai/chat
 // @access  Public
 exports.chatWithAI = async (req, res) => {
-    const { message } = req.body;
+    try {
+        // Safe destructuring with null checks
+        const body = req.body || {};
+        const message = body.message;
+        const history = Array.isArray(body.history) ? body.history : [];
+        const userContext = body.userContext || {};
 
-    if (!message) {
-        return res.status(400).json({ success: false, message: 'Message is required' });
-    }
-
-    const systemPrompt = `You are the specific AI Assistant for the **Ambo University Graduate Credential Verification System (AUGCVS)**. 
-Your goal is to guide users (Graduates, Registrars, and External Verifiers) through the specific workflows of this web application.
-
-### SYSTEM KNOWLEDGE BASE (USE THIS TO ANSWER):
-
-**1. USER ROLES:**
-*   **External (Verifier)**: Organizations/Companies who want to verify a graduate's degree.
-*   **Registrar/Admin**: University staff who process verifications and upload graduate data.
-*   **SuperAdmin**: Manages system users.
-
-**2. REGISTRATION PROCESS:**
-*   Users must click "Register" or "Create Account".
-*   **Required Fields**: First Name, Last Name, Email, Password (min 6 chars), Adjust Role (defaults to External), Organization Name (required for External).
-*   **Email Verification**: After signing up, a link is sent to the email. The account must be verified before logging in.
-
-**3. VERIFICATION REQUEST FLOW (For External Users):**
-1.  **Login** to the dashboard.
-2.  Click **"New Verification Request"**.
-3.  **Search**: Start by searching for the graduate using their **Student ID** or **Name**.
-4.  **Upload**: You MUST upload a scanned copy of the **Degree Certificate** (Image/PDF).
-5.  **Submit**: The request enters "Pending" status.
-
-**4. STATUS MEANINGS:**
-*   **Pending**: Request submitted, waiting for Registrar review.
-*   **In Progress**: Registrar is currently checking the records.
-*   **Approved (Valid)**: The degree is confirmed as AUTHENTIC.
-*   **Rejected (Invalid/Forged)**: The degree is confirmed as FAKE or INVALID.
-*   **Clarification Needed**: The Registrar needs more info (e.g., clearer image).
-
-**5. NAVIGATION:**
-*   **Dashboard**: Main hub for stats and recent activity.
-*   **Verifications**: View history of all submitted requests.
-*   **Support**: Contact page for technical issues.
-
-### RULES:
-1.  **BE SPECIFIC**: Do not give generic advice. Use the terms above (e.g., "Status: Pending", "Role: External").
-2.  **NO VERIFICATION**: If asked "Is this ID real?", refer them to the "New Verification Request" form. NEVER verify in chat.
-3.  **NO PRIVATE DATA**: Do not look up or ask for real student records in this chat.
-4.  **TONE**: Professional, precise, and helpful academic tone.
-
-If you don't know the answer based on this info, suggest contacting the Registrar office via the Support page.`;
-
-    let lastError = null;
-
-    // Try models in sequence until one works
-    for (const model of FREE_MODELS) {
-        try {
-            console.log(`Attempting AI chat with model: ${model}`);
-
-            const response = await axios.post(
-                'https://openrouter.ai/api/v1/chat/completions',
-                {
-                    model: model,
-                    messages: [
-                        { role: 'system', content: systemPrompt },
-                        { role: 'user', content: message }
-                    ],
-                    temperature: 0.3, // Lower temperature for more factual responses
-                    max_tokens: 600
-                },
-                {
-                    headers: {
-                        'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-                        'HTTP-Referer': process.env.CLIENT_URL || 'http://localhost:3000',
-                        'X-Title': 'AUGCVS',
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-
-            if (response.data && response.data.choices && response.data.choices.length > 0) {
-                const aiResponse = response.data.choices[0].message.content;
-                return res.status(200).json({
-                    success: true,
-                    response: aiResponse,
-                    model_used: model
-                });
-            }
-
-        } catch (error) {
-            console.warn(`Model ${model} failed:`, error.response?.data?.error?.message || error.message);
-            lastError = error;
-            // Continue to next model
+        if (!message) {
+            return res.status(400).json({ success: false, message: 'Message is required' });
         }
-    }
 
-    // If all models fail
-    console.error('All AI models failed');
-    res.status(500).json({
-        success: false,
-        message: 'I am having trouble connecting to my service right now. Please try again later.',
-        details: lastError?.response?.data || lastError?.message
-    });
+        // Check API Key
+        if (!process.env.OPENROUTER_API_KEY) {
+            const err = new Error('OPENROUTER_API_KEY is missing in server environment');
+            logErrorToFile(err);
+            return res.status(500).json({
+                success: false,
+                message: 'AI Service Configuration Error: API Key missing'
+            });
+        }
+
+        // Dynamic system prompt based on user role
+        const role = userContext.role || 'guest';
+        const name = userContext.name || 'User';
+
+        let roleSpecificInstructions = "";
+
+        if (role === 'registrar' || role === 'admin') {
+            roleSpecificInstructions = `
+            YOU ARE SPEAKING TO A REGISTRAR/ADMIN named ${name}.
+            - Focus on: Verifying pending requests, uploading graduate data, and managing users.
+            - If they ask about "Pending" requests, explain how to review and approve them.
+            `;
+        } else if (role === 'external') {
+            roleSpecificInstructions = `
+            YOU ARE SPEAKING TO AN EXTERNAL VERIFIER named ${name}.
+            - Focus on: How to submit new requests, tracking status, and payment/fees.
+            `;
+        } else {
+            roleSpecificInstructions = `
+            YOU ARE SPEAKING TO A GUEST.
+            - Encourage them to "Register" or "Login" to start verification.
+            `;
+        }
+
+        const systemPrompt = `You are the specific AI Assistant for the **Ambo University Graduate Credential Verification System (AUGCVS)**. 
+        Your goal is to guide users through the specific workflows of this web application.
+
+        ${roleSpecificInstructions}
+
+        ### RULES:
+        1.  **CONTEXT AWARE**: Remember previous messages if provided.
+        2.  **SHORT & HELPFUL**: Keep answers under 3-4 sentences.
+        `;
+
+        let lastError = null;
+
+        // Prepare context-aware messages
+        const recentHistory = history.slice(-6).map(msg => ({
+            role: msg.sender === 'user' ? 'user' : 'assistant',
+            content: msg.text || msg.message || ''
+        }));
+
+        const messages = [
+            { role: 'system', content: systemPrompt },
+            ...recentHistory,
+            { role: 'user', content: message }
+        ];
+
+        // Try models in sequence
+        for (const model of FREE_MODELS) {
+            try {
+                console.log(`Attempting AI chat with model: ${model}`);
+
+                const response = await axios.post(
+                    'https://openrouter.ai/api/v1/chat/completions',
+                    {
+                        model: model,
+                        messages: messages,
+                        temperature: 0.3,
+                        max_tokens: 500
+                    },
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+                            'HTTP-Referer': process.env.CLIENT_URL || 'http://localhost:3000',
+                            'X-Title': 'AUGCVS',
+                            'Content-Type': 'application/json'
+                        },
+                        timeout: 30000 // 30s timeout
+                    }
+                );
+
+                if (response.data?.choices?.[0]?.message?.content) {
+                    const aiResponse = response.data.choices[0].message.content;
+                    return res.status(200).json({
+                        success: true,
+                        response: aiResponse,
+                        model_used: model
+                    });
+                }
+
+            } catch (error) {
+                console.warn(`Model ${model} failed:`, error.message);
+                lastError = error;
+                // Log detailed OpenRouter error if available
+                if (error.response?.data) {
+                    logErrorToFile(new Error(`OpenRouter Error (${model}): ${JSON.stringify(error.response.data)}`));
+                }
+            }
+        }
+
+        // If all models fail
+        logErrorToFile(new Error(`All models failed. Last error: ${lastError?.message}`));
+        res.status(500).json({
+            success: false,
+            message: 'All AI models are currently unavailable. Please try again later.',
+            details: lastError?.response?.data || lastError?.message
+        });
+
+    } catch (criticalError) {
+        logErrorToFile(criticalError);
+        console.error('Critical AI Controller Error:', criticalError);
+        res.status(500).json({
+            success: false,
+            message: 'Internal Server Error in AI Controller'
+        });
+    }
 };

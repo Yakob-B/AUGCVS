@@ -11,12 +11,14 @@ const {
     createInternalUser
 } = require('../controllers/auth.controller');
 const { protect, requireSuperAdmin } = require('../middleware/auth.middleware');
+const { authLimiter, passwordResetLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
 
-// Register route with validation
+// Register route with validation and rate limiting
 router.post(
     '/register',
+    authLimiter,
     [
         check('firstName', 'First name is required').not().isEmpty(),
         check('lastName', 'Last name is required').not().isEmpty(),
@@ -30,9 +32,10 @@ router.post(
     register
 );
 
-// Login route with validation
+// Login route with validation and rate limiting
 router.post(
     '/login',
+    authLimiter,
     [
         check('email', 'Please include a valid email').isEmail(),
         check('password', 'Password is required').exists()
@@ -43,9 +46,10 @@ router.post(
 // Verify email route
 router.get('/verify-email/:token', verifyEmail);
 
-// Password reset routes
+// Password reset routes with rate limiting
 router.post(
     '/forgot-password',
+    passwordResetLimiter,
     [check('email', 'Please include a valid email').isEmail()],
     forgotPassword
 );

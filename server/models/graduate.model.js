@@ -84,7 +84,7 @@ const graduateSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt timestamp before saving
-graduateSchema.pre('save', function(next) {
+graduateSchema.pre('save', function (next) {
     this.updatedAt = Date.now();
     next();
 });
@@ -95,5 +95,14 @@ graduateSchema.index({ certificateNumber: 1 }, { unique: true });
 graduateSchema.index({ firstName: 1, lastName: 1 });
 graduateSchema.index({ graduationYear: -1 });
 graduateSchema.index({ status: 1 });
+
+// Text index for search
+graduateSchema.index({
+    firstName: 'text',
+    lastName: 'text',
+    middleName: 'text',
+    studentId: 'text',
+    certificateNumber: 'text'
+});
 
 module.exports = mongoose.model('Graduate', graduateSchema); 

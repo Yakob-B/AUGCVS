@@ -3,7 +3,10 @@ import { MdChat, MdSend, MdClose, MdSmartToy, MdMinimize } from 'react-icons/md'
 import { chatWithAI } from '../../services/ai.service';
 import ReactMarkdown from 'react-markdown';
 
+import { useAuth } from '../../contexts/AuthContext';
+
 const Chatbot = () => {
+    const { user } = useAuth(); // Get authenticated user
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([
         {
@@ -42,7 +45,19 @@ const Chatbot = () => {
         setIsLoading(true);
 
         try {
-            const response = await chatWithAI(userMessage);
+            // Prepare context
+            const userContext = {
+                name: user?.firstName || 'Guest',
+                role: user?.role || 'guest'
+            };
+
+            // Prepare history (excluding the very latest user message which is sent separately)
+            const history = messages.map(msg => ({
+                sender: msg.role,
+                text: msg.content
+            }));
+
+            const response = await chatWithAI(userMessage, history, userContext);
             const aiMessage = response.data.response;
 
             setMessages(prev => [...prev, { role: 'assistant', content: aiMessage }]);

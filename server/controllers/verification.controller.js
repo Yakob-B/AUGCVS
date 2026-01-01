@@ -22,15 +22,9 @@ const emitVerificationUpdate = (req, event, data) => {
 // @route   POST /api/verifications
 // @access  Private (External)
 exports.createVerification = async (req, res) => {
-    // Debug logging
-    console.log('--- Incoming Verification Request ---');
-    console.log('req.body:', req.body);
-    console.log('req.file:', req.file);
-
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            console.log('Validation errors:', errors.array());
             await logAudit({
                 user: req.user.id,
                 action: 'create_verification_failed',
@@ -42,7 +36,6 @@ exports.createVerification = async (req, res) => {
 
         // Check if file was uploaded
         if (!req.file) {
-            console.log('No file uploaded!');
             await logAudit({
                 user: req.user.id,
                 action: 'create_verification_failed',
@@ -57,21 +50,58 @@ exports.createVerification = async (req, res) => {
 
         // Lookup graduate by studentId, fullName, graduationYear, degreeType
         const { studentId, fullName, graduationYear, degreeType } = req.body;
-        let graduateQuery = { studentId, graduationYear, degreeType };
+        let graduate = null;
+
+        // Build base query
+        const baseQuery = { studentId, graduationYear, degreeType };
+
         if (fullName) {
-            // Try to split fullName into firstName and lastName
-            const [firstName, ...rest] = fullName.trim().split(' ');
-            if (firstName && rest.length > 0) {
-                graduateQuery.firstName = firstName;
-                graduateQuery.lastName = rest.join(' ');
+            const nameParts = fullName.trim().split(/\s+/);
+
+            // Try different name matching strategies
+            if (nameParts.length >= 1) {
+                const firstName = nameParts[0];
+
+                // Strategy 1: First name + remaining as lastName (original behavior)
+                if (nameParts.length >= 2) {
+                    const lastName = nameParts.slice(-1)[0]; // Last part is lastName
+                    graduate = await Graduate.findOne({
+                        ...baseQuery,
+                        firstName: { $regex: new RegExp(`^${firstName}$`, 'i') },
+                        lastName: { $regex: new RegExp(`^${lastName}$`, 'i') }
+                    });
+                }
+
+                // Strategy 2: Check with middleName if not found
+                if (!graduate && nameParts.length >= 3) {
+                    const middleName = nameParts[1];
+                    const lastName = nameParts.slice(-1)[0];
+                    graduate = await Graduate.findOne({
+                        ...baseQuery,
+                        firstName: { $regex: new RegExp(`^${firstName}$`, 'i') },
+                        middleName: { $regex: new RegExp(`^${middleName}$`, 'i') },
+                        lastName: { $regex: new RegExp(`^${lastName}$`, 'i') }
+                    });
+                }
+
+                // Strategy 3: Search by firstName only with studentId as primary key
+                if (!graduate) {
+                    graduate = await Graduate.findOne({
+                        ...baseQuery,
+                        firstName: { $regex: new RegExp(`^${firstName}$`, 'i') }
+                    });
+                }
             }
+        } else {
+            // No fullName provided, search by studentId and other fields only
+            graduate = await Graduate.findOne(baseQuery);
         }
-        const graduate = await Graduate.findOne(graduateQuery);
+
         if (!graduate) {
             await logAudit({
                 user: req.user.id,
                 action: 'create_verification_failed',
-                details: { reason: 'Graduate not found', query: graduateQuery },
+                details: { reason: 'Graduate not found', studentId, fullName },
                 ip: req.ip
             });
             return res.status(404).json({
