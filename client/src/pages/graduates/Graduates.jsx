@@ -109,7 +109,7 @@ const Graduates = () => {
           <h1 className="text-4xl font-heading font-bold dark:text-dark-text light:text-light-text mb-2">Graduate Management</h1>
           <p className="dark:text-dark-muted light:text-light-muted">Manage graduate records and certificates</p>
         </div>
-        {(user.role === 'admin' || user.role === 'registrar') && (
+        {user.role === 'registrar' && (
           <button
             onClick={() => {
               setSelectedGraduate(null)
@@ -205,7 +205,7 @@ const Graduates = () => {
                   </div>
 
                   {/* Action Buttons - Beautifully Styled */}
-                  {(user.role === 'admin' || user.role === 'registrar') && (
+                  {user.role === 'registrar' && (
                     <div className="flex items-center gap-3 pt-4 border-t dark:border-dark-border light:border-light-border">
                       <button
                         onClick={() => handleEdit(graduate)}
@@ -218,7 +218,7 @@ const Graduates = () => {
                         <MdEdit className="text-lg transition-transform group-hover:rotate-12" />
                         <span>Edit</span>
                       </button>
-                      {user.role === 'admin' && (
+                      {user.role === 'registrar' && (
                         <button
                           onClick={() => handleDelete(graduate)}
                           className="group flex-1 relative flex items-center justify-center gap-2 py-3.5 px-4 overflow-hidden rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-95
@@ -262,7 +262,7 @@ const Graduates = () => {
                       <td className="p-4 dark:text-dark-muted light:text-light-muted">{graduate.certificateNumber}</td>
                       <td className="p-4">
                         <div className="flex items-center gap-2">
-                          {(user.role === 'admin' || user.role === 'registrar') && (
+                          {user.role === 'registrar' && (
                             <button
                               onClick={() => handleEdit(graduate)}
                               className="group relative p-2.5 rounded-xl overflow-hidden transition-all duration-300 transform hover:scale-110 active:scale-95
@@ -274,7 +274,7 @@ const Graduates = () => {
                               <MdEdit className="text-lg relative z-10 transition-transform group-hover:rotate-12" />
                             </button>
                           )}
-                          {user.role === 'admin' && (
+                          {user.role === 'registrar' && (
                             <button
                               onClick={() => handleDelete(graduate)}
                               className="group relative p-2.5 rounded-xl overflow-hidden transition-all duration-300 transform hover:scale-110 active:scale-95

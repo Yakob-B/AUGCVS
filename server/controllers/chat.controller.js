@@ -179,9 +179,10 @@ exports.getMyChats = async (req, res) => {
       query = { participants: userId };
     }
 
-    const chats = await Chat.find(query)
+    const chats = await Chat.find(query, { messages: { $slice: -1 } })
       .populate('verification', 'requestNumber status graduate')
       .populate('participants', 'firstName lastName email role')
+      .populate('messages.sender', 'firstName lastName')
       .sort({ lastMessage: -1 })
       .limit(50);
 

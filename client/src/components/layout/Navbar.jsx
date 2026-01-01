@@ -89,34 +89,35 @@ const Navbar = () => {
                   Dashboard
                 </Link>
 
-                {user.role === 'admin' && (
-                  <>
-                    <Link
-                      to="/admin/graduates"
-                      className={`px-4 py-2 rounded-lg transition-all duration-200 ${location.pathname.includes('/graduates')
-                        ? 'bg-purple-600 text-white'
-                        : 'text-white hover:bg-purple-600/20'
-                        }`}
-                    >
-                      <MdSchool className="inline mr-2" />
-                      Graduates
-                    </Link>
-                    <Link
-                      to="/admin/users"
-                      className={`px-4 py-2 rounded-lg transition-all duration-200 ${location.pathname.includes('/users')
-                        ? 'bg-purple-600 text-white'
-                        : 'text-white hover:bg-purple-600/20'
-                        }`}
-                    >
-                      <MdPeople className="inline mr-2" />
-                      Users
-                    </Link>
-                  </>
+                {user.role === 'registrar' && (
+                  <Link
+                    to="/registrar/graduates"
+                    className={`px-4 py-2 rounded-lg transition-all duration-200 ${location.pathname.includes('/graduates')
+                      ? 'bg-purple-600 text-white'
+                      : 'text-white hover:bg-purple-600/20'
+                      }`}
+                  >
+                    <MdSchool className="inline mr-2" />
+                    Graduates
+                  </Link>
                 )}
 
-                {(user.role === 'admin' || user.role === 'registrar') && (
+                {user.role === 'admin' && (
                   <Link
-                    to={`/${user.role === 'admin' ? 'admin' : 'registrar'}/verifications`}
+                    to="/admin/users"
+                    className={`px-4 py-2 rounded-lg transition-all duration-200 ${location.pathname.includes('/users')
+                      ? 'bg-purple-600 text-white'
+                      : 'text-white hover:bg-purple-600/20'
+                      }`}
+                  >
+                    <MdPeople className="inline mr-2" />
+                    Users
+                  </Link>
+                )}
+
+                {user.role === 'registrar' && (
+                  <Link
+                    to="/registrar/verifications"
                     className={`px-4 py-2 rounded-lg transition-all duration-200 ${location.pathname.includes('/verifications')
                       ? 'bg-purple-600 text-white'
                       : 'text-white hover:bg-purple-600/20'
@@ -221,29 +222,29 @@ const Navbar = () => {
                   <MdDashboard className="inline mr-2" />
                   Dashboard
                 </Link>
-                {user.role === 'admin' && (
-                  <>
-                    <Link
-                      to="/admin/graduates"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block px-4 py-2 rounded-lg text-white hover:bg-purple-600/20"
-                    >
-                      <MdSchool className="inline mr-2" />
-                      Graduates
-                    </Link>
-                    <Link
-                      to="/admin/users"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block px-4 py-2 rounded-lg text-white hover:bg-purple-600/20"
-                    >
-                      <MdPeople className="inline mr-2" />
-                      Users
-                    </Link>
-                  </>
-                )}
-                {(user.role === 'admin' || user.role === 'registrar') && (
+                {user.role === 'registrar' && (
                   <Link
-                    to={`/${user.role === 'admin' ? 'admin' : 'registrar'}/verifications`}
+                    to="/registrar/graduates"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-4 py-2 rounded-lg text-white hover:bg-purple-600/20"
+                  >
+                    <MdSchool className="inline mr-2" />
+                    Graduates
+                  </Link>
+                )}
+                {user.role === 'admin' && (
+                  <Link
+                    to="/admin/users"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-4 py-2 rounded-lg text-white hover:bg-purple-600/20"
+                  >
+                    <MdPeople className="inline mr-2" />
+                    Users
+                  </Link>
+                )}
+                {user.role === 'registrar' && (
+                  <Link
+                    to="/registrar/verifications"
                     onClick={() => setMobileMenuOpen(false)}
                     className="block px-4 py-2 rounded-lg text-white hover:bg-purple-600/20"
                   >

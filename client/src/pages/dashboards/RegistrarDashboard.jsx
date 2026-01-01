@@ -3,13 +3,16 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { useNotification } from '../contexts/NotificationContext'
 import * as verificationService from '../../services/verifications'
+import * as graduateService from '../../services/graduates'
 import {
   MdVerifiedUser,
   MdPendingActions,
   MdCheckCircle,
   MdCancel,
   MdArrowForward,
-  MdFileUpload
+  MdFileUpload,
+  MdSchool,
+  MdSearch
 } from 'react-icons/md'
 import BulkUploadModal from '../../components/graduates/BulkUploadModal'
 
@@ -21,6 +24,7 @@ const RegistrarDashboard = () => {
     pending: 0,
     approved: 0,
     rejected: 0,
+    graduates: 0,
   })
   const [recentVerifications, setRecentVerifications] = useState([])
   const [loading, setLoading] = useState(true)
@@ -33,14 +37,19 @@ const RegistrarDashboard = () => {
   const loadData = async () => {
     try {
       setLoading(true)
-      const response = await verificationService.getVerifications()
-      const verifications = response.data || []
+      const [verificationRes, graduateRes] = await Promise.all([
+        verificationService.getVerifications(),
+        graduateService.getGraduates()
+      ])
+
+      const verifications = verificationRes.data || []
 
       const stats = {
         total: verifications.length,
         pending: verifications.filter(v => v.status === 'pending').length,
         approved: verifications.filter(v => v.status === 'approved').length,
         rejected: verifications.filter(v => v.status === 'rejected').length,
+        graduates: graduateRes.count || 0
       }
 
       setStats(stats)
@@ -54,13 +63,13 @@ const RegistrarDashboard = () => {
 
   const statCards = [
     {
-      title: 'Total Requests',
-      value: stats.total,
-      icon: <MdVerifiedUser />,
-      color: 'from-blue-500 to-cyan-500',
+      title: 'Total Graduates',
+      value: stats.graduates,
+      icon: <MdSchool />,
+      color: 'from-purple-500 to-indigo-500',
     },
     {
-      title: 'Pending',
+      title: 'Pending Requests',
       value: stats.pending,
       icon: <MdPendingActions />,
       color: 'from-orange-500 to-red-500',
@@ -187,7 +196,17 @@ const RegistrarDashboard = () => {
             >
               <div className="flex items-center space-x-3">
                 <MdVerifiedUser className="text-primary-400 text-xl" />
-                <span className="dark:text-dark-text light:text-light-text">Review Pending</span>
+                <span className="dark:text-dark-text light:text-light-text">Review Verifications</span>
+              </div>
+              <MdArrowForward className="dark:text-dark-muted light:text-light-muted group-hover:text-primary-400 transition-colors" />
+            </Link>
+            <Link
+              to="/registrar/graduates"
+              className="flex items-center justify-between p-4 rounded-lg dark:bg-dark-surface light:bg-light-surface hover:dark:bg-dark-card hover:light:bg-gray-100 transition-colors group"
+            >
+              <div className="flex items-center space-x-3">
+                <MdSchool className="text-primary-400 text-xl" />
+                <span className="dark:text-dark-text light:text-light-text">Manage Graduates</span>
               </div>
               <MdArrowForward className="dark:text-dark-muted light:text-light-muted group-hover:text-primary-400 transition-colors" />
             </Link>
