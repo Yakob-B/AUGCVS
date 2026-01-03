@@ -49,6 +49,11 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    status: {
+        type: String,
+        enum: ['active', 'deactivated'],
+        default: 'active'
+    },
     verificationToken: String,
     resetPasswordToken: String,
     resetPasswordExpire: Date,

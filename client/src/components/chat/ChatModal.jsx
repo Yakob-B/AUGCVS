@@ -3,8 +3,9 @@ import { useSocket } from '../../contexts/SocketContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { useNotification } from '../../pages/contexts/NotificationContext'
 import * as chatService from '../../services/chat'
-import { MdClose, MdSend, MdPerson } from 'react-icons/md'
+import { MdClose, MdSend, MdPerson, MdChat } from 'react-icons/md'
 import { FaSpinner } from 'react-icons/fa'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const ChatModal = ({ verificationId, onClose }) => {
   const { socket } = useSocket()
@@ -21,13 +22,11 @@ const ChatModal = ({ verificationId, onClose }) => {
 
   useEffect(() => {
     loadChat()
-    
-    // Join chat room
+
     if (socket && verificationId) {
       socket.emit('join-chat-room', verificationId)
     }
 
-    // Listen for new messages
     if (socket) {
       socket.on('new-message', handleNewMessage)
       socket.on('user-typing', handleUserTyping)
@@ -54,8 +53,6 @@ const ChatModal = ({ verificationId, onClose }) => {
       setLoading(true)
       const response = await chatService.getOrCreateChat(verificationId)
       setChat(response.data)
-      
-      // Mark as read
       await chatService.markAsRead(verificationId)
     } catch (error) {
       showNotification('error', 'Error loading chat', error.message)
@@ -68,10 +65,8 @@ const ChatModal = ({ verificationId, onClose }) => {
     if (data.verificationId === verificationId) {
       setChat(prev => {
         if (!prev) return null
-        
         const messageExists = prev.messages.some(m => m._id === data.message._id)
         if (messageExists) return prev
-        
         return {
           ...prev,
           messages: [...prev.messages, data.message],
@@ -79,13 +74,9 @@ const ChatModal = ({ verificationId, onClose }) => {
           lastMessage: new Date()
         }
       })
-      
-      // Mark as read if I'm viewing
       if (data.message.sender._id !== user._id) {
         chatService.markAsRead(verificationId).catch(console.error)
       }
-      
-      // Scroll to bottom when new message arrives
       setTimeout(() => scrollToBottom(), 100)
     }
   }
@@ -94,7 +85,6 @@ const ChatModal = ({ verificationId, onClose }) => {
     e.preventDefault()
     if (!message.trim() || sending) return
 
-    // Stop typing indicator
     if (socket) {
       socket.emit('typing-stop', {
         verificationId,
@@ -105,14 +95,11 @@ const ChatModal = ({ verificationId, onClose }) => {
     try {
       setSending(true)
       const response = await chatService.sendMessage(verificationId, message)
-      
-      // Message will be added via socket event, but we can add it optimistically
       setChat(prev => ({
         ...prev,
         messages: [...prev.messages, response.data],
         lastMessage: new Date()
       }))
-      
       setMessage('')
       scrollToBottom()
     } catch (error) {
@@ -141,20 +128,14 @@ const ChatModal = ({ verificationId, onClose }) => {
 
   const handleTyping = () => {
     if (!socket || !verificationId) return
-
-    // Emit typing start
     socket.emit('typing-start', {
       verificationId,
       userId: user._id,
       userName: `${user.firstName} ${user.lastName}`
     })
-
-    // Clear existing timeout
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current)
     }
-
-    // Stop typing after 3 seconds of inactivity
     typingTimeoutRef.current = setTimeout(() => {
       socket.emit('typing-stop', {
         verificationId,
@@ -168,9 +149,9 @@ const ChatModal = ({ verificationId, onClose }) => {
   }
 
   const formatTime = (date) => {
-    return new Date(date).toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return new Date(date).toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit'
     })
   }
 
@@ -180,96 +161,92 @@ const ChatModal = ({ verificationId, onClose }) => {
     const yesterday = new Date(today)
     yesterday.setDate(yesterday.getDate() - 1)
 
-    if (messageDate.toDateString() === today.toDateString()) {
-      return 'Today'
-    } else if (messageDate.toDateString() === yesterday.toDateString()) {
-      return 'Yesterday'
-    } else {
-      return messageDate.toLocaleDateString()
-    }
-  }
-
-  const getParticipantName = (participant) => {
-    if (participant._id === user._id) return 'You'
-    return `${participant.firstName} ${participant.lastName}`
-  }
-
-  const getParticipantRole = (participant) => {
-    if (participant._id === user._id) return null
-    return participant.role === 'external' ? 'Organization' : participant.role.charAt(0).toUpperCase() + participant.role.slice(1)
+    if (messageDate.toDateString() === today.toDateString()) return 'Today'
+    if (messageDate.toDateString() === yesterday.toDateString()) return 'Yesterday'
+    return messageDate.toLocaleDateString()
   }
 
   if (loading) {
     return (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="rounded-xl p-8 max-w-md w-full dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border shadow-2xl">
-          <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
-          </div>
+      <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 flex flex-col items-center shadow-2xl">
+          <div className="w-10 h-10 border-3 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
+          <p className="mt-4 text-gray-500 dark:text-gray-400 text-sm font-medium">Loading conversation...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="rounded-xl border dark:border-dark-border light:border-light-border shadow-2xl w-full max-w-2xl h-[80vh] flex flex-col dark:bg-dark-card/95 light:bg-light-card">
+    <div className="fixed inset-0 bg-gray-900/70 z-50 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        className="standard-chat-surface rounded-2xl w-full max-w-2xl h-[85vh] flex flex-col overflow-hidden shadow-2xl bg-white dark:bg-gray-900"
+      >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b dark:border-dark-border light:border-light-border">
-          <div>
-            <h2 className="text-xl font-heading font-bold dark:text-dark-text light:text-light-text">
-              Chat - Verification #{chat?.verification?.requestNumber}
-            </h2>
-            <p className="text-sm dark:text-dark-muted light:text-light-muted mt-1">
-              {chat?.participants?.filter(p => p._id !== user._id).map(p => 
-                `${p.firstName} ${p.lastName} (${getParticipantRole(p)})`
-              ).join(', ')}
-            </p>
+        <div className="p-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-white dark:bg-gray-900">
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+              <MdChat size={24} />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white leading-tight">
+                Case Support
+              </h2>
+              <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 space-x-2 mt-0.5">
+                <span className="font-semibold">#{chat?.verification?.requestNumber}</span>
+                <span>•</span>
+                <span className="truncate max-w-[200px]">
+                  {chat?.participants?.filter(p => p._id !== user._id).map(p =>
+                    `${p.firstName} ${p.lastName}`
+                  ).join(', ')}
+                </span>
+              </div>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg dark:text-dark-muted light:text-light-muted hover:dark:text-dark-text hover:light:text-light-text hover:dark:bg-dark-surface hover:light:bg-gray-100 transition-colors"
+            className="p-2 rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           >
-            <MdClose size={24} />
+            <MdClose size={22} />
           </button>
         </div>
 
         {/* Messages */}
-        <div 
+        <div
           ref={chatContainerRef}
-          className="flex-1 overflow-y-auto p-6 space-y-4 dark:bg-gradient-to-b dark:from-dark-bg/40 dark:to-dark-card/60 light:bg-gradient-to-b light:from-light-bg/40 light:to-light-card/70"
+          className="flex-1 overflow-y-auto p-5 space-y-4 scrollbar-hide bg-gray-50/50 dark:bg-gray-950/20"
         >
           {chat?.messages?.map((msg, index) => {
             const isMine = msg.sender._id === user._id
-            const showDate = index === 0 || 
-              formatDate(msg.createdAt) !== formatDate(chat.messages[index - 1].createdAt)
-            
+            const showDate = index === 0 || formatDate(msg.createdAt) !== formatDate(chat.messages[index - 1].createdAt)
+
             return (
               <div key={msg._id}>
                 {showDate && (
-                  <div className="text-center dark:text-dark-muted light:text-light-muted text-xs mb-4">
-                    {formatDate(msg.createdAt)}
+                  <div className="text-center my-6">
+                    <span className="text-[10px] uppercase tracking-widest font-bold text-gray-400 bg-white dark:bg-gray-800 px-3 py-1 rounded-full shadow-sm border border-gray-100 dark:border-gray-700">
+                      {formatDate(msg.createdAt)}
+                    </span>
                   </div>
                 )}
                 <div className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[70%] ${isMine ? 'order-2' : 'order-1'}`}>
+                  <div className="max-w-[80%]">
                     {!isMine && (
-                      <div className="flex items-center space-x-2 mb-1">
-                        <MdPerson className="text-purple-400" size={16} />
-                        <span className="text-xs text-white/70">
-                          {msg.sender.firstName} {msg.sender.lastName}
-                        </span>
-                      </div>
+                      <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-1 ml-2">
+                        {msg.sender.firstName} {msg.sender.lastName}
+                      </p>
                     )}
                     <div
-                      className={`rounded-lg px-4 py-2 ${
-                        isMine
-                          ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg shadow-primary-500/20'
-                          : 'dark:bg-dark-surface light:bg-light-surface dark:text-dark-text light:text-light-text border dark:border-dark-border light:border-light-border'
-                      }`}
+                      className={`px-4 py-2.5 shadow-sm text-sm ${isMine
+                          ? 'message-bubble-standard-user rounded-2xl rounded-tr-sm'
+                          : 'message-bubble-standard-bot rounded-2xl rounded-tl-sm'
+                        }`}
                     >
-                      <p className="text-sm whitespace-pre-wrap break-words">{msg.message}</p>
-                      <p className={`text-xs mt-1 ${isMine ? 'text-white/80' : 'dark:text-dark-muted light:text-light-muted'}`}>
+                      <p className="leading-relaxed whitespace-pre-wrap break-words">{msg.message}</p>
+                      <p className={`text-[9px] mt-1.5 ${isMine ? 'text-white/60 text-right' : 'text-gray-400'}`}>
                         {formatTime(msg.createdAt)}
                       </p>
                     </div>
@@ -278,25 +255,24 @@ const ChatModal = ({ verificationId, onClose }) => {
               </div>
             )
           })}
+
           {/* Typing Indicator */}
           {Object.keys(typingUsers).length > 0 && (
-            <div className="flex items-center space-x-2 text-sm italic mb-4 dark:text-dark-muted light:text-light-muted">
+            <div className="flex items-center space-x-2 text-xs text-gray-400 ml-2 animate-pulse">
               <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" />
+                <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce delay-100" />
+                <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce delay-200" />
               </div>
-              <span>
-                {Object.values(typingUsers).join(', ')} {Object.keys(typingUsers).length === 1 ? 'is' : 'are'} typing...
-              </span>
+              <span>Typing...</span>
             </div>
           )}
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input */}
-        <form onSubmit={handleSendMessage} className="p-6 border-t dark:border-dark-border light:border-light-border">
-          <div className="flex space-x-3">
+        {/* Input bar */}
+        <div className="p-4 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
+          <form onSubmit={handleSendMessage} className="flex items-center space-x-3">
             <input
               type="text"
               value={message}
@@ -304,33 +280,27 @@ const ChatModal = ({ verificationId, onClose }) => {
                 setMessage(e.target.value)
                 handleTyping()
               }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault()
-                  handleSendMessage(e)
-                }
-              }}
-              placeholder="Type your message... (Press Enter to send)"
-              className="input flex-1"
+              placeholder="Write a message..."
+              className="flex-1 bg-gray-50 dark:bg-gray-800 dark:text-white border border-gray-200 dark:border-gray-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-full px-5 py-3 text-sm outline-none transition-all"
               disabled={sending}
             />
             <button
               type="submit"
               disabled={!message.trim() || sending}
-              className="btn-primary px-6 py-3 font-semibold disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white w-12 h-12 flex items-center justify-center rounded-full shadow-lg transition-all active:scale-95"
             >
               {sending ? (
-                <FaSpinner className="animate-spin" size={20} />
+                <FaSpinner className="animate-spin" size={18} />
               ) : (
                 <MdSend size={20} />
               )}
             </button>
-          </div>
-        </form>
-      </div>
+          </form>
+        </div>
+      </motion.div>
     </div>
+
   )
 }
 
 export default ChatModal
-

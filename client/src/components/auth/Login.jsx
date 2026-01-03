@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { useNotification } from '../../pages/contexts/NotificationContext'
 import { FaSpinner } from 'react-icons/fa'
+import { MdMessage, MdEmail, MdClose, MdSend } from 'react-icons/md'
+import * as authService from '../../services/auth'
 
 const Login = () => {
   const navigate = useNavigate()
@@ -15,6 +17,12 @@ const Login = () => {
   })
   const [errors, setErrors] = useState({})
 
+  // Contact Feature State
+  const [isDeactivated, setIsDeactivated] = useState(false)
+  const [showContactModal, setShowContactModal] = useState(false)
+  const [contactMessage, setContactMessage] = useState('')
+  const [contactLoading, setContactLoading] = useState(false)
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({
@@ -25,6 +33,8 @@ const Login = () => {
       ...prev,
       [name]: '',
     }))
+    // Reset deactivated state on change
+    setIsDeactivated(false)
   }
 
   const validateForm = () => {
@@ -55,6 +65,7 @@ const Login = () => {
     }
 
     setLoading(true)
+    setIsDeactivated(false)
     try {
       const user = await login(formData.email, formData.password)
       showNotification('success', 'Login successful!', 'Welcome back!')
@@ -70,13 +81,37 @@ const Login = () => {
 
       navigate(dashboardPath)
     } catch (err) {
+      const isDeactivatedError = err.response?.status === 403 && err.response?.data?.message?.toLowerCase().includes('deactivated')
+      setIsDeactivated(isDeactivatedError)
+
       showNotification(
         'error',
-        'Login failed',
+        isDeactivatedError ? 'Account Deactivated' : 'Login failed',
         err.response?.data?.message || 'Invalid email or password'
       )
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleContactSubmit = async (e) => {
+    e.preventDefault()
+    if (!contactMessage.trim()) return
+
+    setContactLoading(true)
+    try {
+      await authService.contactAdmin({
+        email: formData.email,
+        message: contactMessage
+      })
+      showNotification('success', 'Message Sent', 'Your message has been sent to the administrator.')
+      setShowContactModal(false)
+      setContactMessage('')
+    } catch (error) {
+      const errorMsg = error.response?.data?.message || error.message || 'Something went wrong.'
+      showNotification('error', 'Failed to Send', errorMsg)
+    } finally {
+      setContactLoading(false)
     }
   }
 
@@ -154,6 +189,19 @@ const Login = () => {
           </form>
         </div>
 
+        {/* Deactivated Notice */}
+        {isDeactivated && (
+          <div className="px-10 pb-4 animate-bounce-short">
+            <button
+              onClick={() => setShowContactModal(true)}
+              className="w-full py-3 bg-red-50 text-red-600 rounded-lg text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-red-100 transition-all border border-red-200"
+            >
+              <MdMessage className="text-lg" />
+              Contact Support
+            </button>
+          </div>
+        )}
+
         {/* Footer Actions */}
         <div className="flex h-16 mt-6">
           <Link
@@ -171,6 +219,72 @@ const Login = () => {
           </button>
         </div>
       </div>
+
+      {/* Contact Modal */}
+      {showContactModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+          <div className="bg-white/90 backdrop-blur-xl w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden border border-white/20 animate-scale-in">
+            <div className="p-8">
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-red-600 to-rose-600 bg-clip-text text-transparent">
+                    Contact Administrator
+                  </h3>
+                  <p className="text-gray-500 text-sm mt-1">
+                    Describe your issue and we'll get back to you.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowContactModal(false)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <MdClose className="text-2xl text-gray-400" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                    <MdEmail />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">From Account</p>
+                    <p className="text-gray-700 font-semibold">{formData.email}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
+                    Your Message
+                  </label>
+                  <textarea
+                    rows="4"
+                    value={contactMessage}
+                    onChange={(e) => setContactMessage(e.target.value)}
+                    placeholder="Tell us what happened..."
+                    className="w-full p-4 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all text-gray-700 placeholder:text-gray-300 resize-none"
+                  ></textarea>
+                </div>
+
+                <button
+                  onClick={handleContactSubmit}
+                  disabled={contactLoading || !contactMessage.trim()}
+                  className="w-full py-4 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-bold rounded-xl shadow-lg shadow-red-500/30 transform transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 group"
+                >
+                  {contactLoading ? (
+                    <FaSpinner className="animate-spin" />
+                  ) : (
+                    <>
+                      <span>Send Message</span>
+                      <MdSend className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

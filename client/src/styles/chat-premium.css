@@ -1,0 +1,45 @@
+:root {
+  --chat-bg-main: #ffffff;
+  --chat-surface-light: #f3f4f6;
+  --chat-primary: #4f46e5;
+  --chat-text-dark: #111827;
+  --chat-text-muted: #6b7280;
+  --chat-border: #e5e7eb;
+}
+
+.dark {
+  --chat-bg-main: #111827;
+  --chat-surface-light: #1f2937;
+  --chat-primary: #6366f1;
+  --chat-text-dark: #f9fafb;
+  --chat-text-muted: #9ca3af;
+  --chat-border: #374151;
+}
+
+.standard-chat-surface {
+  background: var(--chat-bg-main);
+  border: 1px solid var(--chat-border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.message-bubble-standard-user {
+  background: var(--chat-primary);
+  color: white;
+  border-radius: 18px 18px 2px 18px;
+}
+
+.message-bubble-standard-bot {
+  background: var(--chat-surface-light);
+  color: var(--chat-text-dark);
+  border-radius: 18px 18px 18px 2px;
+  border: 1px solid var(--chat-border);
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

@@ -1,6 +1,6 @@
 const express = require('express');
 const { check } = require('express-validator');
-const { getUsers, addUser, deleteUser, updateUser, getUser } = require('../controllers/user.controller');
+const { getUsers, addUser, deleteUser, updateUser, getUser, toggleUserStatus } = require('../controllers/user.controller');
 const { protect, authorize } = require('../middleware/auth.middleware');
 
 const router = express.Router();
@@ -13,6 +13,9 @@ router.get('/', getUsers);
 
 // Get single user
 router.get('/:id', getUser);
+
+// Toggle status
+router.patch('/:id/toggle-status', toggleUserStatus);
 
 // Add user
 router.post(

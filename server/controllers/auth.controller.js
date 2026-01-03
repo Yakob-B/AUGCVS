@@ -129,6 +129,20 @@ exports.login = async (req, res) => {
             });
         }
 
+        // Check if user is deactivated
+        if (user.status === 'deactivated') {
+            await logAudit({
+                user: user._id,
+                action: 'login_failed',
+                details: { email, reason: 'Account deactivated' },
+                ip: req.ip
+            });
+            return res.status(403).json({
+                success: false,
+                message: 'Your account has been deactivated. Please contact an administrator.'
+            });
+        }
+
         const isMatch = await user.matchPassword(password);
         if (!isMatch) {
             await logAudit({
@@ -552,6 +566,94 @@ exports.createInternalUser = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Server error'
+        });
+    }
+};
+
+// @desc    Contact admin (for deactivated users)
+// @route   POST /api/auth/contact-admin
+// @access  Public
+exports.contactAdmin = async (req, res) => {
+    try {
+        const { email, message } = req.body;
+
+        if (!email || !message) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide an email and message'
+            });
+        }
+
+        console.log(`Support request from deactivated user: ${email}`);
+
+        // Find superadmins to notify
+        let admins = [];
+        try {
+            admins = await User.find({ role: 'superadmin' });
+        } catch (err) {
+            console.error('Error finding superadmins:', err);
+        }
+
+        const adminEmails = admins.map(admin => admin.email).filter(e => !!e);
+        const recipientList = adminEmails.length > 0
+            ? adminEmails.join(', ')
+            : (process.env.FROM_EMAIL || process.env.SMTP_USER);
+
+        if (!recipientList) {
+            console.error('No recipients found for support email (no superadmins and no FROM_EMAIL)');
+            return res.status(500).json({
+                success: false,
+                message: 'System configuration error: No administrator email found.'
+            });
+        }
+
+        // Log the attempt
+        try {
+            await logAudit({
+                action: 'deactivated_user_contact_attempt',
+                details: { email, messageSnippet: String(message).substring(0, 500) },
+                ip: req.ip
+            });
+        } catch (auditError) {
+            console.error('Audit logging failed for support request:', auditError);
+        }
+
+        const htmlMessage = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px;">
+                <h2 style="color: #e11d48;">Support Request: Deactivated Account</h2>
+                <p><strong>From User:</strong> ${email}</p>
+                <div style="background-color: #f9fafb; padding: 15px; border-radius: 5px; margin-top: 10px; border-left: 4px solid #e11d48;">
+                    <p style="white-space: pre-wrap;">${message}</p>
+                </div>
+                <p style="color: #666; font-size: 12px; margin-top: 20px;">This message was sent from the AUGCVS Login Page by a deactivated user.</p>
+            </div>
+        `;
+
+        try {
+            await sendEmail({
+                email: recipientList,
+                subject: 'Deactivated Account Support Request - AUGCVS',
+                html: htmlMessage,
+                message: `Deactivated user (${email}) sent a message: ${message}`
+            });
+            console.log(`Support email sent to: ${recipientList}`);
+        } catch (emailError) {
+            console.error('Email sending failed for support request:', emailError);
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to send your request. Please try again later or contact support via other means.'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Your message has been sent to the administrator. We will review it shortly.'
+        });
+    } catch (err) {
+        console.error('Main error in contactAdmin:', err);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error while processing your request.'
         });
     }
 };

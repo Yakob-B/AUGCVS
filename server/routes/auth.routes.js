@@ -8,7 +8,8 @@ const {
     forgotPassword,
     resetPassword,
     resendVerification,
-    createInternalUser
+    createInternalUser,
+    contactAdmin
 } = require('../controllers/auth.controller');
 const { protect, requireSuperAdmin } = require('../middleware/auth.middleware');
 const { authLimiter, passwordResetLimiter } = require('../middleware/rateLimiter');
@@ -62,6 +63,17 @@ router.put(
 
 // Resend verification email
 router.post('/resend-verification', protect, resendVerification);
+
+// Contact admin for deactivated users
+router.post(
+    '/contact-admin',
+    authLimiter,
+    [
+        check('email', 'Please include a valid email').isEmail(),
+        check('message', 'Message is required').not().isEmpty()
+    ],
+    contactAdmin
+);
 
 // Get current user route
 router.get('/me', protect, getMe);

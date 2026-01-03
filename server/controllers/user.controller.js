@@ -203,3 +203,42 @@ exports.getUser = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+// Toggle user status (active/deactivated)
+exports.toggleUserStatus = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    // Check if user is trying to deactivate themselves
+    if (userId === req.user.id) {
+      return res.status(400).json({
+        success: false,
+        message: 'You cannot deactivate your own account'
+      });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Toggle status
+    user.status = user.status === 'active' ? 'deactivated' : 'active';
+    await user.save();
+
+    await logAudit({
+      user: req.user.id,
+      action: `user_${user.status}`,
+      details: { userId: user._id, email: user.email, status: user.status },
+      ip: req.ip
+    });
+
+    res.status(200).json({
+      success: true,
+      data: user,
+      message: `User ${user.status === 'active' ? 'activated' : 'deactivated'} successfully`
+    });
+  } catch (err) {
+    console.error(`Error toggling user status: ${err.message}`);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};

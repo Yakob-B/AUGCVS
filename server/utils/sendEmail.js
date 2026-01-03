@@ -28,8 +28,11 @@ const sendEmail = async (options) => {
     logger.info(`Attempting to send email using host: ${process.env.SMTP_HOST}, port: ${process.env.SMTP_PORT}, secure: ${process.env.SMTP_PORT == 465}`);
 
     // Define email options
+    const fromName = process.env.FROM_NAME || 'AUGCVS System';
+    const fromEmail = process.env.FROM_EMAIL || process.env.SMTP_USER;
+
     const message = {
-        from: `${process.env.FROM_NAME} <${process.env.FROM_EMAIL}>`,
+        from: `"${fromName}" <${fromEmail}>`,
         to: options.email,
         subject: options.subject,
         text: options.message,

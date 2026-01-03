@@ -3,7 +3,7 @@ import { useNotification } from '../contexts/NotificationContext'
 import { useAuth } from '../../contexts/AuthContext'
 import * as userService from '../../services/users'
 import UserForm from '../../components/users/UserForm'
-import { MdPeople, MdAdd, MdEdit, MdDelete } from 'react-icons/md'
+import { MdPeople, MdAdd, MdEdit, MdDelete, MdBlock, MdCheckCircle } from 'react-icons/md'
 
 const Users = () => {
   const { user: currentUser } = useAuth()
@@ -54,6 +54,21 @@ const Users = () => {
     }
   }
 
+  const handleToggleStatus = async (user) => {
+    const action = user.status === 'active' ? 'deactivate' : 'activate'
+    if (!window.confirm(`Are you sure you want to ${action} ${user.firstName}'s account?`)) {
+      return
+    }
+
+    try {
+      await userService.toggleUserStatus(user._id)
+      showNotification('success', `User ${action === 'activate' ? 'Activated' : 'Deactivated'}`, `User account has been ${action}d successfully.`)
+      loadUsers()
+    } catch (error) {
+      showNotification('error', `${action === 'activate' ? 'Activation' : 'Deactivation'} Failed`, error.message)
+    }
+  }
+
   const getRoleBadge = (role) => {
     switch (role) {
       case 'admin':
@@ -65,6 +80,18 @@ const Users = () => {
       default:
         return <span className="badge-pending">{role}</span>
     }
+  }
+
+  const getStatusBadge = (status) => {
+    const isActive = status === 'active'
+    return (
+      <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 ${isActive
+          ? 'bg-green-100/20 text-green-500 border border-green-500/30 shadow-[0_0_10px_rgba(34,197,94,0.2)]'
+          : 'bg-red-100/20 text-red-500 border border-red-500/30'
+        }`}>
+        {status}
+      </span>
+    )
   }
 
   if (loading && users.length === 0) {
@@ -131,8 +158,9 @@ const Users = () => {
                         {user.email}
                       </p>
                     </div>
-                    <div className="ml-3 flex-shrink-0">
+                    <div className="ml-3 flex flex-col items-end gap-2">
                       {getRoleBadge(user.role)}
+                      {getStatusBadge(user.status || 'active')}
                     </div>
                   </div>
 
@@ -145,29 +173,40 @@ const Users = () => {
                   )}
 
                   {/* Action Buttons - Beautifully Styled */}
-                  <div className="flex items-center gap-3 pt-4 border-t dark:border-dark-border light:border-light-border">
+                  <div className="grid grid-cols-2 gap-3 pt-4 border-t dark:border-dark-border light:border-light-border">
                     <button
                       onClick={() => handleEdit(user)}
-                      className="group flex-1 relative flex items-center justify-center gap-2 py-3.5 px-4 overflow-hidden rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-95
+                      className="group relative flex items-center justify-center gap-2 py-3 px-4 overflow-hidden rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-95
                         bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white
-                        shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/40
-                        before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/0 before:via-white/25 before:to-white/0 
-                        before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-700"
+                        shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/40"
                     >
                       <MdEdit className="text-lg transition-transform group-hover:rotate-12" />
                       <span>Edit</span>
                     </button>
                     {currentUser?._id !== user._id && (
                       <button
+                        onClick={() => handleToggleStatus(user)}
+                        className={`group relative flex items-center justify-center gap-2 py-3 px-4 overflow-hidden rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-95 text-white shadow-lg
+                          ${user.status === 'deactivated'
+                            ? 'bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 shadow-emerald-500/25 hover:shadow-emerald-500/40'
+                            : 'bg-gradient-to-r from-orange-500 via-amber-600 to-yellow-600 shadow-amber-500/25 hover:shadow-amber-500/40'}`}
+                      >
+                        {user.status === 'deactivated' ? (
+                          <><MdCheckCircle className="text-lg" /><span>Activate</span></>
+                        ) : (
+                          <><MdBlock className="text-lg" /><span>Deactivate</span></>
+                        )}
+                      </button>
+                    )}
+                    {currentUser?._id !== user._id && (
+                      <button
                         onClick={() => handleDelete(user)}
-                        className="group flex-1 relative flex items-center justify-center gap-2 py-3.5 px-4 overflow-hidden rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-95
+                        className="group col-span-2 relative flex items-center justify-center gap-2 py-3 px-4 overflow-hidden rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-95
                           bg-gradient-to-r from-rose-600 via-red-600 to-pink-600 text-white
-                          shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/40
-                          before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/0 before:via-white/25 before:to-white/0 
-                          before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-700"
+                          shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/40"
                       >
                         <MdDelete className="text-lg transition-transform group-hover:scale-110" />
-                        <span>Delete</span>
+                        <span>Delete Permanently</span>
                       </button>
                     )}
                   </div>
@@ -183,6 +222,7 @@ const Users = () => {
                     <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Name</th>
                     <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Email</th>
                     <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Role</th>
+                    <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Status</th>
                     <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Organization</th>
                     <th className="text-left p-4 font-semibold dark:text-dark-text light:text-light-text">Actions</th>
                   </tr>
@@ -195,6 +235,9 @@ const Users = () => {
                       </td>
                       <td className="p-4 dark:text-dark-muted light:text-light-muted">{user.email}</td>
                       <td className="p-4">{getRoleBadge(user.role)}</td>
+                      <td className="p-4">
+                        {getStatusBadge(user.status || 'active')}
+                      </td>
                       <td className="p-4 dark:text-dark-muted light:text-light-muted">{user.organization || '-'}</td>
                       <td className="p-4">
                         <div className="flex items-center gap-2">
@@ -202,19 +245,35 @@ const Users = () => {
                             onClick={() => handleEdit(user)}
                             className="group relative p-2.5 rounded-xl overflow-hidden transition-all duration-300 transform hover:scale-110 active:scale-95
                               bg-gradient-to-br from-violet-600 to-indigo-600 text-white
-                              shadow-md shadow-purple-500/20 hover:shadow-lg hover:shadow-purple-500/40
-                              before:absolute before:inset-0 before:bg-white/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity"
+                              shadow-md shadow-purple-500/20 hover:shadow-lg hover:shadow-purple-500/40"
                             title="Edit User"
                           >
                             <MdEdit className="text-lg relative z-10 transition-transform group-hover:rotate-12" />
                           </button>
+
+                          {currentUser?._id !== user._id && (
+                            <button
+                              onClick={() => handleToggleStatus(user)}
+                              className={`group relative p-2.5 rounded-xl overflow-hidden transition-all duration-300 transform hover:scale-110 active:scale-95 text-white shadow-md
+                                ${user.status === 'deactivated'
+                                  ? 'bg-gradient-to-br from-green-600 to-emerald-600 shadow-emerald-500/20 hover:shadow-emerald-500/40'
+                                  : 'bg-gradient-to-br from-orange-500 to-amber-600 shadow-amber-500/20 hover:shadow-amber-500/40'}`}
+                              title={user.status === 'deactivated' ? 'Activate User' : 'Deactivate User'}
+                            >
+                              {user.status === 'deactivated' ? (
+                                <MdCheckCircle className="text-lg relative z-10" />
+                              ) : (
+                                <MdBlock className="text-lg relative z-10" />
+                              )}
+                            </button>
+                          )}
+
                           {currentUser?._id !== user._id && (
                             <button
                               onClick={() => handleDelete(user)}
                               className="group relative p-2.5 rounded-xl overflow-hidden transition-all duration-300 transform hover:scale-110 active:scale-95
                                 bg-gradient-to-br from-rose-600 to-pink-600 text-white
-                                shadow-md shadow-red-500/20 hover:shadow-lg hover:shadow-red-500/40
-                                before:absolute before:inset-0 before:bg-white/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity"
+                                shadow-md shadow-red-500/20 hover:shadow-lg hover:shadow-red-500/40"
                               title="Delete User"
                             >
                               <MdDelete className="text-lg relative z-10 transition-transform group-hover:scale-110" />

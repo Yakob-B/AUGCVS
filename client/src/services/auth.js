@@ -42,3 +42,8 @@ export const resendVerification = async () => {
   const response = await api.post('/auth/resend-verification')
   return response.data
 }
+
+export const contactAdmin = async (contactData) => {
+  const response = await api.post('/auth/contact-admin', contactData)
+  return response.data
+}
