@@ -52,6 +52,17 @@ exports.authorize = (...roles) => {
     };
 };
 
+// Check if user is admin or superadmin
+exports.requireAdmin = (req, res, next) => {
+    if (req.user.role !== 'admin' && req.user.role !== 'superadmin') {
+        return res.status(403).json({
+            success: false,
+            message: 'Not authorized to access this route. Admin privileges required.'
+        });
+    }
+    next();
+};
+
 // Check if user is superadmin
 exports.requireSuperAdmin = (req, res, next) => {
     if (req.user.role !== 'superadmin') {

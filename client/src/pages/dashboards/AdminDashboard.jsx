@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { useNotification } from '../contexts/NotificationContext'
 import * as userService from '../../services/users'
+import * as supportService from '../../services/support'
 import {
   MdSchool,
   MdPeople,
@@ -10,7 +11,8 @@ import {
   MdTrendingUp,
   MdArrowForward,
   MdAdd,
-  MdFileUpload
+  MdFileUpload,
+  MdMessage
 } from 'react-icons/md'
 import BulkUploadModal from '../../components/graduates/BulkUploadModal'
 
@@ -19,6 +21,8 @@ const AdminDashboard = () => {
   const { showNotification } = useNotification()
   const [stats, setStats] = useState({
     users: 0,
+    supportRequests: 0,
+    pendingSupport: 0
   })
   const [loading, setLoading] = useState(true)
   const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false)
@@ -30,10 +34,18 @@ const AdminDashboard = () => {
   const loadStats = async () => {
     try {
       setLoading(true)
-      const usersRes = await userService.getUsers()
+      const [usersRes, supportRes] = await Promise.all([
+        userService.getUsers(),
+        supportService.getSupportRequests()
+      ])
+
+      const requests = supportRes.data || []
+      const pending = requests.filter(r => r.status === 'pending').length
 
       setStats({
         users: usersRes.data?.length || 0,
+        supportRequests: requests.length,
+        pendingSupport: pending
       })
     } catch (error) {
       showNotification('error', 'Error loading stats', error.message)
@@ -52,8 +64,17 @@ const AdminDashboard = () => {
       action: 'Manage Users',
     },
     {
+      title: 'Support Inbox',
+      value: stats.supportRequests,
+      badge: stats.pendingSupport > 0 ? `${stats.pendingSupport} New` : null,
+      icon: <MdMessage />,
+      color: 'from-blue-500 to-indigo-500',
+      link: '/admin/support',
+      action: 'View Messages',
+    },
+    {
       title: 'Active Sessions',
-      value: 'Live', // Placeholder for actual session count if available
+      value: 'Live',
       icon: <MdTrendingUp />,
       color: 'from-orange-500 to-red-500',
       link: '/admin/users',
@@ -95,8 +116,16 @@ const AdminDashboard = () => {
               </div>
               <MdArrowForward className="text-white/50 group-hover:text-purple-400 transition-colors" />
             </div>
-            <div className="text-3xl font-heading font-bold text-blue-400 mb-1">
-              {card.value}
+            <div className="flex items-center justify-between mb-1">
+              <div className="text-3xl font-heading font-bold text-blue-400">
+                {card.value}
+              </div>
+              {card.badge && (
+                <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 text-[10px] font-black uppercase tracking-wider animate-pulse">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-600 dark:bg-red-400"></span>
+                  {card.badge}
+                </span>
+              )}
             </div>
             <div className="dark:text-dark-muted light:text-light-muted mb-2">{card.title}</div>
             <div className="text-sm text-primary-400 font-medium group-hover:text-primary-300 transition-colors">
@@ -122,6 +151,16 @@ const AdminDashboard = () => {
                 <span className="dark:text-dark-text light:text-light-text">Add New User</span>
               </div>
               <MdAdd className="dark:text-dark-muted light:text-light-muted group-hover:text-primary-400 transition-colors" />
+            </Link>
+            <Link
+              to="/admin/support"
+              className="flex items-center justify-between p-4 rounded-lg dark:bg-dark-surface light:bg-light-surface hover:dark:bg-dark-card hover:light:bg-gray-100 transition-colors group"
+            >
+              <div className="flex items-center space-x-3">
+                <MdMessage className="text-primary-400 text-xl" />
+                <span className="dark:text-dark-text light:text-light-text">Support Inbox</span>
+              </div>
+              <MdArrowForward className="dark:text-dark-muted light:text-light-muted group-hover:text-primary-400 transition-colors" />
             </Link>
           </div>
         </div>

@@ -126,6 +126,7 @@ app.use('/api/graduates', require('./routes/graduate.routes'));
 app.use('/api/verifications', require('./routes/verification.routes'));
 app.use('/api/chat', require('./routes/chat.routes'));
 app.use('/api/ai', require('./routes/ai.routes'));
+app.use('/api/support', require('./routes/support.routes'));
 
 // Centralized error handling middleware
 app.use(errorHandler);

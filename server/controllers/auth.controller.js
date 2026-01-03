@@ -1,4 +1,5 @@
 const User = require('../models/user.model');
+const SupportRequest = require('../models/support.model');
 const { validationResult } = require('express-validator');
 const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
@@ -585,6 +586,17 @@ exports.contactAdmin = async (req, res) => {
         }
 
         console.log(`Support request from deactivated user: ${email}`);
+
+        // Save to database
+        try {
+            await SupportRequest.create({
+                userEmail: email,
+                message: message
+            });
+            console.log('Support request persisted to database');
+        } catch (dbErr) {
+            console.error('Failed to persist support request to database:', dbErr);
+        }
 
         // Find superadmins to notify
         let admins = [];

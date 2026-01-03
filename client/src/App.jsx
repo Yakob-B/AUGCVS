@@ -29,6 +29,7 @@ import CreateUser from './pages/superadmin/CreateUser'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import TermsOfService from './pages/TermsOfService'
 import Support from './pages/Support'
+import SupportInbox from './pages/support/SupportInbox'
 
 function App() {
   return (
@@ -62,6 +63,7 @@ function App() {
                             <Routes>
                               <Route index element={<AdminDashboard />} />
                               <Route path="users" element={<Users />} />
+                              <Route path="support" element={<SupportInbox />} />
                             </Routes>
                           </PrivateRoute>
                         }
