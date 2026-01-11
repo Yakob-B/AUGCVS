@@ -106,7 +106,7 @@ function App() {
                   </main>
                   <Footer />
                   <ChatList />
-                  <Chatbot />
+                  {/* <Chatbot /> */}
                   <NotificationToast />
                 </div>
               </NotificationProvider>

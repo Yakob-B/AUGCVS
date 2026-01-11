@@ -89,7 +89,7 @@ const Home = () => {
             Secure Credential Verification
           </h1>
           <p className="text-lg md:text-xl text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed animate-fade-in delay-200">
-            Ambo University's modern digital platform for validating graduate credentials with blockchain-inspired security and real-time verification.
+            Ambo University's modern digital platform for validating graduate credentials with advanced security and real-time verification.
           </p>
           <Link
             to="/login"
@@ -123,7 +123,7 @@ const Home = () => {
             <ServiceCard
               icon={<MdSecurity />}
               title="Secure Verification"
-              desc="Blockchain-inspired security for tamper-proof credential validation with advanced encryption."
+              desc="Advanced security for tamper-proof credential validation with strictly enforced encryption."
               delay="delay-[100ms]"
             />
             <ServiceCard
@@ -188,7 +188,7 @@ const Home = () => {
             />
             <BenefitCard
               title="Fraud Prevention"
-              desc="Advanced security prevents certificate fraud with blockchain-inspired validation."
+              desc="Advanced security prevents certificate fraud with secure digital validation."
               delay="delay-[200ms]"
             />
             <BenefitCard

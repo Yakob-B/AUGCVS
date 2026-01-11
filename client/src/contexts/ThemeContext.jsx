@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 
-const ThemeContext = createContext()
+export const ThemeContext = createContext()
 
 export const useTheme = () => {
   const context = useContext(ThemeContext)
@@ -15,7 +15,7 @@ export const ThemeProvider = ({ children }) => {
     // Check localStorage first, then system preference
     const savedTheme = localStorage.getItem('theme')
     if (savedTheme) return savedTheme
-    
+
     // Check system preference
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
       return 'dark'

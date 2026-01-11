@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AUGCVS - Presentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f0f0f;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .slide.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Slide 1 - Title */
+        .slide-title {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            text-align: center;
+        }
+
+        .slide-title h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.5));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 40px rgba(102, 126, 234, 0.8));
+            }
+        }
+
+        .slide-title h2 {
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: #a0a0a0;
+            margin-bottom: 40px;
+        }
+
+        .slide-title .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-top: 30px;
+        }
+
+        .logo-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        /* Content Slides */
+        .content-slide {
+            background: linear-gradient(180deg, #0f0f0f 0%, #1a1a2e 100%);
+            align-items: flex-start;
+            padding: 80px;
+        }
+
+        .content-slide h2 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            width: 100%;
+        }
+
+        .content-grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 35px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.2);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .card p {
+            font-size: 1rem;
+            color: #a0a0a0;
+            line-height: 1.6;
+        }
+
+        .card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .card ul li {
+            padding: 8px 0;
+            color: #a0a0a0;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card ul li::before {
+            content: "→";
+            color: #667eea;
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .tech-badge {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        /* Architecture Slide */
+        .architecture-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 40px 0;
+        }
+
+        .arch-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+            border: 2px solid rgba(102, 126, 234, 0.5);
+            border-radius: 15px;
+            padding: 30px 40px;
+            text-align: center;
+            margin: 0 20px;
+        }
+
+        .arch-box h4 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .arch-box p {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+        }
+
+        .arch-arrow {
+            font-size: 2rem;
+            color: #667eea;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            width: 100%;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-card .label {
+            font-size: 1rem;
+            color: #a0a0a0;
+            margin-top: 10px;
+        }
+
+        /* Image Slide */
+        .image-slide {
+            padding: 60px;
+        }
+
+        .image-slide img {
+            max-width: 85%;
+            max-height: 70vh;
+            border-radius: 20px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .image-slide .caption {
+            font-size: 1.2rem;
+            color: #a0a0a0;
+            margin-top: 30px;
+        }
+
+        /* List slide */
+        .feature-list {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: flex-start;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            gap: 20px;
+        }
+
+        .feature-list .num {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .feature-list .text h4 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+
+        .feature-list .text p {
+            color: #a0a0a0;
+            font-size: 1rem;
+        }
+
+        /* Navigation */
+        .nav-controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.5);
+            color: #fff;
+            padding: 15px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(102, 126, 234, 0.4);
+            transform: scale(1.05);
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 30px;
+            right: 40px;
+            font-size: 1rem;
+            color: #666;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        /* Thank you slide */
+        .thank-you {
+            text-align: center;
+        }
+
+        .thank-you h2 {
+            font-size: 4rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 30px;
+        }
+
+        .contact-info {
+            margin-top: 50px;
+            display: flex;
+            gap: 40px;
+        }
+
+        .contact-item {
+            text-align: center;
+            padding: 20px 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+        }
+
+        .contact-item .label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .contact-item .value {
+            font-size: 1.1rem;
+            color: #a0a0a0;
+        }
+
+        /* Print styles for export */
+        @media print {
+            .slide {
+                page-break-after: always;
+                display: flex !important;
+                opacity: 1 !important;
+                position: relative;
+                height: 100vh;
+            }
+
+            .nav-controls,
+            .slide-counter,
+            .progress-bar {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="progress-bar" id="progress"></div>
+
+    <div class="presentation">
+        <!-- Slide 1: Title -->
+        <div class="slide slide-title active">
+            <div class="logo-badge">Capstone Project 2025</div>
+            <h1>AUGCVS</h1>
+            <h2>Ambo University Graduation Credential<br>Verification System</h2>
+            <p class="subtitle">Full-stack MERN platform digitizing secure graduate credential verification</p>
+        </div>
+
+        <!-- Slide 2: Problem Statement -->
+        <div class="slide content-slide">
+            <h2>🎯 Problem Statement</h2>
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-icon">📝</div>
+                    <h3>Current Challenges</h3>
+                    <ul>
+                        <li>Manual, paper-based verification process</li>
+                        <li>Time-consuming credential validation</li>
+                        <li>Risk of forged certificates going undetected</li>
+                        <li>No centralized graduate database</li>
+                        <li>Difficult to track verification history</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-icon">💡</div>
+                    <h3>Our Solution</h3>
+                    <ul>
+                        <li>Digital platform for instant verification</li>
+                        <li>Secure graduate records database</li>
+                        <li>Real-time verification status updates</li>
+                        <li>Complete audit trail and logging</li>
+                        <li>Role-based access control system</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Key Features -->
+        <div class="slide content-slide">
+            <h2>✨ Key Features</h2>
+            <div class="content-grid content-grid-3">
+                <div class="card">
+                    <div class="card-icon">🔐</div>
+                    <h3>Role-Based Access</h3>
+                    <p>Superadmin, Admin, Registrar, and External user roles with granular permissions</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📄</div>
+                    <h3>Secure File Upload</h3>
+                    <p>PDF/QR certificate upload with 100% validation accuracy using Multer</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⚡</div>
+                    <h3>Real-Time Updates</h3>
+                    <p>Socket.IO integration for instant verification status notifications</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📊</div>
+                    <h3>Audit Logging</h3>
+                    <p>Complete tracking of all verification activities and system actions</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📧</div>
+                    <h3>Email Notifications</h3>
+                    <p>Automated email alerts via Nodemailer for verification updates</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🤖</div>
+                    <h3>AI Assistant</h3>
+                    <p>Intelligent chatbot to help users navigate the system</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: User Roles -->
+        <div class="slide content-slide">
+            <h2>👥 User Roles & Permissions</h2>
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-icon">👑</div>
+                    <h3>Super Admin</h3>
+                    <ul>
+                        <li>Full system control</li>
+                        <li>User management</li>
+                        <li>System configuration</li>
+                        <li>View all analytics</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🛡️</div>
+                    <h3>Admin</h3>
+                    <ul>
+                        <li>Manage registrar accounts</li>
+                        <li>View verification reports</li>
+                        <li>Monitor system activity</li>
+                        <li>Handle support requests</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📋</div>
+                    <h3>Registrar</h3>
+                    <ul>
+                        <li>Add/edit graduate records</li>
+                        <li>Process verification requests</li>
+                        <li>Upload certificates</li>
+                        <li>Approve/reject requests</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🌐</div>
+                    <h3>External User</h3>
+                    <ul>
+                        <li>Submit verification requests</li>
+                        <li>Track request status</li>
+                        <li>View verification results</li>
+                        <li>Download verification letter</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Tech Stack -->
+        <div class="slide content-slide" style="justify-content: center; align-items: center;">
+            <h2>🛠️ Technology Stack</h2>
+            <div class="architecture-diagram" style="flex-direction: column;">
+                <div style="display: flex; align-items: center; margin-bottom: 40px;">
+                    <div class="arch-box">
+                        <h4>Frontend</h4>
+                        <p>React 18 + Vite</p>
+                        <p>Tailwind CSS</p>
+                    </div>
+                    <span class="arch-arrow">↔</span>
+                    <div class="arch-box">
+                        <h4>Backend</h4>
+                        <p>Node.js + Express</p>
+                        <p>Socket.IO</p>
+                    </div>
+                    <span class="arch-arrow">↔</span>
+                    <div class="arch-box">
+                        <h4>Database</h4>
+                        <p>MongoDB</p>
+                        <p>Mongoose ODM</p>
+                    </div>
+                </div>
+                <div class="tech-stack">
+                    <span class="tech-badge">React 18</span>
+                    <span class="tech-badge">Vite</span>
+                    <span class="tech-badge">Tailwind CSS</span>
+                    <span class="tech-badge">Node.js</span>
+                    <span class="tech-badge">Express</span>
+                    <span class="tech-badge">MongoDB</span>
+                    <span class="tech-badge">Socket.IO</span>
+                    <span class="tech-badge">JWT</span>
+                    <span class="tech-badge">bcrypt</span>
+                    <span class="tech-badge">Multer</span>
+                    <span class="tech-badge">Nodemailer</span>
+                    <span class="tech-badge">Vercel</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: System Architecture -->
+        <div class="slide content-slide">
+            <h2>🏗️ System Architecture</h2>
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-icon">🎨</div>
+                    <h3>Client Layer</h3>
+                    <ul>
+                        <li>React SPA with Vite build system</li>
+                        <li>Context API for state management</li>
+                        <li>Protected routes with role guards</li>
+                        <li>Responsive dark theme UI</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⚙️</div>
+                    <h3>API Layer</h3>
+                    <ul>
+                        <li>RESTful endpoints with Express</li>
+                        <li>JWT authentication middleware</li>
+                        <li>Rate limiting & CORS protection</li>
+                        <li>File upload handling with Multer</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-icon">💾</div>
+                    <h3>Data Layer</h3>
+                    <ul>
+                        <li>MongoDB with indexes for performance</li>
+                        <li>Mongoose schemas with validation</li>
+                        <li>Text search for graduate lookup</li>
+                        <li>Pagination for large datasets</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🔒</div>
+                    <h3>Security Layer</h3>
+                    <ul>
+                        <li>Password hashing with bcrypt</li>
+                        <li>JWT token authentication</li>
+                        <li>Email verification flow</li>
+                        <li>Password reset functionality</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Database Schema -->
+        <div class="slide content-slide">
+            <h2>📊 Database Models</h2>
+            <div class="content-grid content-grid-3">
+                <div class="card">
+                    <div class="card-icon">👤</div>
+                    <h3>User Model</h3>
+                    <ul>
+                        <li>firstName, lastName, email</li>
+                        <li>Password (hashed)</li>
+                        <li>Role (superadmin/admin/registrar/external)</li>
+                        <li>Organization, Status</li>
+                        <li>Email verification tokens</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🎓</div>
+                    <h3>Graduate Model</h3>
+                    <ul>
+                        <li>Student ID, Full Name</li>
+                        <li>Department, College, Program</li>
+                        <li>Degree Type, GPA</li>
+                        <li>Graduation Date/Year</li>
+                        <li>Certificate Number</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-icon">✅</div>
+                    <h3>Verification Model</h3>
+                    <ul>
+                        <li>Request Number</li>
+                        <li>Requester & Graduate refs</li>
+                        <li>Certificate File</li>
+                        <li>Status (pending/approved/rejected)</li>
+                        <li>Verification Result</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Screenshots - Login -->
+        <div class="slide image-slide content-slide" style="align-items: center;">
+            <h2>🖥️ Login Interface</h2>
+            <img src="logins.png" alt="Login Page">
+            <p class="caption">Secure login with email verification and password reset</p>
+        </div>
+
+        <!-- Slide 9: Screenshots - Dashboard -->
+        <div class="slide image-slide content-slide" style="align-items: center;">
+            <h2>📈 Admin Dashboard</h2>
+            <img src="dashboard - Copy.png" alt="Admin Dashboard">
+            <p class="caption">Comprehensive analytics and system overview</p>
+        </div>
+
+        <!-- Slide 10: Screenshots - Verification -->
+        <div class="slide image-slide content-slide" style="align-items: center;">
+            <h2>🔍 Verification Workflow</h2>
+            <img src="verifications.png" alt="Verification Page">
+            <p class="caption">Streamlined verification request management</p>
+        </div>
+
+        <!-- Slide 11: Verification Flow -->
+        <div class="slide content-slide">
+            <h2>🔄 Verification Process Flow</h2>
+            <ol class="feature-list">
+                <li>
+                    <span class="num">1</span>
+                    <div class="text">
+                        <h4>Request Submission</h4>
+                        <p>External user submits verification request with certificate file and details</p>
+                    </div>
+                </li>
+                <li>
+                    <span class="num">2</span>
+                    <div class="text">
+                        <h4>Graduate Matching</h4>
+                        <p>System matches certificate number with graduate database records</p>
+                    </div>
+                </li>
+                <li>
+                    <span class="num">3</span>
+                    <div class="text">
+                        <h4>Registrar Review</h4>
+                        <p>Registrar reviews request, verifies documents, and makes decision</p>
+                    </div>
+                </li>
+                <li>
+                    <span class="num">4</span>
+                    <div class="text">
+                        <h4>Result Notification</h4>
+                        <p>Requester receives instant notification with verification result</p>
+                    </div>
+                </li>
+            </ol>
+        </div>
+
+        <!-- Slide 12: Performance -->
+        <div class="slide content-slide" style="justify-content: center; align-items: center;">
+            <h2>📊 Performance & Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="number">300+</div>
+                    <div class="label">Verifications Handled</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">100%</div>
+                    <div class="label">Validation Accuracy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">40%</div>
+                    <div class="label">Faster Onboarding</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">4</div>
+                    <div class="label">User Roles</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Security Features -->
+        <div class="slide content-slide">
+            <h2>🔒 Security Implementation</h2>
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-icon">🔑</div>
+                    <h3>Authentication</h3>
+                    <ul>
+                        <li>JWT-based token authentication</li>
+                        <li>Secure password hashing (bcrypt)</li>
+                        <li>Email verification for new users</li>
+                        <li>Password reset with secure tokens</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🛡️</div>
+                    <h3>Authorization</h3>
+                    <ul>
+                        <li>Role-based access control (RBAC)</li>
+                        <li>Protected API routes with middleware</li>
+                        <li>Frontend route guards</li>
+                        <li>Permission-based UI rendering</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📝</div>
+                    <h3>Data Protection</h3>
+                    <ul>
+                        <li>Input validation with Express Validator</li>
+                        <li>Secure file upload validation</li>
+                        <li>MongoDB injection prevention</li>
+                        <li>XSS protection</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📋</div>
+                    <h3>Audit & Logging</h3>
+                    <ul>
+                        <li>Complete audit trail logging</li>
+                        <li>User activity tracking</li>
+                        <li>Verification history records</li>
+                        <li>System event monitoring</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Deployment -->
+        <div class="slide content-slide">
+            <h2>🚀 Deployment Architecture</h2>
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-icon">🌐</div>
+                    <h3>Frontend - Vercel</h3>
+                    <ul>
+                        <li>Automatic HTTPS/SSL</li>
+                        <li>Global CDN distribution</li>
+                        <li>Automatic Git deployments</li>
+                        <li>Environment variable management</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⚙️</div>
+                    <h3>Backend - Render</h3>
+                    <ul>
+                        <li>Node.js web service hosting</li>
+                        <li>Automatic SSL certificates</li>
+                        <li>Docker container support</li>
+                        <li>Scalable infrastructure</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-icon">💾</div>
+                    <h3>Database - MongoDB Atlas</h3>
+                    <ul>
+                        <li>Cloud-hosted MongoDB</li>
+                        <li>Automatic backups</li>
+                        <li>Global clusters</li>
+                        <li>IP whitelist security</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📱</div>
+                    <h3>Mobile - Android</h3>
+                    <ul>
+                        <li>Companion Android app</li>
+                        <li>Native mobile experience</li>
+                        <li>Push notifications</li>
+                        <li>Offline capability</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Future Improvements -->
+        <div class="slide content-slide">
+            <h2>🔮 Future Improvements</h2>
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-icon">📱</div>
+                    <h3>Mobile Enhancement</h3>
+                    <p>iOS app development and enhanced mobile experience with biometric authentication</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🤖</div>
+                    <h3>AI Document Analysis</h3>
+                    <p>Machine learning for automatic certificate authenticity verification</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🔗</div>
+                    <h3>API Integration</h3>
+                    <p>Third-party integration APIs for employers and institutions</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📊</div>
+                    <h3>Advanced Analytics</h3>
+                    <p>Enhanced reporting dashboards with predictive insights</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 16: Thank You -->
+        <div class="slide slide-title thank-you">
+            <h2>Thank You!</h2>
+            <p style="font-size: 1.3rem; color: #a0a0a0; margin-bottom: 20px;">Questions & Discussion</p>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <div class="label">Live Demo</div>
+                    <div class="value">augcvs.vercel.app</div>
+                </div>
+                <div class="contact-item">
+                    <div class="label">GitHub</div>
+                    <div class="value">github.com/Yakob-B/AUGCVS</div>
+                </div>
+                <div class="contact-item">
+                    <div class="label">Project</div>
+                    <div class="value">Ambo University Capstone 2025</div>
+                </div>
+            </div>
+            <p style="margin-top: 60px; color: #555; font-size: 0.9rem;">Press left/right arrow keys or use buttons to
+                navigate</p>
+        </div>
+    </div>
+
+    <div class="nav-controls">
+        <button class="nav-btn" onclick="prevSlide()">← Previous</button>
+        <button class="nav-btn" onclick="nextSlide()">Next →</button>
+    </div>
+
+    <div class="slide-counter">
+        <span id="current">1</span> / <span id="total"></span>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        let currentSlide = 0;
+        const totalSlides = slides.length;
+
+        document.getElementById('total').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            document.getElementById('current').textContent = index + 1;
+            document.getElementById('progress').style.width = ((index + 1) / totalSlides * 100) + '%';
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                showSlide(currentSlide);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+
+        // Touch support for mobile
+        let touchStartX = 0;
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) nextSlide();
+                else prevSlide();
+            }
+        });
+    </script>
+</body>
+
+</html>

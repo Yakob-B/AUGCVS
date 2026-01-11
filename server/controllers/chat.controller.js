@@ -98,7 +98,15 @@ exports.sendMessage = async (req, res) => {
     }
 
     // Check if user is a participant
-    const isParticipant = chat.participants.some(p => p.toString() === userId);
+    let isParticipant = chat.participants.some(p => p.toString() === userId);
+
+    // Auto-join logic: Allow Admin/Registrar to join implicitly
+    if (!isParticipant && (req.user.role === 'admin' || req.user.role === 'registrar')) {
+      chat.participants.push(userId);
+      await chat.save();
+      isParticipant = true;
+    }
+
     if (!isParticipant) {
       return res.status(403).json({ success: false, message: 'Access denied' });
     }
@@ -202,7 +210,8 @@ exports.markAsRead = async (req, res) => {
     const chat = await Chat.findOne({ verification: verificationId });
 
     if (!chat) {
-      return res.status(404).json({ success: false, message: 'Chat not found' });
+      // If chat doesn't exist, there are no messages to read, so return success
+      return res.json({ success: true, message: 'No chat to mark as read' });
     }
 
     // Mark all unread messages as read

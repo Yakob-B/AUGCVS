@@ -8,12 +8,14 @@ const Graduate = require('../models/graduate.model');
 // List of free models to try in order of preference
 const FREE_MODELS = [
     'google/gemini-2.0-flash-exp:free',
-    'google/gemma-2-9b-it:free',
+    'meta-llama/llama-3.3-70b-instruct:free',
+    'deepseek/deepseek-r1:free',
     'mistralai/mistral-7b-instruct:free',
     'microsoft/phi-3-mini-128k-instruct:free',
-    'meta-llama/llama-3.1-8b-instruct:free',
-    'openchat/openchat-7b:free'
+    'google/gemma-2-9b-it:free'
 ];
+
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Helper to log errors to file
 const logErrorToFile = (error) => {
@@ -144,6 +146,8 @@ exports.chatWithAI = async (req, res) => {
                 if (error.response?.data) {
                     logErrorToFile(new Error(`OpenRouter Error (${model}): ${JSON.stringify(error.response.data)}`));
                 }
+                // Wait 1 second before trying the next model to avoid rate limits
+                await sleep(1000);
             }
         }
 
@@ -249,10 +253,9 @@ exports.analyzeVerification = async (req, res) => {
 
         // Use vision-capable free models (Verified OpenRouter IDs)
         const VISION_MODELS = [
-            'qwen/qwen-2-vl-7b-instruct:free',
             'google/gemini-2.0-flash-exp:free',
-            'meta-llama/llama-3.2-11b-vision-instruct:free',
-            'google/gemini-pro-1.5-exp:free'
+            'qwen/qwen-2-vl-7b-instruct:free',
+            'meta-llama/llama-3.2-11b-vision-instruct:free'
         ];
 
         let lastError = null;

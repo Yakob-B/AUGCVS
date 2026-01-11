@@ -342,18 +342,7 @@ const Verifications = () => {
                   <div className="flex items-center gap-3 pt-4 border-t dark:border-dark-border light:border-light-border">
                     {/* Chat Button - Animated Message Icon */}
                     <button
-                      onClick={async () => {
-                        setChatVerificationId(verification._id)
-                        try {
-                          await chatService.markAsRead(verification._id)
-                          setChatUnreadCounts(prev => ({
-                            ...prev,
-                            [verification._id]: 0
-                          }))
-                        } catch (error) {
-                          console.error('Error marking chat as read:', error)
-                        }
-                      }}
+                      onClick={() => setChatVerificationId(verification._id)}
                       className="group relative flex-1 flex items-center justify-center gap-2.5 py-3.5 px-4 overflow-hidden rounded-2xl font-bold transition-all duration-500 transform hover:scale-[1.03] active:scale-[0.97]
                         bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600 text-white
                         shadow-lg shadow-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/50
@@ -376,14 +365,14 @@ const Verifications = () => {
                     <button
                       onClick={() => setSelectedVerification(verification._id)}
                       className={`group relative flex-1 flex items-center justify-center gap-2.5 py-3.5 px-4 overflow-hidden rounded-2xl font-bold transition-all duration-500 transform hover:scale-[1.03] active:scale-[0.97] ring-2 ring-transparent ${(user.role === 'admin' || user.role === 'registrar') && verification.status === 'pending'
-                          ? `bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 text-white
+                        ? `bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 text-white
                              shadow-lg shadow-purple-500/30 hover:shadow-2xl hover:shadow-purple-500/50
                              hover:ring-purple-300/50
                              before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/0 before:via-white/30 before:to-white/0 
                              before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-1000
                              after:absolute after:inset-0 after:bg-gradient-to-t after:from-black/20 after:to-transparent after:opacity-0 hover:after:opacity-100 after:transition-opacity
                              animate-pulse-slow`
-                          : `bg-gradient-to-r from-slate-600 via-gray-600 to-zinc-700 text-white
+                        : `bg-gradient-to-r from-slate-600 via-gray-600 to-zinc-700 text-white
                              shadow-lg shadow-gray-500/20 hover:shadow-xl hover:shadow-gray-500/40
                              hover:ring-gray-400/50
                              before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/0 before:via-white/20 before:to-white/0 
