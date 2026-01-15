@@ -42,3 +42,13 @@ export const getFilters = async () => {
   const response = await api.get('/graduates/filters')
   return response.data
 }
+
+export const bulkUploadGraduates = async (formData) => {
+  const response = await api.post('/graduates/bulk', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    timeout: 300000 // 5 minutes timeout for large files
+  })
+  return response.data
+}

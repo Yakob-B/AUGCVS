@@ -73,11 +73,11 @@ const AdminDashboard = () => {
       action: 'View Messages',
     },
     {
-      title: 'Active Sessions',
-      value: 'Live',
+      title: 'Audit Logs',
+      value: 'System',
       icon: <MdTrendingUp />,
       color: 'from-orange-500 to-red-500',
-      link: '/admin/users',
+      link: '/admin/logs',
       action: 'Audit Logs',
     },
   ]

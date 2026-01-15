@@ -1,8 +1,7 @@
+@import './styles/chat-premium.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import './styles/chat-premium.css';
 
 
 @layer base {

@@ -1,0 +1,6 @@
+Student ID,First Name,Last Name,Middle Name,Date of Birth,Gender,Program,Department,College,Graduation Year,Graduation Date,Degree Type,GPA,Certificate Number
+UGR/12345/16,John,Doe,Michael,1998-05-15,male,Computer Science,Software Engineering,Natural and Computational Sciences,2020,2020-07-15,Bachelor of Science,3.75,CERT-2020-CS-001
+UGR/12346/16,Jane,Smith,,1997-08-22,female,Electrical Engineering,Electrical and Computer Engineering,Engineering and Technology,2020,2020-07-15,Bachelor of Engineering,3.82,CERT-2020-EE-002
+UGR/12347/16,Ahmed,Hassan,Ali,1998-11-10,male,Business Administration,Management,Business and Economics,2020,2020-07-15,Bachelor of Arts,3.65,CERT-2020-BA-003
+UGR/12348/16,Sara,Mulugeta,Tesfaye,1999-02-18,female,Nursing,Nursing,Health Sciences,2021,2021-07-20,Bachelor of Science,3.90,CERT-2021-NS-004
+UGR/12349/16,Michael,Kebede,,1997-12-05,male,Mechanical Engineering,Mechanical Engineering,Engineering and Technology,2020,2020-07-15,Bachelor of Engineering,3.55,CERT-2020-ME-005

@@ -91,12 +91,15 @@ const localDiskStorage = multer.diskStorage({
 
 const dataFileFilter = (req, file, cb) => {
     // Allowed file types
-    const filetypes = /csv|xlsx|xls/;
+    const filetypes = /csv|xlsx|xls|zip/;
     // Check extension
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
     // Check mime type
     const mimetypes = [
         'text/csv',
+        'application/zip',
+        'application/x-zip-compressed',
+        'multipart/x-zip',
         'application/vnd.ms-excel',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     ];
@@ -105,13 +108,13 @@ const dataFileFilter = (req, file, cb) => {
     if (extname && mimetype) {
         return cb(null, true);
     } else {
-        cb(new Error('Only CSV and Excel files are allowed!'));
+        cb(new Error('Only CSV, Excel, and ZIP files are allowed!'));
     }
 };
 
 const dataUpload = multer({
     storage: localDiskStorage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max file size
+    limits: { fileSize: 50 * 1024 * 1024 }, // 50MB max file size for bulk
     fileFilter: dataFileFilter
 });
 

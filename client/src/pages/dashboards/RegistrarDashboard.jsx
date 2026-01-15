@@ -4,31 +4,31 @@ import { useAuth } from '../../contexts/AuthContext'
 import { useNotification } from '../contexts/NotificationContext'
 import * as verificationService from '../../services/verifications'
 import * as graduateService from '../../services/graduates'
+import BulkUploadModal from '../../components/graduates/BulkUploadModal'
 import {
-  MdVerifiedUser,
+  MdVerified,
   MdPendingActions,
+  MdError,
+  MdPeople,
+  MdTrendingUp,
   MdCheckCircle,
   MdCancel,
-  MdArrowForward,
-  MdFileUpload,
+  MdAccessTime,
+  MdCloudUpload,
   MdSchool,
-  MdSearch
+  MdArrowForward,
+  MdVerifiedUser
 } from 'react-icons/md'
-import BulkUploadModal from '../../components/graduates/BulkUploadModal'
 
 const RegistrarDashboard = () => {
   const { user } = useAuth()
   const { showNotification } = useNotification()
-  const [stats, setStats] = useState({
-    total: 0,
-    pending: 0,
-    approved: 0,
-    rejected: 0,
-    graduates: 0,
-  })
+  const [stats, setStats] = useState(null)
   const [recentVerifications, setRecentVerifications] = useState([])
   const [loading, setLoading] = useState(true)
-  const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false)
+  const [showVerificationModal, setShowVerificationModal] = useState(false)
+  const [showBulkUploadModal, setShowBulkUploadModal] = useState(false)
+  const [selectedRequest, setSelectedRequest] = useState(null)
 
   useEffect(() => {
     loadData()
@@ -61,6 +61,44 @@ const RegistrarDashboard = () => {
     }
   }
 
+
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'pending':
+        return <span className="badge-warning">Pending</span>
+      case 'approved':
+        return <span className="badge-success">Approved</span>
+      case 'rejected':
+        return <span className="badge-danger">Rejected</span>
+      default:
+        return <span className="badge-pending">{status}</span>
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+      </div>
+    )
+  }
+
+  if (!stats) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <MdError className="mx-auto text-red-500 text-4xl mb-4" />
+          <h3 className="text-xl font-bold dark:text-white light:text-light-text mb-2">Failed to load data</h3>
+          <p className="dark:text-dark-muted light:text-light-muted mb-4">Please try refreshing the page</p>
+          <button onClick={loadData} className="btn-primary">
+            Retry
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   const statCards = [
     {
       title: 'Total Graduates',
@@ -87,27 +125,6 @@ const RegistrarDashboard = () => {
       color: 'from-red-500 to-rose-500',
     },
   ]
-
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'pending':
-        return <span className="badge-warning">Pending</span>
-      case 'approved':
-        return <span className="badge-success">Approved</span>
-      case 'rejected':
-        return <span className="badge-danger">Rejected</span>
-      default:
-        return <span className="badge-pending">{status}</span>
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
-      </div>
-    )
-  }
 
   return (
     <div className="animate-fade-in dark:text-dark-text light:text-light-text">
@@ -162,10 +179,10 @@ const RegistrarDashboard = () => {
           ) : (
             <div className="space-y-4">
               {recentVerifications.map((verification) => (
-                <Link
+                <button
                   key={verification._id}
-                  to={`/registrar/verifications`}
-                  className="block p-4 rounded-lg dark:bg-dark-surface light:bg-light-surface hover:dark:bg-dark-card hover:light:bg-gray-100 transition-colors group border dark:border-dark-border light:border-light-border"
+                  onClick={() => handleReviewClick(verification)}
+                  className="block w-full text-left p-4 rounded-lg dark:bg-dark-surface light:bg-light-surface hover:dark:bg-dark-card hover:light:bg-gray-100 transition-colors group border dark:border-dark-border light:border-light-border"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="dark:text-dark-text light:text-light-text font-semibold">
@@ -179,7 +196,7 @@ const RegistrarDashboard = () => {
                   <div className="text-xs dark:text-dark-muted light:text-light-muted mt-1">
                     {new Date(verification.createdAt).toLocaleDateString()}
                   </div>
-                </Link>
+                </button>
               ))}
             </div>
           )}
@@ -218,24 +235,28 @@ const RegistrarDashboard = () => {
             </div>
 
             <button
-              onClick={() => setIsBulkUploadOpen(true)}
-              className="w-full flex items-center justify-between p-4 rounded-lg border border-primary-500/30 dark:bg-primary-500/5 hover:dark:bg-primary-500/10 transition-colors group"
+              onClick={() => setShowBulkUploadModal(true)}
+              className="w-full flex items-center justify-between p-4 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg shadow-purple-500/20 group"
             >
               <div className="flex items-center space-x-3">
-                <MdFileUpload className="text-primary-400 text-xl" />
-                <span className="dark:text-dark-text light:text-light-text">Bulk Upload</span>
+                <MdCloudUpload className="text-xl" />
+                <span className="font-semibold">Bulk Import</span>
               </div>
-              <MdArrowForward className="dark:text-dark-muted light:text-light-muted group-hover:text-primary-400 transition-colors" />
+              <MdArrowForward className="group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
         </div>
       </div>
 
-      <BulkUploadModal
-        isOpen={isBulkUploadOpen}
-        onClose={() => setIsBulkUploadOpen(false)}
-        onUploadSuccess={loadData}
-      />
+      {showBulkUploadModal && (
+        <BulkUploadModal
+          onClose={() => setShowBulkUploadModal(false)}
+          onSuccess={() => {
+            loadData()
+            // Optional: Close modal automatically or wait for user to click Done
+          }}
+        />
+      )}
     </div>
   )
 }

@@ -4,7 +4,8 @@ import { useAuth } from '../../contexts/AuthContext'
 import * as graduateService from '../../services/graduates'
 import GraduateForm from '../../components/graduates/GraduateForm'
 import Pagination from '../../components/common/Pagination'
-import { MdSchool, MdAdd, MdSearch, MdEdit, MdDelete } from 'react-icons/md'
+import BulkUploadModal from '../../components/graduates/BulkUploadModal'
+import { MdSchool, MdAdd, MdSearch, MdEdit, MdDelete, MdCloudUpload } from 'react-icons/md'
 
 const Graduates = () => {
   const { user } = useAuth()
@@ -13,6 +14,7 @@ const Graduates = () => {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [showForm, setShowForm] = useState(false)
+  const [showBulkUploadModal, setShowBulkUploadModal] = useState(false)
   const [selectedGraduate, setSelectedGraduate] = useState(null)
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, pages: 0 })
 
@@ -110,18 +112,37 @@ const Graduates = () => {
           <p className="dark:text-dark-muted light:text-light-muted">Manage graduate records and certificates</p>
         </div>
         {user.role === 'registrar' && (
-          <button
-            onClick={() => {
-              setSelectedGraduate(null)
-              setShowForm(true)
-            }}
-            className="mt-4 md:mt-0 inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg shadow-purple-500/30"
-          >
-            <MdAdd className="mr-2" />
-            Add Graduate
-          </button>
+          <div className="mt-4 md:mt-0 flex gap-3">
+            <button
+              onClick={() => setShowBulkUploadModal(true)}
+              className="inline-flex items-center px-6 py-3 bg-white text-purple-600 border-2 border-purple-600 rounded-lg font-semibold hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md"
+            >
+              <MdCloudUpload className="mr-2" />
+              Bulk Import
+            </button>
+            <button
+              onClick={() => {
+                setSelectedGraduate(null)
+                setShowForm(true)
+              }}
+              className="mt-4 md:mt-0 inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg shadow-purple-500/30"
+            >
+              <MdAdd className="mr-2" />
+              Add Graduate
+            </button>
+          </div>
         )}
       </div>
+
+      {/* Bulk Upload Modal */}
+      {showBulkUploadModal && (
+        <BulkUploadModal
+          onClose={() => setShowBulkUploadModal(false)}
+          onSuccess={() => {
+            loadGraduates()
+          }}
+        />
+      )}
 
       {/* Graduate Form Modal */}
       {showForm && (
@@ -212,7 +233,7 @@ const Graduates = () => {
                         className="group flex-1 relative flex items-center justify-center gap-2 py-3.5 px-4 overflow-hidden rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-95
                           bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white
                           shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/40
-                          before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/0 before:via-white/25 before:to-white/0 
+                          before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/0 before:via-white/25 before:to-white/0
                           before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-700"
                       >
                         <MdEdit className="text-lg transition-transform group-hover:rotate-12" />
@@ -224,7 +245,7 @@ const Graduates = () => {
                           className="group flex-1 relative flex items-center justify-center gap-2 py-3.5 px-4 overflow-hidden rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-95
                             bg-gradient-to-r from-rose-600 via-red-600 to-pink-600 text-white
                             shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/40
-                            before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/0 before:via-white/25 before:to-white/0 
+                            before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/0 before:via-white/25 before:to-white/0
                             before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-700"
                         >
                           <MdDelete className="text-lg transition-transform group-hover:scale-110" />

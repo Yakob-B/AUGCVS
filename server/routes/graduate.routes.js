@@ -6,8 +6,8 @@ const {
     getGraduate,
     updateGraduate,
     deleteGraduate,
-    searchGraduates,
     getFilters,
+    searchGraduates,
     bulkUploadGraduates
 } = require('../controllers/graduate.controller');
 const { protect, authorize } = require('../middleware/auth.middleware');
@@ -38,18 +38,10 @@ const graduateValidation = [
 // ✅ Static and search/filter routes go first
 router.get('/filters', authorize('registrar'), getFilters);
 router.get('/search', authorize('registrar'), searchGraduates);
-router.get('/', authorize('registrar'), getGraduates);
-
-// Bulk upload
-router.post(
-    '/bulk-upload',
-    authorize('registrar'),
-    dataUpload.single('file'),
-    handleUploadError,
-    bulkUploadGraduates
-);
 
 // ✅ CRUD routes
+router.get('/', authorize('registrar'), getGraduates);
+
 router.post(
     '/',
     authorize('registrar'),
@@ -57,6 +49,14 @@ router.post(
     handleUploadError,
     graduateValidation,
     createGraduate
+);
+
+router.post(
+    '/bulk',
+    authorize('registrar'),
+    dataUpload.single('file'), // Use dataUpload for local storage of ZIP
+    handleUploadError,
+    bulkUploadGraduates
 );
 
 router.put(

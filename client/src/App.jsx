@@ -30,6 +30,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy'
 import TermsOfService from './pages/TermsOfService'
 import Support from './pages/Support'
 import SupportInbox from './pages/support/SupportInbox'
+import AuditLogs from './pages/admin/AuditLogs'
 
 function App() {
   return (
@@ -64,6 +65,7 @@ function App() {
                               <Route index element={<AdminDashboard />} />
                               <Route path="users" element={<Users />} />
                               <Route path="support" element={<SupportInbox />} />
+                              <Route path="logs" element={<AuditLogs />} />
                             </Routes>
                           </PrivateRoute>
                         }

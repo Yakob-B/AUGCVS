@@ -320,103 +320,105 @@ const VerificationReviewModal = ({ verificationId, onClose, onSuccess }) => {
             </div>
           )}
 
-          {/* AI Assistance Section */}
-          <div className="card border-2 border-primary-500/30 overflow-hidden">
-            <div className="bg-gradient-to-r from-primary-500/10 to-transparent p-4 flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <FaRobot className="text-primary-500 text-xl" />
-                <h3 className="text-lg font-bold dark:text-white light:text-light-text">AI Verification Assistant</h3>
+          {/* AI Assistance Section (Registrar Only) */}
+          {user.role === 'registrar' && (
+            <div className="card border-2 border-primary-500/30 overflow-hidden">
+              <div className="bg-gradient-to-r from-primary-500/10 to-transparent p-4 flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <FaRobot className="text-primary-500 text-xl" />
+                  <h3 className="text-lg font-bold dark:text-white light:text-light-text">AI Verification Assistant</h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleAiAnalyze}
+                  disabled={aiAnalyzing || isProcessed}
+                  className={`btn-primary text-sm flex items-center space-x-2 ${aiAnalyzing ? 'animate-pulse' : ''}`}
+                >
+                  {aiAnalyzing ? (
+                    <>
+                      <FaSpinner className="animate-spin" />
+                      <span>Analyzing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <MdAutoFixHigh />
+                      <span>Run AI Analysis</span>
+                    </>
+                  )}
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={handleAiAnalyze}
-                disabled={aiAnalyzing || isProcessed}
-                className={`btn-primary text-sm flex items-center space-x-2 ${aiAnalyzing ? 'animate-pulse' : ''}`}
-              >
-                {aiAnalyzing ? (
-                  <>
-                    <FaSpinner className="animate-spin" />
-                    <span>Analyzing...</span>
-                  </>
-                ) : (
-                  <>
-                    <MdAutoFixHigh />
-                    <span>Run AI Analysis</span>
-                  </>
+
+              <div className="p-5">
+                {!aiAnalysis && !aiAnalyzing && (
+                  <p className="text-sm dark:text-dark-muted light:text-light-muted text-center italic">
+                    Run AI Analysis to automatically extract text and check for discrepancies.
+                  </p>
                 )}
-              </button>
-            </div>
 
-            <div className="p-5">
-              {!aiAnalysis && !aiAnalyzing && (
-                <p className="text-sm dark:text-dark-muted light:text-light-muted text-center italic">
-                  Run AI Analysis to automatically extract text and check for discrepancies.
-                </p>
-              )}
-
-              {aiAnalysis && (
-                <div className="space-y-4 animate-fade-in">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium">Match Confidence:</span>
-                      <div className="w-48 h-2 bg-gray-200 dark:bg-dark-surface rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full ${aiAnalysis.matchPercentage > 80 ? 'bg-green-500' : aiAnalysis.matchPercentage > 50 ? 'bg-yellow-500' : 'bg-red-500'}`}
-                          style={{ width: `${aiAnalysis.matchPercentage}%` }}
-                        ></div>
+                {aiAnalysis && (
+                  <div className="space-y-4 animate-fade-in">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-medium">Match Confidence:</span>
+                        <div className="w-48 h-2 bg-gray-200 dark:bg-dark-surface rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full ${aiAnalysis.matchPercentage > 80 ? 'bg-green-500' : aiAnalysis.matchPercentage > 50 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                            style={{ width: `${aiAnalysis.matchPercentage}%` }}
+                          ></div>
+                        </div>
+                        <span className="font-bold">{aiAnalysis.matchPercentage}%</span>
                       </div>
-                      <span className="font-bold">{aiAnalysis.matchPercentage}%</span>
+                      <button
+                        onClick={applyAiRecommendation}
+                        className="text-xs btn-secondary py-1"
+                      >
+                        Apply Results to Form
+                      </button>
                     </div>
-                    <button
-                      onClick={applyAiRecommendation}
-                      className="text-xs btn-secondary py-1"
-                    >
-                      Apply Results to Form
-                    </button>
-                  </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <h4 className="text-xs font-bold uppercase text-primary-500">Extracted Data</h4>
-                      <ul className="text-sm space-y-1">
-                        {Object.entries(aiAnalysis.extractedData || {}).map(([key, val]) => (
-                          <li key={key} className="flex justify-between">
-                            <span className="capitalize dark:text-dark-muted">{key.replace(/([A-Z])/g, ' $1')}:</span>
-                            <span className="font-medium">{val || 'N/A'}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="space-y-2">
-                      <h4 className="text-xs font-bold uppercase text-red-500">Insights</h4>
-                      {aiAnalysis.discrepancies?.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <h4 className="text-xs font-bold uppercase text-primary-500">Extracted Data</h4>
                         <ul className="text-sm space-y-1">
-                          {aiAnalysis.discrepancies.map((d, i) => (
-                            <li key={i} className="flex items-start text-red-400">
-                              <FaExclamationTriangle className="mt-1 mr-2 flex-shrink-0" />
-                              <span>{d}</span>
+                          {Object.entries(aiAnalysis.extractedData || {}).map(([key, val]) => (
+                            <li key={key} className="flex justify-between">
+                              <span className="capitalize dark:text-dark-muted">{key.replace(/([A-Z])/g, ' $1')}:</span>
+                              <span className="font-medium">{val || 'N/A'}</span>
                             </li>
                           ))}
                         </ul>
-                      ) : (
-                        <p className="text-sm text-green-400 flex items-center">
-                          <FaCheckCircle className="mr-2" /> No discrepancies found.
-                        </p>
-                      )}
+                      </div>
+                      <div className="space-y-2">
+                        <h4 className="text-xs font-bold uppercase text-red-500">Insights</h4>
+                        {aiAnalysis.discrepancies?.length > 0 ? (
+                          <ul className="text-sm space-y-1">
+                            {aiAnalysis.discrepancies.map((d, i) => (
+                              <li key={i} className="flex items-start text-red-400">
+                                <FaExclamationTriangle className="mt-1 mr-2 flex-shrink-0" />
+                                <span>{d}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-sm text-green-400 flex items-center">
+                            <FaCheckCircle className="mr-2" /> No discrepancies found.
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="p-3 bg-primary-500/5 rounded-lg border border-primary-500/20">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <FaBrain className="text-primary-500" />
-                      <span className="text-xs font-bold uppercase">AI Explanation</span>
+                    <div className="p-3 bg-primary-500/5 rounded-lg border border-primary-500/20">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <FaBrain className="text-primary-500" />
+                        <span className="text-xs font-bold uppercase">AI Explanation</span>
+                      </div>
+                      <p className="text-sm dark:text-gray-300 italic">{aiAnalysis.explanation}</p>
                     </div>
-                    <p className="text-sm dark:text-gray-300 italic">{aiAnalysis.explanation}</p>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Processing Form (only if pending and user is registrar/admin) */}
           {!isProcessed && (user.role === 'registrar' || user.role === 'admin') && (

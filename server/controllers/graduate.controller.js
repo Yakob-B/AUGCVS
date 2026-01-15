@@ -4,8 +4,9 @@ const logAudit = require('../utils/auditLog');
 const mongoose = require('mongoose');
 const fs = require('fs');
 const path = require('path');
-const csv = require('csv-parser');
+const AdmZip = require('adm-zip');
 const xlsx = require('xlsx');
+const cloudinary = require('../config/cloudinary.config');
 
 // @desc    Create new graduate
 exports.createGraduate = async (req, res) => {
@@ -285,120 +286,6 @@ exports.searchGraduates = async (req, res) => {
     }
 };
 
-// @desc    Bulk upload graduates
-exports.bulkUploadGraduates = async (req, res) => {
-    try {
-        if (!req.file) {
-            return res.status(400).json({ success: false, message: 'Please upload a file' });
-        }
-
-        const filePath = req.file.path;
-        const graduates = [];
-        const errors = [];
-        const fileExt = path.extname(req.file.originalname).toLowerCase();
-
-        if (fileExt === '.csv') {
-            await new Promise((resolve, reject) => {
-                fs.createReadStream(filePath)
-                    .pipe(csv())
-                    .on('data', (data) => graduates.push(data))
-                    .on('error', (err) => reject(err))
-                    .on('end', () => resolve());
-            });
-        } else if (fileExt === '.xlsx' || fileExt === '.xls') {
-            const workbook = xlsx.readFile(filePath);
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
-            const jsonData = xlsx.utils.sheet_to_json(worksheet);
-            graduates.push(...jsonData);
-        }
-
-        // Processing results
-        let successCount = 0;
-        let failCount = 0;
-        const results = [];
-
-        for (let i = 0; i < graduates.length; i++) {
-            const gradData = graduates[i];
-
-            // Map fields and validate
-            try {
-                // Ensure field names are consistent (handle potential variations in header names)
-                const mappedData = {
-                    studentId: gradData['Student ID'] || gradData['studentId'] || gradData['student_id'],
-                    firstName: gradData['First Name'] || gradData['firstName'] || gradData['first_name'],
-                    lastName: gradData['Last Name'] || gradData['lastName'] || gradData['last_name'],
-                    middleName: gradData['Middle Name'] || gradData['middleName'] || gradData['middle_name'],
-                    dateOfBirth: gradData['Date of Birth'] || gradData['dateOfBirth'] || gradData['dob'],
-                    gender: (gradData['Gender'] || gradData['gender'] || '').toLowerCase(),
-                    program: gradData['Program'] || gradData['program'],
-                    department: gradData['Department'] || gradData['department'],
-                    college: gradData['College'] || gradData['college'],
-                    graduationYear: gradData['Graduation Year'] || gradData['graduationYear'] || gradData['year'],
-                    graduationDate: gradData['Graduation Date'] || gradData['graduationDate'],
-                    degreeType: gradData['Degree Type'] || gradData['degreeType'],
-                    gpa: gradData['GPA'] || gradData['gpa'],
-                    certificateNumber: gradData['Certificate Number'] || gradData['certificateNumber'],
-                    addedBy: req.user.id
-                };
-
-                // Basic validation for required fields
-                const requiredFields = ['studentId', 'firstName', 'lastName', 'dateOfBirth', 'gender', 'program', 'department', 'college', 'graduationYear', 'graduationDate', 'degreeType', 'gpa', 'certificateNumber'];
-                const missingFields = requiredFields.filter(f => !mappedData[f]);
-
-                if (missingFields.length > 0) {
-                    throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
-                }
-
-                // Check for existing studentId or certificateNumber
-                const existing = await Graduate.findOne({
-                    $or: [
-                        { studentId: mappedData.studentId },
-                        { certificateNumber: mappedData.certificateNumber }
-                    ]
-                });
-
-                if (existing) {
-                    throw new Error(`Student ID ${mappedData.studentId} or Certificate ${mappedData.certificateNumber} already exists`);
-                }
-
-                await Graduate.create(mappedData);
-                successCount++;
-                results.push({ row: i + 1, status: 'success', studentId: mappedData.studentId });
-            } catch (err) {
-                failCount++;
-                results.push({ row: i + 1, status: 'failed', error: err.message });
-            }
-        }
-
-        // Clean up temporary file
-        fs.unlinkSync(filePath);
-
-        await logAudit({
-            user: req.user.id,
-            action: 'bulk_upload_graduates',
-            details: { successCount, failCount, total: graduates.length },
-            ip: req.ip
-        });
-
-        res.status(200).json({
-            success: true,
-            summary: {
-                total: graduates.length,
-                success: successCount,
-                failed: failCount
-            },
-            results
-        });
-    } catch (err) {
-        console.error(err);
-        if (req.file && fs.existsSync(req.file.path)) {
-            fs.unlinkSync(req.file.path);
-        }
-        res.status(500).json({ success: false, message: 'Server error', error: err.message });
-    }
-};
-
 // @desc    Get filter options
 exports.getFilters = async (req, res) => {
     try {
@@ -408,5 +295,248 @@ exports.getFilters = async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Failed to fetch filter options' });
+    }
+};
+
+// Helper function to extract student ID from filename
+// Prioritizes student ID format: UGR/12345/16
+function extractStudentIdFromFilename(filename) {
+    // Remove common separators and normalize
+    const normalized = filename.toUpperCase().trim();
+
+    // Pattern 1: UGR-12345-16 or UGR_12345_16 or UGR 12345 16
+    const pattern1 = /UGR[-_\s]?(\d+)[-_\s]?(\d+)/;
+    const match1 = normalized.match(pattern1);
+    if (match1) {
+        return `UGR/${match1[1]}/${match1[2]}`;
+    }
+
+    // Pattern 2: Just the ID part like 12345-16 or 12345_16
+    const pattern2 = /^(\d+)[-_](\d+)/;
+    const match2 = normalized.match(pattern2);
+    if (match2) {
+        return `UGR/${match2[1]}/${match2[2]}`;
+    }
+
+    // Pattern 3: Full format UGR/12345/16 already in filename
+    const pattern3 = /UGR\/(\d+)\/(\d+)/;
+    const match3 = normalized.match(pattern3);
+    if (match3) {
+        return `UGR/${match3[1]}/${match3[2]}`;
+    }
+
+    return null;
+}
+
+// @desc    Bulk upload graduates via ZIP (Excel + Certificates)
+exports.bulkUploadGraduates = async (req, res) => {
+    let zipPath = null;
+    let extractionPath = null;
+
+    // Helper to get all files recursively
+    const getAllFiles = (dirPath, arrayOfFiles) => {
+        const files = fs.readdirSync(dirPath);
+        arrayOfFiles = arrayOfFiles || [];
+        files.forEach(file => {
+            const fullPath = path.join(dirPath, file);
+            if (fs.statSync(fullPath).isDirectory()) {
+                arrayOfFiles = getAllFiles(fullPath, arrayOfFiles);
+            } else {
+                arrayOfFiles.push(fullPath);
+            }
+        });
+        return arrayOfFiles;
+    };
+
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'Please upload a ZIP file' });
+        }
+
+        zipPath = req.file.path;
+        extractionPath = path.join(path.dirname(zipPath), `extracted_${Date.now()}`);
+
+        // 1. Unzip the file
+        const zip = new AdmZip(zipPath);
+        zip.extractAllTo(extractionPath, true);
+
+        // 2. Find the Excel file recursively
+        const allExtractedFiles = getAllFiles(extractionPath);
+        const excelFileFull = allExtractedFiles.find(f => f.match(/\.(xlsx|xls|csv)$/i));
+
+        if (!excelFileFull) {
+            throw new Error('No Excel or CSV file found in the ZIP archive');
+        }
+
+        // 3. Parse Excel Data
+        const workbook = xlsx.readFile(excelFileFull);
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const data = xlsx.utils.sheet_to_json(sheet);
+
+        if (!data || data.length === 0) {
+            throw new Error('Excel file is empty');
+        }
+
+        const stats = {
+            total: data.length,
+            success: 0,
+            failed: 0,
+            errors: []
+        };
+
+        console.log('--- Bulk Upload Debug ---');
+        console.log('Excel file found at:', excelFileFull);
+        console.log('Parsed records count:', data.length);
+        if (data.length > 0) {
+            console.log('First record keys:', Object.keys(data[0]));
+        }
+
+        // 4. Process each student
+        for (let i = 0; i < data.length; i++) {
+            const row = data[i];
+            const studentId = row['Student ID'] || row['studentId'];
+
+            try {
+                if (!studentId) throw new Error('Missing Student ID');
+
+                const existing = await Graduate.findOne({ studentId });
+                if (existing) throw new Error(`Graduate with ID ${studentId} already exists`);
+
+                // Find Certificate File recursively
+                console.log(`Searching certificate for: ${studentId}`);
+
+                const normalizedId = studentId.toLowerCase().replace(/[\/\-_ ]/g, '');
+                const idParts = studentId.split(/[\/\-_ ]/).filter(p => p && !isNaN(p));
+
+                const certFileFull = allExtractedFiles.find(f => {
+                    if (f === excelFileFull) return false;
+                    const isMedia = f.match(/\.(pdf|jpg|jpeg|png)$/i);
+                    if (!isMedia) return false;
+
+                    const filename = path.basename(f).toLowerCase();
+                    const filenameWithoutExt = filename.split('.').slice(0, -1).join('.');
+                    const normalizedFilename = filenameWithoutExt.replace(/[\/\-_ ]/g, '');
+
+                    // Match 1: Normalized exact (ugr123416 === ugr123416)
+                    if (normalizedFilename === normalizedId) return true;
+
+                    // Match 2: Contains whole student ID as-is (case insensitive)
+                    if (filename.includes(studentId.toLowerCase())) return true;
+
+                    // Match 3: Alphanumeric version replaces slashes with common separators
+                    const slugId = studentId.toLowerCase().replace(/\//g, '-');
+                    const underscoreId = studentId.toLowerCase().replace(/\//g, '_');
+                    if (filename.includes(slugId) || filename.includes(underscoreId)) return true;
+
+                    // Match 4: Every numeric part (strict fallback)
+                    if (idParts.length > 0 && idParts.every(part => filename.includes(part))) return true;
+
+                    // Match 5: Filename is exactly one of the significant numeric parts (e.g., "1234.pdf" matches "UGR/1234/16")
+                    if (idParts.some(part => part.length >= 3 && filenameWithoutExt === part)) return true;
+
+                    // Match 6: Filename starts with or ends with the "primary" (longest) numeric part
+                    const longestPart = idParts.reduce((a, b) => a.length >= b.length ? a : b, "");
+                    if (longestPart.length >= 3 && (filenameWithoutExt.startsWith(longestPart) || filenameWithoutExt.endsWith(longestPart))) return true;
+
+                    return false;
+                });
+
+                if (!certFileFull) {
+                    console.log(`Available files in ZIP: ${allExtractedFiles.map(f => path.basename(f)).join(', ')}`);
+                }
+
+                let certificateUrl = null;
+                if (certFileFull) {
+                    const uploadResult = await cloudinary.uploader.upload(certFileFull, {
+                        folder: 'augcvs/certificates',
+                        resource_type: 'auto',
+                        public_id: `certificate_${studentId.replace(/\//g, '_')}_${Date.now()}`
+                    });
+                    certificateUrl = uploadResult.secure_url;
+                } else {
+                    throw new Error(`Certificate file not found in ZIP for ID ${studentId}`);
+                }
+
+                const graduateData = {
+                    studentId,
+                    firstName: row['First Name'] || row['firstName'],
+                    lastName: row['Last Name'] || row['lastName'],
+                    middleName: row['Middle Name'] || row['middleName'] || '',
+                    dateOfBirth: row['Date of Birth'] || row['dateOfBirth'],
+                    gender: (row['Gender'] || row['gender'] || 'male').toLowerCase(),
+                    program: row['Program'] || row['program'],
+                    department: row['Department'] || row['department'],
+                    college: row['College'] || row['college'],
+                    graduationYear: row['Graduation Year'] || row['graduationYear'],
+                    graduationDate: row['Graduation Date'] || row['graduationDate'],
+                    degreeType: row['Degree Type'] || row['degreeType'],
+                    gpa: row['GPA'] || row['gpa'],
+                    certificateNumber: row['Certificate Number'] || row['certificateNumber'],
+                    certificateFile: certificateUrl,
+                    addedBy: req.user.id,
+                    status: 'active'
+                };
+
+                if (!graduateData.firstName || !graduateData.lastName) throw new Error('Missing name fields');
+
+                await Graduate.create(graduateData);
+                stats.success++;
+
+            } catch (err) {
+                stats.failed++;
+                stats.errors.push({
+                    studentId: studentId || `Row ${i + 2}`,
+                    error: err.message
+                });
+            }
+        }
+
+        // Cleanup
+        try {
+            if (zipPath && fs.existsSync(zipPath)) fs.unlinkSync(zipPath);
+            if (extractionPath && fs.existsSync(extractionPath)) {
+                fs.rmSync(extractionPath, { recursive: true, force: true });
+            }
+        } catch (cleanupErr) {
+            console.error('Cleanup error:', cleanupErr);
+        }
+
+        await logAudit({
+            user: req.user.id,
+            action: 'bulk_upload_graduates',
+            details: {
+                total: stats.total,
+                success: stats.success,
+                failed: stats.failed
+            },
+            ip: req.ip
+        });
+
+        res.status(200).json({
+            success: stats.success > 0,
+            message: stats.success > 0
+                ? `Successfully processed ${stats.success} records.`
+                : `Failed to process any records. Check the error list below.`,
+            stats
+        });
+
+    } catch (err) {
+        console.error('Bulk Upload Error:', err);
+        try {
+            if (zipPath && fs.existsSync(zipPath)) fs.unlinkSync(zipPath);
+            if (extractionPath && fs.existsSync(extractionPath)) {
+                fs.rmSync(extractionPath, { recursive: true, force: true });
+            }
+        } catch (cleanupErr) { console.error('Cleanup error:', cleanupErr); }
+
+        await logAudit({
+            user: req.user ? req.user.id : 'system',
+            action: 'bulk_upload_failed',
+            details: { error: err.message },
+            ip: req.ip
+        });
+
+        res.status(500).json({ success: false, message: err.message });
     }
 };
